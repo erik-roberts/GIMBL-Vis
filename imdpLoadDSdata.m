@@ -130,12 +130,26 @@ if ~exist(filePath,'file') || options.overwriteBool
     end
     lin2mdMat(mdInd{:})=iData;
   end
+  lin2mdMat(isnan(lin2mdMat)) = length(simIDs)+1; %assign nan's to a new fake index
   
   for iVar = 1:length(nonOrdinalVars)
     thisNonOrdVar = nonOrdinalVars{iVar};
     thisLinearData = data.Linear.data(:, strcmp(data.Linear.dimNames,thisNonOrdVar));
+    thisLinearData{end+1} = nan; %make fake index at end
     data.MultiDim.data{iVar} = thisLinearData(lin2mdMat);
+    
+    % Fix NaNs
+    if strcmp(data.Linear.dimTypes{iVar}, 'index')
+      % Assign -1 to index for missing values
+      [data.MultiDim.data{iVar}{cellfun(@isnan, data.MultiDim.data{iVar})}] = deal(-1);
+    elseif strcmp(data.Linear.dimTypes{iVar}, 'categorical')
+      % Assign empty string for missing values
+      sliceInd = cell2mat(cellfun(@isnanStr, data.MultiDim.data{iVar},'uni',0));
+      [data.MultiDim.data{iVar}{sliceInd}] = deal('');
+    end
   end
+  
+  
   data.MultiDim.dataNames = {'simID', 'class'};
   data.MultiDim.dataTypes = {'index', 'categorical'};
   data.MultiDim.dimNames = ordinalVars;
@@ -160,6 +174,14 @@ end
 
 
 %% Sub Fns
+  function output = isnanStr(x)
+    if ischar(x) || isstring(x)
+      output = false;
+    else
+      output = logical(isnan(x));
+    end
+  end
+
   function vfprintf(varargin)
     if options.verboseBool
       fprintf(varargin{:})

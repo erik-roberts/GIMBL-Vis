@@ -1,26 +1,40 @@
 function imdpViewDimCallback(hObject, eventdata, handles)
 
-vdH = handles.lists.vdH;
-sH = handles.lists.sH;
-svH = handles.lists.svH;
+vdH = handles.MainPanel.HandlesNames.vdH;
+sH = handles.MainPanel.HandlesNames.sH;
+svH = handles.MainPanel.HandlesNames.svH;
+
+nAxDims = handles.PlotPanel.nAxDims;
 
 % Determine number of checked ViewDim boxes
 nViewDims = 0;
 viewDims = [];
 
-for hInd = 1:handles.PlotPanel.nAxDims
+for hInd = 1:nAxDims
   nViewDims = nViewDims + handles.(vdH{hInd}).Value;
   viewDims(end+1) = handles.(vdH{hInd}).Value;
-  if handles.(vdH{hInd}).Value
-    handles.(sH{hInd}).Enable = 'off';
-    handles.(svH{hInd}).Enable = 'off';
-  else
-    handles.(sH{hInd}).Enable = 'on';
-    handles.(svH{hInd}).Enable = 'on';
-  end
 end
 handles.PlotPanel.nViewDims = nViewDims;
 
+% Disable sliders when all data is shown (dim < 3)
+axDims = 1:nAxDims;
+if nViewDims < 3
+  disableDims = logical(viewDims);
+else
+  disableDims = logical(zeros(size(viewDims)));
+end
+
+for hInd = axDims(disableDims)
+  handles.(sH{hInd}).Enable = 'off';
+  handles.(svH{hInd}).Enable = 'off';
+end
+
+for hInd = axDims(~disableDims)
+  handles.(sH{hInd}).Enable = 'on';
+  handles.(svH{hInd}).Enable = 'on';
+end
+
+% Check number of ViewDims
 if nViewDims > 8
   hObject.Value = 0;
   wprintf('A max of 8 ViewDims is permitted.')

@@ -21,6 +21,13 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
     newPanelBool = false;
   end
   
+  % Add user data to figure
+  hFig.UserData.mdData = handles.mdData;
+  
+  % Data cursor
+  dm = datacursormode(hFig);
+  dm.UpdateFcn = @imdpDataCursorCallback;
+  
   %   if isfield(handles.PlotPanel, 'handle') && isvalid(handles.PlotPanel.figHandle)
   %     hFig = handles.PlotPanel.figHandle;
   %
@@ -40,9 +47,9 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
   
   % Update Panel
   clf(hFig) %clear fig
-  gap = [];
-  marg_h = [];
-  marg_w = [];
+  gap = 0.1;
+  marg_h = 0.1;
+  marg_w = 0.1;
   switch nViewDims
     case 1
       % 1 1d pane

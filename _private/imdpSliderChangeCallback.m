@@ -9,7 +9,11 @@ hNum = str2double(hNum{1});
 lastVal = hObject.UserData.lastVal;
 switch hObject.Style
   case 'slider'
-    newVal = hObject.Value;
+    if ~isnumeric(eventdata)
+      newVal = hObject.Value;
+    else %from scroll
+      newVal = lastVal + eventdata * (hObject.SliderStep(1))*(hObject.Max-hObject.Min);
+    end
   case 'edit'
     newVal = str2double(hObject.String);
 end

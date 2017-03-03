@@ -15,6 +15,9 @@ end
 nDimVals = handles.mdData.nDimVals;
 
 viewDims = handles.PlotPanel.viewDims;
+if sum(viewDims) > 2
+  viewDims(:) = 0;
+end
 incrDims = ~viewDims;
 
 axDimsReversed = 1:length(incrDims);
@@ -45,10 +48,11 @@ end
     
     % check if all values arent at final index
     if ~all(axInd(incrDims) == nDimVals(incrDims))
+%       TODO: recursiveIncre() instead
       for axDim = axDimsReversed
         if axInd(axDim) < nDimVals(axDim) %Then iterate
-          sliderObject = handles.(handles.lists.sH{axDim});
-          sliderObject.Value = sliderObject.Value + eps;%sliderObject.SliderStep(1);
+          sliderObject = handles.(handles.MainPanel.HandlesNames.sH{axDim});
+          sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
           imdpSliderChangeCallback(sliderObject, eventdata, handles);
           break % stop incrementing others
         end
@@ -56,7 +60,7 @@ end
     else % Reset to starting index
       % loop over slider handles and set value to min
       for iSlider = axDimsReversed
-        sliderObject = handles.(handles.lists.sH{iSlider});
+        sliderObject = handles.(handles.MainPanel.HandlesNames.sH{iSlider});
 %         thisMinVal = dimVals{iSlider}(1);
 %         sliderObject.Value = thisMinVal;
 %         sliderObject.UserData.sibling.Value = thisMinVal;
@@ -69,7 +73,7 @@ end
         guidata(hObject, handles);
       end
       
-      % rePlot
+      % replot
       handles = imdpPlot(hObject, eventdata, handles);
       
       % Update handles structure

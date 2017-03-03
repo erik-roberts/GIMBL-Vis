@@ -13,18 +13,6 @@ end
 % Choose default command line output for imdpMainPanel
 handles.output = hObject;
 
-% Get fields
-flds = fields(handles);
-txtH = sort(flds(~cellfun(@isempty,(strfind(flds, 'varText')))));
-sH = sort(flds(~cellfun(@isempty,(regexp(flds, 'slider\d'))))); % use regexp to avoid capuring svh also
-svH = sort(flds(~cellfun(@isempty,(strfind(flds, 'sliderVal')))));
-vdH = sort(flds(~cellfun(@isempty,(strfind(flds, 'viewDim')))));
-
-handles.lists.txtH = txtH;
-handles.lists.sH = sH;
-handles.lists.svH = svH;
-handles.lists.vdH = vdH;
-
 % Setup var names
 dimNames = mdData.dimNames;
 % nonAxDims = data.Table.Properties.UserData.nonAxisDims;
@@ -35,6 +23,29 @@ axDimNames = dimNames;
 % axDimNames(nonAxDims) = [];
 % data.Table.Properties.UserData.axDimNames = axDimNames;
 nAxDims = length(axDimNames);
+
+%% Setup Main Panel Vars
+
+% Get fields
+flds = fields(handles);
+txtH = sort(flds(~cellfun(@isempty,(strfind(flds, 'varText')))));
+sH = sort(flds(~cellfun(@isempty,(regexp(flds, 'slider\d'))))); % use regexp to avoid capuring svh also
+svH = sort(flds(~cellfun(@isempty,(strfind(flds, 'sliderVal')))));
+vdH = sort(flds(~cellfun(@isempty,(strfind(flds, 'viewDim')))));
+
+% Handles Names
+handles.MainPanel.HandlesNames.txtH = txtH;
+handles.MainPanel.HandlesNames.sH = sH;
+handles.MainPanel.HandlesNames.svH = svH;
+handles.MainPanel.HandlesNames.vdH = vdH;
+
+% Handles Types
+for iDim = 1:nAxDims
+  handles.MainPanel.Handles.txtH{iDim} = handles.(txtH{iDim});
+  handles.MainPanel.Handles.sH{iDim} = handles.(sH{iDim});
+  handles.MainPanel.Handles.svH{iDim} = handles.(svH{iDim});
+  handles.MainPanel.Handles.vdH{iDim} = handles.(vdH{iDim});
+end
 
 for iDim = 1:nAxDims
   handles.(txtH{iDim}).String = axDimNames{iDim};
@@ -79,6 +90,12 @@ for iH = length(axDimNames)+1:length(txtH)
   handles.(svH{iH}).Visible = 'off';
   handles.(vdH{iH}).Visible = 'off';
 end
+
+% Scrollwheel callback
+hObject.WindowScrollWheelFcn = @imdpMainPanelScrollCallback;
+
+% Makes Plot Legend Boolean
+handles.MainPanel.legendBool = true;
 
 %% Plot Panel Vars
 % Set 0 checked view dims
