@@ -1,4 +1,4 @@
-function imdpIterateCallback(hObject, eventdata, handles)
+function gvIterateCallback(hObject, eventdata, handles)
 
 if hObject.Value && (~isValidFigHandle('handles.PlotPanel.figHandle') || ~handles.PlotPanel.nViewDims)
   wprintf('Cannot iterate without a Plot Panel and at least 1 ViewDim.')
@@ -53,7 +53,7 @@ end
         if axInd(axDim) < nDimVals(axDim) %Then iterate
           sliderObject = handles.(handles.MainPanel.HandlesNames.sH{axDim});
           sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
-          imdpSliderChangeCallback(sliderObject, eventdata, handles);
+          gvSliderChangeCallback(sliderObject, eventdata, handles);
           break % stop incrementing others
         end
       end
@@ -67,14 +67,14 @@ end
 %         sliderObject.UserData.sibling.String = num2str(thisMinVal);
         
         sliderObject.Value = -inf;
-        handles = imdpSliderChangeCallback(sliderObject, eventdata, handles);
+        handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
         
         % Update handles structure
         guidata(hObject, handles);
       end
       
       % replot
-      handles = imdpPlot(hObject, eventdata, handles);
+      handles = gvPlot(hObject, eventdata, handles);
       
       % Update handles structure
       guidata(hObject, handles);

@@ -1,4 +1,4 @@
-function imdpMainPanelSetup(hObject, eventdata, handles, varargin)
+function gvMainPanelSetup(hObject, eventdata, handles, varargin)
 
 % Add data input
 if nargin > 0 && isstruct(varargin{1})
@@ -10,7 +10,7 @@ else
   error('Needs data struct input')
 end
 
-% Choose default command line output for imdpMainPanel
+% Choose default command line output for gvMainPanel
 handles.output = hObject;
 
 % Setup var names
@@ -92,7 +92,7 @@ for iH = length(axDimNames)+1:length(txtH)
 end
 
 % Scrollwheel callback
-hObject.WindowScrollWheelFcn = @imdpMainPanelScrollCallback;
+hObject.WindowScrollWheelFcn = @gvMainPanelScrollCallback;
 
 % Makes Plot Legend Boolean
 handles.MainPanel.legendBool = true;

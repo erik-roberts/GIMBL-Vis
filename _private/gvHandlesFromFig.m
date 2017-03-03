@@ -1,4 +1,4 @@
-function handles = imdpHandlesFromFig(mainPanelH)
+function handles = gvHandlesFromFig(mainPanelH)
 
 handles = getappdata(mainPanelH, 'UsedByGUIData_m');
 

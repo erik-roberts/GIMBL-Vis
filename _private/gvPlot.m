@@ -1,4 +1,4 @@
-function varargout = imdpPlot(hObject, eventdata, handles)
+function varargout = gvPlot(hObject, eventdata, handles)
 
 nViewDims = handles.PlotPanel.nViewDims;
 viewDims = handles.PlotPanel.viewDims;
@@ -134,7 +134,7 @@ end
     % Set MarkerSize Slider Val
     if isfield(handles.PlotPanel, 'sliderH')
       handles.PlotPanel.sliderH.Value = markerSize;
-      imdpMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
+      gvMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
     end
     
     scatter3dPlot(plotData);
@@ -203,7 +203,7 @@ end
     % Set MarkerSize Slider Val
     if isfield(handles.PlotPanel, 'sliderH')
       handles.PlotPanel.sliderH.Value = markerSize;
-      imdpMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
+      gvMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
     end
     
     scatter2dPlot(plotData);
@@ -261,7 +261,7 @@ end
 %     % Set MarkerSize Slider Val
 %     if isfield(handles.PlotPanel, 'sliderH')
 %       handles.PlotPanel.sliderH.Value = markerSize;
-%       imdpMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
+%       gvMarkerSizeSliderCallback(handles.PlotPanel.sliderH,[])
 %     end
     
     scatter2dPlot(plotData);

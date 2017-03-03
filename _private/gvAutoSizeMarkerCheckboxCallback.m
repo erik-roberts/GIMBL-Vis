@@ -1,4 +1,4 @@
-function imdpAutoSizeMarkerCheckboxCallback(hObject, eventdata, handles)
+function gvAutoSizeMarkerCheckboxCallback(hObject, eventdata, handles)
 
 % Enable/Disable marker size slider based on state of autoSize checkbox
 if hObject.Value % auto on
@@ -7,6 +7,6 @@ else % auto off
   handles.markerSizeSlider.Enable = 'on';
 end
 
-imdpPlot(hObject, eventdata, handles);
+gvPlot(hObject, eventdata, handles);
 
 end

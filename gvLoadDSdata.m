@@ -1,4 +1,4 @@
-function data = imdpLoadDSdata(data_dir, varargin)
+function data = gvLoadDSdata(data_dir, varargin)
 if ~exist('data_dir', 'var') || isempty(data_dir)
   data_dir = pwd;
 end
@@ -15,8 +15,8 @@ options = CheckOptions(varargin,{...
   },false);
 
 
-%% Load or Create imdpData
-filePath = fullfile(data_dir, 'imdpData.mat');
+%% Load or Create gvData
+filePath = fullfile(data_dir, 'gvData.mat');
 if ~exist(filePath,'file') || options.overwriteBool
   % Determine classifyFn
   if isempty(options.classifyFn)

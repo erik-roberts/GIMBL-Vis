@@ -1,4 +1,4 @@
-function varargout = imdpSliderChangeCallback(hObject, eventdata, handles)
+function varargout = gvSliderChangeCallback(hObject, eventdata, handles)
 % Fn sets both slider and edit box to nearest value in data
 
 % Slider handle number
@@ -74,7 +74,7 @@ handles.PlotPanel.axInd(hNum) = nearestValInd;
 %% Replot
 % Check if reset from iterate or hit boundaries
 if newVal > -inf && nearestVal ~= lastVal
-  imdpPlot(hObject, eventdata, handles);
+  gvPlot(hObject, eventdata, handles);
 end
 
 % Update handles structure

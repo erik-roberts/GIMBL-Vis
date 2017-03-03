@@ -1,8 +1,8 @@
-function imdpMainPanelScrollCallback(figH, scrollData)
+function gvMainPanelScrollCallback(figH, scrollData)
 
 mousePos = get(figH, 'CurrentPoint');
 
-handles = imdpHandlesFromFig(figH);
+handles = gvHandlesFromFig(figH);
 
 nVarSliders = length(handles.MainPanel.Handles.sH);
 
@@ -35,10 +35,10 @@ if onSlider
   
   if onSlider <= nVarSliders % var slider
     hObject = handles.MainPanel.Handles.sH{onSlider};
-    imdpSliderChangeCallback(hObject, eventdata, handles)
+    gvSliderChangeCallback(hObject, eventdata, handles)
   else% marker size slider
     hObject = handles.markerSizeSlider;
-    imdpMarkerSizeSliderCallback(hObject, eventdata, handles)
+    gvMarkerSizeSliderCallback(hObject, eventdata, handles)
   end
 end
 

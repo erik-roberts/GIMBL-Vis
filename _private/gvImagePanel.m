@@ -1,4 +1,4 @@
-function imdpImagePanel(hObject, eventdata, handles)
+function gvImagePanel(hObject, eventdata, handles)
 
 if hObject.Value % turn on
   hObject.String = 'Image [on]';

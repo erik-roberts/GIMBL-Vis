@@ -1,4 +1,4 @@
-function imdpViewDimCallback(hObject, eventdata, handles)
+function gvViewDimCallback(hObject, eventdata, handles)
 
 vdH = handles.MainPanel.HandlesNames.vdH;
 sH = handles.MainPanel.HandlesNames.sH;
@@ -46,7 +46,7 @@ end
 handles.PlotPanel.viewDims = viewDims;
 
 % Update Multi Dim Plot
-handles = imdpPlotPanel(hObject, eventdata, handles);
+handles = gvPlotPanel(hObject, eventdata, handles);
 
 % Update nViewDimsLast
 handles.PlotPanel.nViewDimsLast = nViewDims;

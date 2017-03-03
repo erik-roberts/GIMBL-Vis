@@ -1,4 +1,4 @@
-function varargout = imdpPlotPanel(hObject, eventdata, handles)
+function varargout = gvPlotPanel(hObject, eventdata, handles)
 
 nViewDims = handles.PlotPanel.nViewDims;
 nViewDimsLast = handles.PlotPanel.nViewDimsLast;
@@ -26,7 +26,7 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
   
   % Data cursor
   dm = datacursormode(hFig);
-  dm.UpdateFcn = @imdpDataCursorCallback;
+  dm.UpdateFcn = @gvDataCursorCallback;
   
   %   if isfield(handles.PlotPanel, 'handle') && isvalid(handles.PlotPanel.figHandle)
   %     hFig = handles.PlotPanel.figHandle;
@@ -98,7 +98,7 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
   %     guidata(hObject, handles);
   %
   %     % Plot
-  %     imdpPlot(hObject, eventdata, handles);
+  %     gvPlot(hObject, eventdata, handles);
   %   end
   
   if nViewDims > 0
@@ -109,7 +109,7 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
     guidata(hObject, handles);
     
     % Plot
-    handles = imdpPlot(hObject, eventdata, handles);
+    handles = gvPlot(hObject, eventdata, handles);
   end
 end
 

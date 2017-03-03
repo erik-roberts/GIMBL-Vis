@@ -1,35 +1,35 @@
-function varargout = imdpMainPanel(varargin)
-% imdpMainPanel MATLAB code for imdpMainPanel.fig
-%      imdpMainPanel, by itself, creates a new imdpMainPanel or raises the existing
+function varargout = gvMainPanel(varargin)
+% gvMainPanel MATLAB code for gvMainPanel.fig
+%      gvMainPanel, by itself, creates a new gvMainPanel or raises the existing
 %      singleton*.
 %
-%      H = imdpMainPanel returns the handle to a new imdpMainPanel or the handle to
+%      H = gvMainPanel returns the handle to a new gvMainPanel or the handle to
 %      the existing singleton*.
 %
-%      imdpMainPanel('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in imdpMainPanel.M with the given input arguments.
+%      gvMainPanel('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in gvMainPanel.M with the given input arguments.
 %
-%      imdpMainPanel('Property','Value',...) creates a new imdpMainPanel or raises the
+%      gvMainPanel('Property','Value',...) creates a new gvMainPanel or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before imdpMainPanel_OpeningFcn gets called.  An
+%      applied to the GUI before gvMainPanel_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to imdpMainPanel_OpeningFcn via varargin.
+%      stop.  All inputs are passed to gvMainPanel_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help imdpMainPanel
+% Edit the above text to modify the response to help gvMainPanel
 
-% Last Modified by GUIDE v2.5 02-Mar-2017 08:38:50
+% Last Modified by GUIDE v2.5 03-Mar-2017 08:53:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @imdpMainPanel_OpeningFcn, ...
-                   'gui_OutputFcn',  @imdpMainPanel_OutputFcn, ...
+                   'gui_OpeningFcn', @gvMainPanel_OpeningFcn, ...
+                   'gui_OutputFcn',  @gvMainPanel_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,22 +44,22 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before imdpMainPanel is made visible.
-function imdpMainPanel_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before gvMainPanel is made visible.
+function gvMainPanel_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to imdpMainPanel (see VARARGIN)
+% varargin   command line arguments to gvMainPanel (see VARARGIN)
 
-imdpMainPanelSetup(hObject, eventdata, handles, varargin{:});
+gvMainPanelSetup(hObject, eventdata, handles, varargin{:});
 
-% UIWAIT makes imdpMainPanel wait for user response (see UIRESUME)
+% UIWAIT makes gvMainPanel wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = imdpMainPanel_OutputFcn(hObject, eventdata, handles) 
+function varargout = gvMainPanel_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -74,7 +74,7 @@ function slider1_Callback(hObject, eventdata, handles)
 % hObject    handle to slider1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -96,7 +96,7 @@ function slider2_Callback(hObject, eventdata, handles)
 % hObject    handle to slider2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -118,7 +118,7 @@ function slider3_Callback(hObject, eventdata, handles)
 % hObject    handle to slider3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -140,7 +140,7 @@ function slider4_Callback(hObject, eventdata, handles)
 % hObject    handle to slider4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -162,7 +162,7 @@ function slider5_Callback(hObject, eventdata, handles)
 % hObject    handle to slider5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -184,7 +184,7 @@ function slider6_Callback(hObject, eventdata, handles)
 % hObject    handle to slider6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -206,7 +206,7 @@ function slider7_Callback(hObject, eventdata, handles)
 % hObject    handle to slider7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -228,7 +228,7 @@ function slider8_Callback(hObject, eventdata, handles)
 % hObject    handle to slider8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -250,7 +250,7 @@ function sliderVal1_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal1 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal1 as a double
 
@@ -273,7 +273,7 @@ function sliderVal2_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal2 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal2 as a double
 
@@ -296,7 +296,7 @@ function sliderVal3_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal3 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal3 as a double
 
@@ -319,7 +319,7 @@ function sliderVal4_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal4 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal4 as a double
 
@@ -342,7 +342,7 @@ function sliderVal5_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal5 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal5 as a double
 
@@ -365,7 +365,7 @@ function sliderVal6_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal6 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal6 as a double
 
@@ -388,7 +388,7 @@ function sliderVal7_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal7 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal7 as a double
 
@@ -411,7 +411,7 @@ function sliderVal8_Callback(hObject, eventdata, handles)
 % hObject    handle to sliderVal8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpSliderChangeCallback(hObject, eventdata, handles);
+gvSliderChangeCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'String') returns contents of sliderVal8 as text
 %        str2double(get(hObject,'String')) returns contents of sliderVal8 as a double
 
@@ -443,7 +443,7 @@ function viewDim1_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim1
 
 
@@ -452,7 +452,7 @@ function viewDim2_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim2
 
 
@@ -461,7 +461,7 @@ function viewDim3_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim3
 
 
@@ -470,7 +470,7 @@ function viewDim4_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim4
 
 
@@ -479,7 +479,7 @@ function viewDim5_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim5
 
 
@@ -488,7 +488,7 @@ function viewDim6_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim6
 
 
@@ -497,7 +497,7 @@ function viewDim7_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim7
 
 
@@ -506,7 +506,7 @@ function viewDim8_Callback(hObject, eventdata, handles)
 % hObject    handle to viewDim8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpViewDimCallback(hObject, eventdata, handles);
+gvViewDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of viewDim8
 
 
@@ -515,7 +515,7 @@ function iterateToggle_Callback(hObject, eventdata, handles)
 % hObject    handle to iterateToggle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpIterateCallback(hObject, eventdata, handles)
+gvIterateCallback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of iterateToggle
 
 
@@ -524,7 +524,7 @@ function delayBox_Callback(hObject, eventdata, handles)
 % hObject    handle to delayBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpDelayCallback(hObject, eventdata, handles)
+gvDelayCallback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of delayBox as text
 %        str2double(get(hObject,'String')) returns contents of delayBox as a double
 
@@ -547,7 +547,7 @@ function imageToggle_Callback(hObject, eventdata, handles)
 % hObject    handle to imageToggle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpImagePanel(hObject, eventdata, handles);
+gvImagePanel(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of imageToggle
 
 
@@ -556,7 +556,7 @@ function makePlotButton_Callback(hObject, eventdata, handles)
 % hObject    handle to makePlotButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpPlotPanel(hObject, eventdata, handles);
+gvPlotPanel(hObject, eventdata, handles);
 
 
 % --- Executes on slider movement.
@@ -564,7 +564,7 @@ function markerSizeSlider_Callback(hObject, eventdata, handles)
 % hObject    handle to markerSizeSlider (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpMarkerSizeSliderCallback(hObject, eventdata, handles);
+gvMarkerSizeSliderCallback(hObject, eventdata, handles);
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 
@@ -609,5 +609,5 @@ function autoSizeMarkerCheckbox_Callback(hObject, eventdata, handles)
 % hObject    handle to autoSizeMarkerCheckbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-imdpAutoSizeMarkerCheckboxCallback(hObject, eventdata, handles);
+gvAutoSizeMarkerCheckboxCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of autoSizeMarkerCheckbox
