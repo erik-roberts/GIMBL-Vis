@@ -1,13 +1,19 @@
 function gvMainPanelSetup(hObject, eventdata, handles, varargin)
 
 % Add data input
-if nargin > 0 && isstruct(varargin{1})
+if nargin > 3 && isstruct(varargin{1})
   data = varargin{1};
   handles.data = data;
   mdData = data.MultiDim;
   handles.mdData = mdData;
 else
   error('Needs data struct input')
+end
+
+if nargin > 4
+  dataName = varargin{2};
+else
+  dataName = sprintf('%iD Data', mdData.nDims);
 end
 
 % Choose default command line output for gvMainPanel
@@ -26,6 +32,9 @@ nAxDims = length(axDimNames);
 
 %% Setup Main Panel Vars
 
+% Set title
+handles.panelTitle.String = dataName;
+
 % Get fields
 flds = fields(handles);
 txtH = sort(flds(~cellfun(@isempty,(strfind(flds, 'varText')))));
@@ -41,10 +50,10 @@ handles.MainPanel.HandlesNames.vdH = vdH;
 
 % Handles Types
 for iDim = 1:nAxDims
-  handles.MainPanel.Handles.txtH{iDim} = handles.(txtH{iDim});
-  handles.MainPanel.Handles.sH{iDim} = handles.(sH{iDim});
-  handles.MainPanel.Handles.svH{iDim} = handles.(svH{iDim});
-  handles.MainPanel.Handles.vdH{iDim} = handles.(vdH{iDim});
+  handles.MainPanel.Handles.txtH(iDim) = handles.(txtH{iDim});
+  handles.MainPanel.Handles.sH(iDim) = handles.(sH{iDim});
+  handles.MainPanel.Handles.svH(iDim) = handles.(svH{iDim});
+  handles.MainPanel.Handles.vdH(iDim) = handles.(vdH{iDim});
 end
 
 for iDim = 1:nAxDims
@@ -92,10 +101,14 @@ for iH = length(axDimNames)+1:length(txtH)
 end
 
 % Scrollwheel callback
-hObject.WindowScrollWheelFcn = @gvMainPanelScrollCallback;
+hObject.WindowScrollWheelFcn = @gvScrollCallback;
 
 % Makes Plot Legend Boolean
 handles.MainPanel.legendBool = true;
+
+% MarkerTypes
+handles.markerTypeMenu.String = {'scatter', 'pcolor'};
+handles.markerTypeMenu.UserData.lastVal = 1;
 
 %% Plot Panel Vars
 % Set 0 checked view dims
@@ -107,6 +120,9 @@ handles.PlotPanel.nAxDims = nAxDims;
 
 handles.PlotPanel.figHandle = [];
 handles.PlotPanel.axHandle = [];
+
+% set marker type for plotting
+handles.PlotPanel.markerType = handles.markerTypeMenu.String{handles.markerTypeMenu.UserData.lastVal};
 
 % Check for index variable
 handles.PlotPanel.indVarNum = find(strcmp('index', mdData.dataTypes));
@@ -132,10 +148,14 @@ end
 % Assign starting axis index corresponding to slider position
 handles.PlotPanel.axInd = ones(1, nAxDims);
 
-% Image Panel
-% handles.ImagePanel.handle = [];
+%% Image Panel Vars
+handles.ImagePanel.handle = [];
 
-% Update handles structure
+%% Legend Panel Vars
+handles.LegendPanel.handle = [];
+
+
+%% Update handles structure
 guidata(hObject, handles);
 
 end

@@ -22,7 +22,7 @@ function varargout = gvMainPanel(varargin)
 
 % Edit the above text to modify the response to help gvMainPanel
 
-% Last Modified by GUIDE v2.5 03-Mar-2017 08:53:54
+% Last Modified by GUIDE v2.5 04-Mar-2017 15:49:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -542,13 +542,13 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in imageToggle.
-function imageToggle_Callback(hObject, eventdata, handles)
-% hObject    handle to imageToggle (see GCBO)
+% --- Executes on button press in imageButton.
+function imageButton_Callback(hObject, eventdata, handles)
+% hObject    handle to imageButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 gvImagePanel(hObject, eventdata, handles);
-% Hint: get(hObject,'Value') returns toggle state of imageToggle
+% Hint: get(hObject,'Value') returns toggle state of imageButton
 
 
 % --- Executes on button press in makePlotButton.
@@ -611,3 +611,34 @@ function autoSizeMarkerCheckbox_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 gvAutoSizeMarkerCheckboxCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of autoSizeMarkerCheckbox
+
+
+% --- Executes on selection change in markerTypeMenu.
+function markerTypeMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to markerTypeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvMarkerTypeMenuCallback(hObject, eventdata, handles);
+% Hints: contents = cellstr(get(hObject,'String')) returns markerTypeMenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from markerTypeMenu
+
+
+% --- Executes during object creation, after setting all properties.
+function markerTypeMenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to markerTypeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in legendButton.
+function legendButton_Callback(hObject, eventdata, handles)
+% hObject    handle to legendButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLegendPanel(hObject, eventdata, handles)

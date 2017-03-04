@@ -1,0 +1,50 @@
+### TODO
+
+- New Features
+  - image panel
+  - add overlays
+  - import csv
+  - plot any categorical with labels
+  - plot any ordinal with colormap
+  - combine data
+  - allow for iterative simulation
+  - colorblind friendly colors
+  - continous imaging from mouse cursor over points in graph
+  - MDS, PCA, etc
+  - gvArray data structure
+  - have image panel show whats under cursor
+- Bugs/Changes
+  - check that meshgrid is correct
+  - use refreshdata and drawnow
+  - fix iterate to be correct
+  - fix legend
+  - pcolor knows color matching
+  - play pause button
+      - char(9654)
+  - plot functions of variables as overlay (constant curent leak vs. Iapp)
+- Analysis
+  - what fraction of models have a class along a dim (2nd set of viewDim)
+  - fraction of models that 
+- gvArray
+  - properties
+    - sparsity
+      - filled
+        - mat binary for unique ordinal indicies
+        - mat unique ordinal indicies by extra dims for nDmat
+        - cell unique ordinal indicies
+      - sparse
+        - if small, do same as filled and fill with nans for mat and empty for cell
+        - all cells if really sparse
+    - data size
+      - memory capable: load matfile
+      - disk IO: slice matfile from mat array in v7.3 mat files
+    - data types
+      - ordinal
+      - categorical w/index
+      - nD-mat
+      - nD-cell
+    - metadata
+      - labels for categorical, dims of nD arrays
+    - methods
+      - table out
+      - slice by index, value, or label

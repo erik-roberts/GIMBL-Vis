@@ -155,6 +155,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   data.MultiDim.dimNames = ordinalVars;
   data.MultiDim.dimVals = uniqueVals; % sorted
   data.MultiDim.nDimVals = nVals;
+  data.MultiDim.nDims = length(nVals);
   
   % Labels
   Classes.linearDimNum = 2;

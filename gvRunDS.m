@@ -10,6 +10,16 @@ end
 options.overwriteBool = 0;
 data = gvLoadDSdata(data_dir, options);
 
-gvMainPanel(data);
+% Get last directory name
+[dataPath] = fileparts([data_dir filesep]);
+if ~ispc
+  dataPath = strsplit(dataPath, filesep);
+else
+  dataPath = strsplit(dataPath, '\\');
+end
+dataPath = dataPath(~cellfun(@isempty, dataPath));
+dataName = dataPath{end};
+
+gvMainPanel(data, dataName);
 
 end
