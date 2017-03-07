@@ -19,9 +19,9 @@ end
 % Check number of ViewDims
 if nViewDims > 3
   hObject.Value = 0;
-  wprintf('A max of 8 ViewDims is permitted.')
+  wprintf('A max of 3 ViewDims is permitted at this time.')
   nViewDims = nViewDims - 1;
-  viewDims(hObject.Tag(end)) = 0;
+  viewDims(str2double(hObject.Tag(end))) = 0;
 end
 
 handles.PlotPanel.nViewDims = nViewDims;
