@@ -9,6 +9,7 @@ end
 
 options.overwriteBool = 0;
 data = gvLoadDSdata(data_dir, options);
+data.workingDir = data_dir;
 
 % Get last directory name
 [dataPath] = fileparts([data_dir filesep]);

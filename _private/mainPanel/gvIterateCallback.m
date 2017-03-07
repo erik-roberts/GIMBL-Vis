@@ -1,17 +1,17 @@
 function gvIterateCallback(hObject, eventdata, handles)
+disabledDims = handles.PlotPanel.disabledDims;
 
-if hObject.Value && (~isValidFigHandle('handles.PlotPanel.figHandle') || ~handles.PlotPanel.nViewDims)
-  wprintf('Cannot iterate without a Plot Panel and at least 1 ViewDim.')
+if hObject.Value && (~isValidFigHandle('handles.PlotPanel.figHandle') || ~handles.PlotPanel.nViewDims) || all(disabledDims)
+  wprintf('Cannot iterate without a visible Plot Panel, at least 1 "view" variable, and at least 1 variable not disabled.')
   hObject.Value = 0;
   return
-elseif hObject.Value% turn on
-  hObject.String = 'Iterate [on]';
-else % turn off
-  hObject.String = 'Iterate [off]';
+elseif hObject.Value% turned on
+  hObject.String = sprintf('( %s ) Iterate', char(8545)); %pause char (bars)
+else % turned off
+  hObject.String = sprintf('( %s ) Iterate', char(9654)); %start char (arrow)
 end
 
 % Vars
-% dimVals = handles.mdData.dimVals;
 nDimVals = handles.mdData.nDimVals;
 
 viewDims = handles.PlotPanel.viewDims;
@@ -19,10 +19,6 @@ if sum(viewDims) > 2
   viewDims(:) = 0;
 end
 incrDims = ~viewDims;
-
-axDimsReversed = 1:length(incrDims);
-axDimsReversed = axDimsReversed(incrDims);
-axDimsReversed = flip(axDimsReversed);
 
 % Loop
 iterBool = hObject.Value;
@@ -41,44 +37,73 @@ while iterBool
   pause(delayTimeFinal)
 end
 
+%% Sub functions
   function incrementSliders()
     handles = getappdata(handles.output, 'UsedByGUIData_m');
-     
-    axInd = handles.PlotPanel.axInd;
     
-    % check if all values arent at final index
-    if ~all(axInd(incrDims) == nDimVals(incrDims))
-%       TODO: recursiveIncre() instead
-      for axDim = axDimsReversed
-        if axInd(axDim) < nDimVals(axDim) %Then iterate
-          sliderObject = handles.(handles.MainPanel.HandlesNames.sH{axDim});
-          sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
-          gvSliderChangeCallback(sliderObject, eventdata, handles);
-          break % stop incrementing others
-        end
-      end
-    else % Reset to starting index
-      % loop over slider handles and set value to min
-      for iSlider = axDimsReversed
-        sliderObject = handles.(handles.MainPanel.HandlesNames.sH{iSlider});
-%         thisMinVal = dimVals{iSlider}(1);
-%         sliderObject.Value = thisMinVal;
-%         sliderObject.UserData.sibling.Value = thisMinVal;
-%         sliderObject.UserData.sibling.String = num2str(thisMinVal);
-        
+    axInd = handles.PlotPanel.axInd;
+    axInd(disabledDims) = nDimVals(disabledDims); % set disabled dims to max
+    
+    
+    %% New slider position
+    if any(axInd < nDimVals) % Increment
+      % find new axis indices
+      axIndNew = recursiveIterate(axInd, nDimVals, 1);
+      incrAxLogical = axIndNew - axInd; % includes resets as negatives and increments as 1, all doubles
+      resetAx = incrAxLogical < 0;
+      incrAxLogical(resetAx) = 0; % remove resets from incr
+      incrAxLogical = logical(incrAxLogical);
+      
+      % change slider that icnrements
+      sliderObject = handles.MainPanel.Handles.sH(incrAxLogical);
+      sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
+      handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
+    else
+      resetAx = incrDims;
+      resetAx(disabledDims) = 0;
+    end %if
+    
+    %% Reset any sliders
+    % loop over slider handles and set value to min
+    if any(resetAx)
+      for iSlider = find(resetAx) %logical to indices
+        sliderObject = handles.MainPanel.Handles.sH(iSlider);
         sliderObject.Value = -inf;
+        
         handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
         
         % Update handles structure
         guidata(hObject, handles);
       end
-      
-      % replot
-      handles = gvPlot(hObject, eventdata, handles);
-      
-      % Update handles structure
-      guidata(hObject, handles);
     end
+    
+    %% Update plot and image
+    % replot
+    handles = gvPlot(hObject, eventdata, handles);
+    
+    % reshow image
+    gvPlotPanelMouseMoveCallback(handles.PlotPanel.figHandle, []);
+    
+    % Update handles structure
+    guidata(hObject, handles);
+    
   end %incrementSliders
+
+end %main fun
+
+%% Private functions
+function ind = recursiveIterate(ind, maxInd, currI)
+
+if currI < length(ind)
+  if any(ind(currI+1:end) ~= maxInd(currI+1:end))
+    currI = currI+1;
+    ind = recursiveIterate(ind, maxInd, currI);
+  else
+    ind(currI) = ind(currI)+1;
+    ind(currI+1:end) = 1;
+  end
+else
+  ind(currI) = ind(currI)+1;
+end
 
 end

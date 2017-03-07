@@ -22,7 +22,7 @@ function varargout = gvMainPanel(varargin)
 
 % Edit the above text to modify the response to help gvMainPanel
 
-% Last Modified by GUIDE v2.5 04-Mar-2017 15:49:38
+% Last Modified by GUIDE v2.5 07-Mar-2017 12:56:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -586,7 +586,7 @@ function imageTypeMenu_Callback(hObject, eventdata, handles)
 % hObject    handle to imageTypeMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+gvImageTypeMenuCallback(hObject, eventdata, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns imageTypeMenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from imageTypeMenu
 
@@ -642,3 +642,75 @@ function legendButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 gvLegendPanel(hObject, eventdata, handles)
+
+
+% --- Executes on button press in lockDim1.
+function lockDim1_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim1
+
+
+% --- Executes on button press in lockDim2.
+function lockDim2_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim2
+
+
+% --- Executes on button press in lockDim3.
+function lockDim3_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim3
+
+
+% --- Executes on button press in lockDim4.
+function lockDim4_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim4
+
+
+% --- Executes on button press in lockDim5.
+function lockDim5_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim5
+
+
+% --- Executes on button press in lockDim6.
+function lockDim6_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim6
+
+
+% --- Executes on button press in lockDim7.
+function lockDim7_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim7 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim7
+
+
+% --- Executes on button press in lockDim8.
+function lockDim8_Callback(hObject, eventdata, handles)
+% hObject    handle to lockDim8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvLockDimCallback(hObject, eventdata, handles);
+% Hint: get(hObject,'Value') returns toggle state of lockDim8

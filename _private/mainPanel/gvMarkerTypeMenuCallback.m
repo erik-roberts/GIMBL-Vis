@@ -4,12 +4,12 @@ function gvMarkerTypeMenuCallback(hObject, eventdata, handles)
 if hObject.UserData.lastVal ~= hObject.Value
   handles.PlotPanel.markerType = hObject.String{hObject.Value};
   gvPlot(hObject, eventdata, handles);
+  
+  %Update last value
+  hObject.UserData.lastVal = hObject.Value;
+
+  % Update handles structure
+  guidata(hObject, handles);
 end
-
-%Update last value
-hObject.UserData.lastVal = hObject.Value;
-
-% Update handles structure
-guidata(hObject, handles);
 
 end

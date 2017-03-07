@@ -20,6 +20,7 @@ end
 handles.output = hObject;
 
 % Setup var names
+handles.mdData.dimNames = strrep(handles.mdData.dimNames, '_','-'); %replace _ with -
 dimNames = mdData.dimNames;
 % nonAxDims = data.Table.Properties.UserData.nonAxisDims;
 % nonAxDimNames = dimNames(nonAxDims);
@@ -33,7 +34,11 @@ nAxDims = length(axDimNames);
 %% Setup Main Panel Vars
 
 % Set title
+dataName = strrep(dataName, '_','-'); %replace _ with -
 handles.panelTitle.String = dataName;
+
+% Change iterateToggle String
+handles.iterateToggle.String = sprintf('( %s ) Iterate', char(9654)); %start char (arrow)
 
 % Get fields
 flds = fields(handles);
@@ -41,12 +46,14 @@ txtH = sort(flds(~cellfun(@isempty,(strfind(flds, 'varText')))));
 sH = sort(flds(~cellfun(@isempty,(regexp(flds, 'slider\d'))))); % use regexp to avoid capuring svh also
 svH = sort(flds(~cellfun(@isempty,(strfind(flds, 'sliderVal')))));
 vdH = sort(flds(~cellfun(@isempty,(strfind(flds, 'viewDim')))));
+ldH = sort(flds(~cellfun(@isempty,(strfind(flds, 'lockDim')))));
 
 % Handles Names
 handles.MainPanel.HandlesNames.txtH = txtH;
 handles.MainPanel.HandlesNames.sH = sH;
 handles.MainPanel.HandlesNames.svH = svH;
 handles.MainPanel.HandlesNames.vdH = vdH;
+handles.MainPanel.HandlesNames.ldH = ldH;
 
 % Handles Types
 for iDim = 1:nAxDims
@@ -54,6 +61,7 @@ for iDim = 1:nAxDims
   handles.MainPanel.Handles.sH(iDim) = handles.(sH{iDim});
   handles.MainPanel.Handles.svH(iDim) = handles.(svH{iDim});
   handles.MainPanel.Handles.vdH(iDim) = handles.(vdH{iDim});
+  handles.MainPanel.Handles.ldH(iDim) = handles.(ldH{iDim});
 end
 
 for iDim = 1:nAxDims
@@ -98,6 +106,7 @@ for iH = length(axDimNames)+1:length(txtH)
   handles.(sH{iH}).Visible = 'off';
   handles.(svH{iH}).Visible = 'off';
   handles.(vdH{iH}).Visible = 'off';
+  handles.(ldH{iH}).Visible = 'off';
 end
 
 % Scrollwheel callback
@@ -115,6 +124,13 @@ handles.markerTypeMenu.UserData.lastVal = 1;
 handles.PlotPanel.viewDims = zeros(1, nAxDims);
 handles.PlotPanel.nViewDims = 0;
 handles.PlotPanel.nViewDimsLast = 0;
+
+% Set 0 checked locked dims
+handles.PlotPanel.lockedDims = zeros(1, nAxDims);
+handles.PlotPanel.nLockedDims = 0;
+handles.PlotPanel.nLockedDimsLast = 0;
+
+handles.PlotPanel.disabledDims = zeros(1, nAxDims);
 
 handles.PlotPanel.nAxDims = nAxDims;
 
@@ -150,6 +166,9 @@ handles.PlotPanel.axInd = ones(1, nAxDims);
 
 %% Image Panel Vars
 handles.ImagePanel.handle = [];
+data_dir = data.workingDir;
+handles.ImagePanel.plotDir = fullfile(data_dir, 'plots');
+handles.imageTypeMenu.UserData.lastVal = [];
 
 %% Legend Panel Vars
 handles.LegendPanel.handle = [];

@@ -14,8 +14,7 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
     hFig = figure('Name','Plot Panel','NumberTitle','off',...
       'Position',[mainPanelPos(1)+mainPanelPos(3)+50, mainPanelPos(2), 600,500]);
     handles.PlotPanel.figHandle = hFig;
-%     hFig.WindowButtonMotionFcn = @gvPlotPanelMouseMoveCallback;
-    hFig.WindowButtonDownFcn = @gvPlotPanelMouseMoveCallback; % FIXME temp replacement
+    hFig.WindowButtonMotionFcn = @gvPlotPanelMouseMoveCallback;
     
     % Update handles structure
     guidata(hObject, handles);
@@ -28,6 +27,7 @@ if ~isValidFigHandle('handles.PlotPanel.figHandle') || nViewDims ~= nViewDimsLas
   
   % Add user data to figure
   hFig.UserData.mdData = handles.mdData;
+  hFig.UserData.MainFigH = handles.output;
   
   % Data cursor
   dm = datacursormode(hFig);

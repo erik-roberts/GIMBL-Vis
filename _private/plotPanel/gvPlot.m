@@ -83,13 +83,14 @@ end
     % z dim is plotDims(2)
     
     axes(hAx)
-    
+
     sliceInd = handles.PlotPanel.axInd;
     sliceInd = num2cell(sliceInd);
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [x,y,z] = meshgrid(mdData.dimVals{plotDims(1)}, mdData.dimVals{plotDims(2)}, mdData.dimVals{plotDims(3)});
+    [y,x,z] = meshgrid(mdData.dimVals{plotDims(2)}, mdData.dimVals{plotDims(1)}, mdData.dimVals{plotDims(3)});
+      %  meshgrid works differently than the linearization
     g = plotLabels(sliceInd{:});
     
     % Linearize grid
@@ -147,6 +148,12 @@ end
     
     scatter3dPlot(plotData);
     
+    axObj = get(gcf,'CurrentAxes');
+    axObj.UserData.plotDims = plotDims;
+    axObj.UserData.axLabels = dimNames(plotDims);
+    axObj.FontSize = 14;
+    axObj.FontWeight = 'Bold';
+    
 %     % Rescale ylim
 %     ylims = get(hAx,'ylim');
 %     set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
@@ -163,7 +170,8 @@ end
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [x,y] = meshgrid(mdData.dimVals{plotDims(1)}, mdData.dimVals{plotDims(2)});
+    [y,x] = meshgrid(mdData.dimVals{plotDims(2)}, mdData.dimVals{plotDims(1)});
+      %  meshgrid works opposite the linearization
     g = plotLabels(sliceInd{:});
     
     % Linearize grid
@@ -221,6 +229,13 @@ end
       ylims = get(hAx,'ylim');
       set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
     end
+    
+    axObj = get(gcf,'CurrentAxes');
+    axObj.UserData = [];
+    axObj.UserData.plotDims = plotDims;
+    axObj.UserData.axLabels = dimNames(plotDims);
+    axObj.FontSize = 14;
+    axObj.FontWeight = 'Bold';
   end
 
   function make2dPcolorPlot(hAx, plotDims)
@@ -234,7 +249,8 @@ end
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [x,y] = meshgrid(mdData.dimVals{plotDims(1)}, mdData.dimVals{plotDims(2)});
+    [y,x] = meshgrid(mdData.dimVals{plotDims(2)}, mdData.dimVals{plotDims(1)});
+      %  meshgrid works opposite the linearization
     g = plotLabels(sliceInd{:});
     
 %     % Linearize grid
@@ -278,6 +294,13 @@ end
     pcolor(hAx, x,y,grpNumeric)
     xlabel(dimNames{plotDims(1)})
     ylabel(dimNames{plotDims(2)})
+    
+    axObj = get(gcf,'CurrentAxes');
+    axObj.UserData = [];
+    axObj.UserData.plotDims = plotDims;
+    axObj.UserData.axLabels = dimNames(plotDims);
+    axObj.FontSize = 14;
+    axObj.FontWeight = 'Bold';
   end
 
   function make1dPlot(hAx)
@@ -332,6 +355,13 @@ end
     scatter2dPlot(plotData);
 
     set(gca,'YTick', []);
+    
+    axObj = get(gcf,'CurrentAxes');
+    axObj.UserData = [];
+    axObj.UserData.plotDims = plotDim;
+    axObj.UserData.axLabels = dimNames(plotDim);
+    axObj.FontSize = 14;
+    axObj.FontWeight = 'Bold';
   end
 
   function scatter2dPlot(plotData)
