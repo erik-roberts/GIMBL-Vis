@@ -33,30 +33,47 @@ if ~exist(filePath,'file') || options.overwriteBool
     end
   end
   
-  % Import DS Data
-  vfprintf('Importing SaveVaried results...\n')
-  VariedData = ImportResults(data_dir, @SaveVaried);
-  vfprintf('\tDone importing SaveVaried results.\n')
+  % Import studyinfo data
+  vfprintf('Importing varied paramter values...\n')
   
+  studyinfo = CheckStudyinfo(data_dir);
+  mod_set = {studyinfo.simulations.modifications};
+  first_vary = mod_set{1};
+  first_vary = cat(2,first_vary(:,1), repmat({'_'},size(first_vary,1), 1), first_vary(:,2));
+  nParamsVaried = size(first_vary, 1);
+  for iParam = 1:nParamsVaried
+      varied_param_names{iParam} = [first_vary{iParam,1:3}];
+  end
+  
+  % Get param values for each sim
+  varied_param_values = nan(length(mod_set), nParamsVaried);
+  for iSim = 1:length(mod_set)
+    % Get scalar values as vector
+    varied_param_values(iSim, :) = [mod_set{iSim}{:,3}];
+  end
+  
+  for iParam = 1:nParamsVaried
+    VariedData.(varied_param_names{iParam}) = varied_param_values(:,iParam);
+  end
+  
+  vfprintf('\tDone importing varied paramter values.\n')
+  
+  % Import classes
   vfprintf('Importing classification results...\n')
   classResults = ImportResults(data_dir, classifyFn);
   vfprintf('\tDone importing classification results\n')
   
-  if length(classResults) ~= length(VariedData)
+  if length(classResults) ~= size(varied_param_values,1)
     wprintf('Different lengths for SaveVaried results and %s results. Results may not be accurate.', char(classifyFn))
   end
   
   vfprintf('Preparing data to save...\n')
   
-  simIDs = num2cell((1:length(VariedData))', 2);
+  simIDs = {studyinfo.simulations.sim_id}';
   
   % Remove missing data
-  missingVariedDataInd = any(cellfun(@isempty,struct2cell(VariedData)));
   missingClassResultsInd = cellfun(@isempty,classResults);
-  VariedData(missingVariedDataInd) = [];
-  classResults(missingVariedDataInd) = [];
-  simIDs(missingVariedDataInd) = [];
-  VariedData(missingClassResultsInd) = [];
+  varied_param_values(missingClassResultsInd,:) = [];
   classResults(missingClassResultsInd) = [];
   simIDs(missingClassResultsInd) = [];
   
@@ -83,25 +100,24 @@ if ~exist(filePath,'file') || options.overwriteBool
   % Linear Data
   data.Linear.data = [simIDs classResults];
   
-  variedNames = VariedData(1).varied(:);
-  data.Linear.dimNames = [{'simID', 'class'}, variedNames(:)'];
+  data.Linear.dimNames = [{'simID', 'class'}, varied_param_names(:)'];
   
   data.Linear.dimTypes = {'index', 'categorical'};
-  data.Linear.dimTypes(end+1:end+length(variedNames)) = deal({'ordinal'});
+  data.Linear.dimTypes(end+1:end+length(varied_param_names)) = deal({'ordinal'});
   
   % Table Data
   simIDcharCell = cellfun(@num2str, simIDs,'uni',0);
   data.Table = table(categorical(classResults),'VariableNames',{'class'}, 'RowNames',simIDcharCell);
   data.Table.Properties.UserData.nonAxisDims = 1;
   
-  for fld = variedNames(:)'
-    if isnumeric(VariedData(1).(fld{1}))
-      tempData = [VariedData.(fld{1})];
+  for fld = varied_param_names(:)'
+    if isnumeric(VariedData.(fld{1}))
+      tempData = VariedData.(fld{1}); % array
       data.Table.(fld{1}) = tempData(:);
       
-      tempData = {VariedData.(fld{1})};
+      tempData = num2cell(VariedData.(fld{1})); %make array into cell array
     else
-      tempData = {VariedData.(fld{1})};
+      tempData = VariedData.(fld{1}); % cell array
       data.Table.(fld{1}) = tempData(:);
     end
     data.Linear.data(:, end+1) = tempData(:);
