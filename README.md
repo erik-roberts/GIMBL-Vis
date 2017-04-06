@@ -1,6 +1,6 @@
 # GIMBL-Vis
 
-GIMBL-Vis (GV) is an interactive multi-dimension visualization toolbox. Currently, it can only view results data from Dynasim. Specifically, it will plot the classes from a classify analysis function on the varied parameter axes found from the SaveResults analysis function. Additionally, it can display any type of plot from dynasim for the corresponding simulations.
+GIMBL-Vis (GV) is an interactive multi-dimensional visualization toolbox. Currently, it can only view results data from Dynasim. Specifically, it will plot the classes from a classify analysis function on the varied parameter axes found from the SaveResults analysis function. Additionally, it can display any type of plot from dynasim for the corresponding simulations.
 
 To use GV:
 - Navigate to dynasim output directory and call `gvRunDS`, or call `gvRunDS(output_dir_path)`.
