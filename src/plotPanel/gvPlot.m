@@ -35,6 +35,11 @@ switch nViewDims
         make2dPlot(hAx, plotDims);
     elseif strcmp(handles.PlotPanel.markerType, 'pcolor')
       make2dPcolorPlot(hAx, plotDims);
+      % FIXME to use pcolor, need to add extra row,col that arent used for
+      % color. the x,y,z are the edge points.  uses the first point in C for the
+      % interval from 1st point to second point in x,y,z. need to change axis to
+      % shift by 50%, then move ticks and tick lables to center of dots, instead
+      % of edges of dots
     end
     
   case 3
