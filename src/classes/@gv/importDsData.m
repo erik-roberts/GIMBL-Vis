@@ -1,14 +1,11 @@
-function obj = importDsData(varargin)
-% importDsData - import dynasim data
+function obj = ImportDsData(src, varargin)
+% ImportDsData - import dynasim data
 %
-% varargin{1} is a path to a dir or a mat file to save to.
+% src is a path to a dir or a mat file to save to.
 
 %% Setup args
 
-if nargin
-  src = varargin{1};
-  varargin(1) = [];
-else
+if ~nargin
   src = pwd;
 end
 
@@ -228,18 +225,18 @@ if ~exist(filePath,'file') || options.overwriteBool
 %   hypercubeName = obj.nextMdDataFieldName;
   hypercubeName = 'dsData';
   
-  dsHypercube = gvArray;
-  dsHypercube.meta.dataType = {};
-  dsHypercube.meta.hypercubeName = hypercubeName;
+  dynasimData = gvArray;
+  dynasimData.meta.dataType = {};
+  dynasimData.meta.hypercubeName = hypercubeName;
   
   % store simID
   simID = gvArray;
   simID = simID.importDataTable(simIDs, axisVals, axisNames);
   simID.meta.dataType = 'index';
-  dsHypercube.meta.simID = simID;
+  dynasimData.meta.simID = simID;
   
   % store classes
-  dsHypercube.meta.classes = classes;
+  dynasimData.meta.classes = classes;
   
   % Make mdData object
   %   dataTypeInd = 1;
@@ -270,25 +267,25 @@ if ~exist(filePath,'file') || options.overwriteBool
     end
     
     if iscellnum(analysisResults.(analysisFnName))
-      dsHypercube.meta.dataType{end+1} = 'numeric';
+      dynasimData.meta.dataType{end+1} = 'numeric';
     elseif iscellstr(analysisResults.(analysisFnName))
-      dsHypercube.meta.dataType{end+1} = 'categorical';
+      dynasimData.meta.dataType{end+1} = 'categorical';
     else
-      dsHypercube.meta.dataType{end+1} = 'unknown';
+      dynasimData.meta.dataType{end+1} = 'unknown';
     end
     
     %     dataTypeInd = dataTypeInd+1;
   end
   
   % Import data table
-  dsHypercube = dsHypercube.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
+  dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
   
   % Store data
-  obj.mdData.(hypercubeName) = dsHypercube;
+  obj.mdData.(hypercubeName) = dynasimData;
   
   % Save
 %   save(filePath, 'obj') % save gv obj
-  save(filePath, 'dsHypercube') % save gvArray obj
+  save(filePath, 'dynasimData') % save gvArray obj
   vfprintf('\tSaved data.\n')
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
