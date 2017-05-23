@@ -1,5 +1,21 @@
+%% gvArray - GIMBL-Vis multidimensional data storage class
+%
+% Description: The gvArray class inherets from the MDD class. It uses gvArrayAxis 
+%              instead of MDDAxis.
+%
+% gvArray adds the following methods to MDD:
+%
+% Methods (public):
+%   axisValues - alias for MDD's exportAxisVals
+%   axisNames - alias for MDD's exportAxisNames
+%   summary - alias for MDD's printAxisInfo
+%
+% Methods (static):
+%   MDD2gv - convert MDD superclass object to gvArray subclass
+%
+% See also: MDD documentation
+
 classdef gvArray < MDD
-  % gvArray class inherets from the MDD class
   
   properties (Access = private)
     data_pr        % Storing the actual data (multi-dimensional matrix or cell array)
@@ -10,11 +26,19 @@ classdef gvArray < MDD
   methods
     
     function obj = gvArray(varargin)
+      % gvArray - constructor
+      %
+      % Usage:
+      %   obj = gvArray()
+      %   obj = gvArray(data) % multidimensional data
+      %   obj = gvArray(data, axis_vals, axis_names) % multidimensional or linear data
+      %   obj = gvArray(mddObj) % convert MDD to gvArray
+      
       metaObj = ?gvArray;
       axisClass = metaObj.PropertyList(strcmp('axisClass', {metaObj.PropertyList.Name})).DefaultValue;
       
       % constructor conversion to gvArray from MDD step 1
-      if nargin==1 && isa(varargin{1}, 'MDD')
+      if nargin==1 && (isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef'))
         mdobj = varargin{1};
         varargin = {};
       end
@@ -30,17 +54,21 @@ classdef gvArray < MDD
     
     
     function out = axisValues(obj)
+      % axisValues - alias for MDD's exportAxisVals
+      
       out = exportAxisVals(obj);
     end
     
     
     function out = axisNames(obj)
+      % axisNames - alias for MDD's exportAxisNames
+       
       out = exportAxisNames(obj);
     end
     
     
     function out = summary(obj, varargin)
-      % print summary of obj
+      % summary - alias for MDD's printAxisInfo
       if nargout > 0
         out = printAxisInfo(obj, varargin{:});
       else
@@ -49,19 +77,10 @@ classdef gvArray < MDD
     end
     
     
-    function obj = str2ind(obj)
-      % convert all string data to numerical indicies
-      % TODO if necesary
-    end
-    
-    
-    function obj = fillnan(obj)
-      % fill empty cells with nan
-      
-      if iscell(obj.data)
-        obj.data(cellfun(@isempty, obj.data)) = deal({nan});
-      end
-    end
+%     function obj = str2ind(obj)
+%       % convert all string data to numerical indicies
+%       % TODO if necesary
+%     end
     
     
     function mddobj = gv2MDD(obj)
@@ -74,10 +93,13 @@ classdef gvArray < MDD
       mddobj = MDD(data, ax_vals, ax_names);
     end
     
+    %% Overloaded built-ins
+    
   end
   
   
   methods (Access = protected)
+    
     function fld = nextAxesDataTypeName(obj)
       % Get next data type label for given axes. This should only be called if
       % dataType label not specified elsewhere.
@@ -102,7 +124,16 @@ classdef gvArray < MDD
         fld = 'data1';
       end
     end
-  end
+    
+    function obj = fillnan(obj)
+      % fillnan - fill empty cells with nan
+      
+      if iscell(obj.data)
+        obj.data(cellfun(@isempty, obj.data)) = deal({nan});
+      end
+    end
+    
+  end % methods (Access = protected)
   
   
   methods (Static)
@@ -137,7 +168,7 @@ classdef gvArray < MDD
     
     
     function gvobj = MDD2gv(mddobj)
-      % Convert MDD superclass object to gvArray subclass
+      % MDD2gv - Convert MDD superclass object to gvArray subclass
       
       % input already a gvArray
       if isa(mddobj, 'gvArray')
@@ -152,7 +183,6 @@ classdef gvArray < MDD
       gvobj = gvArray(data, ax_vals, ax_names);
     end
     
-  end
+  end % methods (Static)
   
-  
-end
+end % classdef

@@ -22,7 +22,7 @@ function varargout = gvMainPanel(varargin)
 
 % Edit the above text to modify the response to help gvMainPanel
 
-% Last Modified by GUIDE v2.5 07-Mar-2017 12:56:28
+% Last Modified by GUIDE v2.5 18-May-2017 15:14:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -714,3 +714,55 @@ function lockDim8_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 gvLockDimCallback(hObject, eventdata, handles);
 % Hint: get(hObject,'Value') returns toggle state of lockDim8
+
+
+% --- Executes on selection change in hypercubeMenu.
+function hypercubeMenu_Callback(hObject, eventdata, handles)
+% hObject    handle to hypercubeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gvHypercubeMenuCallback(hObject, eventdata, handles);
+% Hints: contents = cellstr(get(hObject,'String')) returns hypercubeMenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from hypercubeMenu
+
+
+% --- Executes during object creation, after setting all properties.
+function hypercubeMenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to hypercubeMenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --------------------------------------------------------------------
+function file_Callback(hObject, eventdata, handles)
+% hObject    handle to file (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function fileLoad_Callback(hObject, eventdata, handles)
+% hObject    handle to fileLoad (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function fileImport_Callback(hObject, eventdata, handles)
+% hObject    handle to fileImport (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function fileSave_Callback(hObject, eventdata, handles)
+% hObject    handle to fileSave (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
