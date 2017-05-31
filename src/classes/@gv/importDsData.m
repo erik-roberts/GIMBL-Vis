@@ -1,4 +1,4 @@
-function obj = ImportDsData(src, varargin)
+function gvObj = ImportDsData(src, varargin)
 % ImportDsData - import dynasim data
 %
 % src is a path to a dir or a mat file to save to.
@@ -10,7 +10,7 @@ if ~nargin
 end
 
 %% Instantiate object
-obj = gv();
+gvObj = gv();
 
 %% Check Options
 options = checkOptions(varargin,{...
@@ -222,7 +222,6 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   
   %% gvArray
-%   hypercubeName = obj.nextMdDataFieldName;
   hypercubeName = 'dsData';
   
   dynasimData = gvArray;
@@ -238,7 +237,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   % store classes
   dynasimData.meta.classes = classes;
   
-  % Make mdData object
+  % Make model object
   %   dataTypeInd = 1;
   allResults = {};
   allAxisVals = cell(1, length(axisVals)+1);
@@ -250,7 +249,7 @@ if ~exist(filePath,'file') || options.overwriteBool
     %     tempArray = tempArray.importDataTable(analysisResults.(analysisFnName), axisVals);
     %     tempArray = tempArray.shiftdim(-1); % add new 1st dim
     %     tempArray.axis(1).values = dataTypeInd;
-    %     mdDataFld = mdDataFld.merge(tempArray); % add new data
+    %     modelFld = modelFld.merge(tempArray); % add new data
     
     allResults = [allResults; analysisResults.(analysisFnName)];
     
@@ -281,7 +280,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
   
   % Store data
-  obj.mdData.(hypercubeName) = dynasimData;
+  gvObj.model.data.(hypercubeName) = gvArrayRef(dynasimData);
   
   % Save
 %   save(filePath, 'obj') % save gv obj
@@ -290,7 +289,7 @@ if ~exist(filePath,'file') || options.overwriteBool
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
   vfprintf('Loading data from: %s\n', filePath)
-  obj = gv.Load(filePath);
+  gvObj = gv.Load(filePath);
 end
 
 

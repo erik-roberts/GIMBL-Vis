@@ -1,9 +1,7 @@
 %% gv - main class for GIMBL-Vis
 %
 % Properties (public):
-%   mdData = struct containing gvArrays, with fields equal to hypercube names
-%   meta = struct()
-%   gui = gvGUI()
+%   TODO
 %
 % Methods (public):
 %   gv: constructor
@@ -11,25 +9,25 @@
 %   importTabularDataFromFile
 %   run: run gv GUI
 %   save: save gv object to file
-%   summary: print mdData gvArray summaries
+%   summary: print model gvArray summaries
 %   cwdChild: get name of most descendant directory for cwd path
 %
 % Methods (protected):
-%   nextMdDataFieldName: get next default field for mdData
-%   checkMdDataFieldName: check if hypercubeName exists as field in mdData
+%   nextModelFieldName: get next default field for model
+%   checkModelFieldName: check if hypercubeName exists as field in model
 %
 % Methods (static):
 %   Load: load gv or gvArray object data
 %   ImportDsData: import dynasim data
 %   ImportTabularDataFromFile
 %
-% NOTE: gv is a handle class, which means that objects are passed by reference
+% Note: gv is a handle class, which means that objects are passed by reference
 %       instead of by value. For more info visit:
 %       https://www.mathworks.com/help/matlab/matlab_oop/comparing-handle-and-value-classes.html
-
-% Dev Notes:
-%   This is the controller class for the GV MVC
 %
+% Author: Erik Roberts
+
+
 % TODO:
 %   fill nans in gvarray and have index
 %   load new axes vs load merge axes
@@ -43,37 +41,49 @@
 %     plot marker
 %     marker type
 %   convert methods to handle style methods
+%   tell people not to call static methods on objects
+%   2ref
+%   function for classifying inputs and swtich to case
+%   gv merge
 
 classdef gv < handle
   
   %% Public Properties %%
   properties (SetObservable, AbortSet) % allows listener callback, aborts if set to current value
-    mdData = struct()
-    meta = struct()
-    gui = gvGUI()
+    %meta = struct()
+    workingDir = pwd
+    plotDir = fullfile('.', 'plots')
+    
+    verboseBool = true
   end
   
-  %   %% Set Properties %%
-  %   methods
-  %
-  %     function set.mdData(obj, value)
-  %       obj.mdData = value;
-  %     end
-  %
-  %     function set.meta(obj, value)
-  %       obj.meta = value;
-  %     end
-  %
-  %     function set.gui(obj, value)
-  %       obj.gui = value;
-  %     end
-  %
-  %   end
+%     %% Set Properties %%
+%     methods
+%   
+%       function set.model(obj, value)
+%         obj.model.data = value;
+%       end
+%   
+%       function set.view(obj, value)
+%         obj.view = value;
+%       end
+%       
+%       function set.controller(obj, value)
+%         obj.controller = value;
+%       end
+%       
+%       function set.meta(obj, value)
+%         obj.meta = value;
+%       end
+%   
+%     end
   
   
-  %% Protected Properties %%
-  properties (Access = protected)
-    propListeners = []; % proplistener array
+  %% Private Properties %%
+  properties %(Access = private)
+    model % = gvModel(gvObj)
+    controller % = gvController(gvObj)
+    view % = gvView(gvObj)
   end
   
   %% Events %%
@@ -85,77 +95,91 @@ classdef gv < handle
   methods
     
     %% Constructor
-    function obj = gv(varargin)
+    function gvObj = gv(varargin)
       % gv - constructor
       %
       % Usage:
-      %   1) Create blank gv object
-      %       obj = gv()
+      %   1) Create empty gv object
+      %       gvObj = gv()
       %
       %   2) Call load method on file/dir
-      %       obj = gv(file/dir)
-      %      obj = gv(file/dir, hypercubeName)
+      %       gvObj = gv(file/dir)
+      %      gvObj = gv(file/dir, hypercubeName)
       %
-      %   3) Call gvArray constructor on gvArray/MDD_Data
-      %       obj = gv(gvArrayData)
-      %       obj = gv(hypercubeName, gvArrayData)
+      %   3) Call gvArray constructor on gvArray/MDD data
+      %       gvObj = gv(gvArrayData)
+      %       gvObj = gv(hypercubeName, gvArrayData)
       %
-      %   4) Call gvArray constructor on cell/numeric_array data. Can be linear
+      %   4) Call gvArray constructor on cell/numeric array data. Can be linear
       %         or multidimensional array data.
-      %       obj = gv(cell/numeric_array)
-      %       obj = gv(hypercubeName, cell/numeric_array)
-      %       obj = gv(cell/numeric_array, axis_vals, axis_names)
-      %       obj = gv(hypercubeName, cell/numeric_array, axis_vals, axis_names)
+      %       gvObj = gv(cell_or_numeric_array)
+      %       gvObj = gv(hypercubeName, cell_or_numeric_array)
+      %       gvObj = gv(cell_or_numeric_array, axis_vals, axis_names)
+      %       gvObj = gv(hypercubeName, cell_or_numeric_array, axis_vals, axis_names)
       
-      % Add GUI propListeners
-      obj.gui.data.mainPanel.obj = []; % set empty main panel obj
-      addlistener(obj, 'mainWindowChange', @gv.guiWindowChangeCallback);
+%       % Add GUI propListeners
+%       obj.gui.data.mainWindow.obj = []; % set empty Main window obj
+%       addlistener(obj, 'mainWindowChange', @gv.guiWindowChangeCallback);
+%       
+%       % Add Property propListeners
+%       obj.propListeners{1} = addlistener(obj,'model','PostSet',@gv.propPostSetCallback);
+%       obj.propListeners{2} = addlistener(obj,'meta','PostSet',@gv.propPostSetCallback);
+%       obj.propListeners{3} = addlistener(obj,'gui','PostSet',@gv.propPostSetCallback);
+%       obj.propListeners = [obj.propListeners{:}]; % convert to proplistener array
+%       
+%       [obj.propListeners.Enabled] = deal(false); % disable until window opens
       
-      % Add Property propListeners
-      obj.propListeners{1} = addlistener(obj,'mdData','PostSet',@gv.propPostSetCallback);
-      obj.propListeners{2} = addlistener(obj,'meta','PostSet',@gv.propPostSetCallback);
-      obj.propListeners{3} = addlistener(obj,'gui','PostSet',@gv.propPostSetCallback);
-      obj.propListeners = [obj.propListeners{:}]; % convert to proplistener array
+      % Add MVC
+      gvObj.model = gvModel(gvObj);
+      gvObj.controller = gvController(gvObj);
+      gvObj.view = gvView(gvObj);
       
-      [obj.propListeners.Enabled] = deal(false); % disable until window opens
-      
+      % TODO Move to separate function or gvModel/Controller
       if nargin
         if ischar(varargin{1})
           if exist(varargin{1}, 'file') || exist(varargin{1}, 'dir') % varargin{1} is a path
-            obj = gv.Load(varargin{:});
+            % 2) Call load method on file/dir
+            gvObj = gv.Load(varargin{:});
             return
-          else % treat varargin{1} as fld
+          else % treat varargin{1} as fld (aka hypercubeName)
             fld = varargin{1};
             varargin(1) = [];
           end
         end
         
+        % Check hypercubeName if given as varargin{1}
         if exist('fld', 'var')
-          [obj, fld] = checkMdDataFieldName(obj, fld);
+          [gvObj, fld] = checkModelFieldName(gvObj, fld);
         end
         
         if iscell(varargin{1}) || isnumeric(varargin{1}) % varargin{1} is built-in data array
+          % 4) Call gvArray constructor on cell/numeric array data.
           if ~exist('fld', 'var')
-            fld = obj.nextMdDataFieldName; % get next fld for mdData.axes#
+            fld = gvObj.nextModelFieldName; % get next fld for model.axes#
           end
-          obj.mdData.(fld) = gvArray(varargin{:});
-        elseif isa(varargin{1}, 'gvArray') || isa(varargin{1}, 'MDD')
+          gvObj.model.data.(fld) = gvArrayRef(varargin{:});
+          gvObj.view.activeHypercube = gvObj.model.data.(fld);
+        elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
+          % 3) Call gvArray constructor on gvArray/MDD data
           if ~exist('fld', 'var')
-            [obj, fld] = checkMdDataFieldName(obj, data);
+            [gvObj, fld] = checkModelFieldName(gvObj, data);
           end
-          obj.mdData.(fld) = gvArray(varargin{:});
+          gvObj.model.data.(fld) = gvArrayRef(varargin{:});
         end
+      else
+        % 1) Create empty gv object
       end
     end
     
     
     %% Loading
-    function obj = load(obj, src, fld, staticBool)
+    % TODO Move to separate function or gvModel/Controller
+    function gvObj = load(gvObj, src, fld, staticBool)
       % load - load gv or gvArray object data
       %
-      % Usage: obj = obj.load()
-      %        obj = obj.load(src)
-      %        obj = obj.load(src, hypercubeName)
+      % Usage: gvObj.load()
+      %        gvObj.load(src)
+      %        gvObj.load(src, hypercubeName)
       %
       % Inputs:
       %   src: is a dir or a file to load.
@@ -177,9 +201,9 @@ classdef gv < handle
       
       % Determine fld/hypercubeName
       if isempty(fld)
-        fld = obj.nextMdDataFieldName; % get next fld for mdData.axes#
+        fld = gvObj.nextModelFieldName; % get next fld for model.axes#
       else
-        [obj, fld] = checkMdDataFieldName(obj, fld);
+        [gvObj, fld] = checkModelFieldName(gvObj, fld);
       end
       
       % parse src
@@ -197,7 +221,7 @@ classdef gv < handle
           
           % in case specify dynasim data dir
           if strcmp(matFile{1}, 'studyinfo.mat')
-            obj = gv.ImportDsData(src); % ignore src
+            gvObj = gv.ImportDsData(src); % ignore src
             return
           end
         else
@@ -211,17 +235,17 @@ classdef gv < handle
       data = importdata(src);
       if isa(data, 'gv')
         if ~staticBool
-          for mdDataFld = fieldnames(data.mdData)'
-            mdDataFld = mdDataFld{1};
-            [obj, mdDataFldNew] = checkMdDataFieldName(obj, mdDataFld); % check fld name
-            obj.mdData.(mdDataFldNew) = data.mdData.(mdDataFld); % add fld to checked fld name
+          for modelFld = fieldnames(data.model)'
+            modelFld = modelFld{1};
+            [gvObj, modelFldNew] = checkModelFieldName(gvObj, modelFld); % check fld name
+            gvObj.model.data.(modelFldNew) = data.model.(modelFld); % add fld to checked fld name
           end
         else
-          obj = data;
+          gvObj = data;
         end
         fprintf('Loaded gv object data.\n')
-      elseif isa(data, 'gvArray') || isa(data, 'MDD')
-        obj.mdData.(fld) = gvArray(data);
+      elseif isa(data, 'MDD') || isa(data, 'MDDRef') % || isa(data, 'gvArray')
+        gvObj.model.data.(fld) = gvArrayRef(data);
         fprintf('Loaded multidimensional array object data.\n')
       else
         error('Attempting to load non-gv data. Use ''obj.importTabularDataFromFile'' instead.')
@@ -230,15 +254,16 @@ classdef gv < handle
     
     
     %% Importing
-    function obj = importTabularDataFromFile(obj, fld, varargin)
+    % TODO Move to separate function or gvModel/Controller
+    function importTabularDataFromFile(gvObj, fld, varargin)
       % importTabularDataFromFile (public) - Imports tabular data from a file to
       %                                      a new set of axes (ie hypercube)
       %
       % Supports file types including: xls, xlsx, csv, tsv, txt, mat.
       %
       % Usage:
-      %   obj = obj.importTabularDataFromFile([], filePath)
-      %   obj = obj.importTabularDataFromFile(hypercubeName, filePath, dataCol, headerFlag, delimiter)
+      %   gvObj.importTabularDataFromFile([], filePath)
+      %   gvObj.importTabularDataFromFile(hypercubeName, filePath, dataCol, headerFlag, delimiter)
       %
       % Inputs:
       %   filePath: path to file
@@ -264,17 +289,17 @@ classdef gv < handle
       %   MDD.ImportFile documentation for more information.
       
       if isempty(fld)
-        fld = obj.nextMdDataFieldName; % get next fld for mdData.axes#
+        fld = gvObj.nextModelFieldName; % get next fld for model.axes#
       else
-        [obj, fld] = checkMdDataFieldName(obj, fld);
+        [gvObj, fld] = checkModelFieldName(gvObj, fld);
       end
       
-      obj.mdData.(fld) = gvArray.ImportFile(varargin{:});
+      gvObj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
     end
     
     
     %% Running
-    function obj = run(obj, varargin)
+    function run(gvObj, varargin)
       % run (public) - run gv GUI
       %
       % See also: gv.Run (static method)
@@ -287,17 +312,15 @@ classdef gv < handle
       
       % if specify load path
       if ~isempty(options.workingDir)
-        obj.gui.data.workingDir = options.workingDir;
+        gvObj.workingDir = options.workingDir;
       else
-        obj.gui.data.workingDir = pwd;
+        gvObj.workingDir = pwd;
       end
-      
-      obj = gvMainPanel(obj);
     end
     
     
     %% Saving
-    function save(obj, filePath, overwriteBool) %#ok<INUSL>
+    function save(gvObj, filePath, overwriteBool) %#ok<INUSL>
       % save - save gv object to file (default: 'gvData.mat')
       
       if ~exist('filePath', 'var') || isempty(filePath)
@@ -308,7 +331,7 @@ classdef gv < handle
       end
       
       if ~exist(filePath,'file') || overwriteBool
-        save(filePath, 'obj');
+        save(filePath, 'gvObj');
       else
         warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
       end
@@ -316,26 +339,32 @@ classdef gv < handle
     
     
     %% Misc
-    function summary(obj)
-      % summary - print mdData gvArray summaries
+    function vprintf(gvObj, str)
+      if gvObj.verboseBool
+        fprintf(str);
+      end
+    end
+    
+    function summary(gvObj)
+      % summary - print model gvArray summaries
       %
       % See also: gvArray/summary
       
-      flds = fieldnames(obj.mdData)';
+      flds = fieldnames(gvObj.model.data)';
       if ~isempty(flds)
-        for mdDataFld = flds
-          fprintf(['Hypercube: ' mdDataFld{1} '\n'])
-          summary(obj.mdData.(mdDataFld{1}))
+        for modelFld = flds
+          fprintf(['Hypercube: ' modelFld{1} '\n'])
+          summary(gvObj.model.data.(modelFld{1}))
           fprintf('\n')
         end
       end
     end
     
     
-    function workingDirChild = cwdChild(obj)
+    function workingDirChild = cwdChild(gvObj)
       % cwdChild - get name of most descendant directory for cwd path
       
-      [workingDir] = fileparts2(obj.gui.data.workingDir);
+      [workingDir] = fileparts2(gvObj.workingDir);
       if ~ispc
         workingDir = strsplit(workingDir, filesep);
       else
@@ -374,22 +403,21 @@ classdef gv < handle
       switch S(1).type
         case '{}'
           varargout = builtin('subsref', obj, S);
-          otherwise
-            [varargout{1:nargout}]
-          varargout = {builtin('subsref', obj, S)};
+        otherwise
+          [varargout{1:nargout}] = builtin('subsref', obj, S);
       end
     end
     
-  end % methods
+  end % public methods
   
   
   %% Protected Methods %%
   methods (Access = protected)
     
-    function fld = nextMdDataFieldName(obj)
-      % nextMdDataFieldName - get next default fld for mdData.defaultName#
+    function fld = nextModelFieldName(gvObj)
+      % nextModelFieldName - get next default fld for model.defaultName#
       
-      flds = fieldnames(obj.mdData);
+      flds = fieldnames(gvObj.model.data);
       tokens = regexp(flds,'hypercube(\d+)$', 'tokens');
       tokens = [tokens{:}]; % enter cells
       if ~isempty(tokens)
@@ -401,21 +429,21 @@ classdef gv < handle
       end
     end
     
-    function [obj, fldOut] = checkMdDataFieldName(obj, src)
-      % Purpose: check if hypercubeName exists as field in mdData.
+    function [gvObj, fldOut] = checkModelFieldName(gvObj, src)
+      % Purpose: check if hypercubeName exists as field in model.
       %
-      % Usage: [obj, hypercubeName_Out] = checkMdDataFieldName(obj, hypercubeName_In)
-      %        [obj, hypercubeName_Out] = checkMdDataFieldName(obj, arrayObj)
+      % Usage: [gvObj, hypercubeName_Out] = gvObj.checkModelFieldName(hypercubeName_In)
+      %        [gvObj, hypercubeName_Out] = gvObj.checkModelFieldName(arrayObj)
       %
       % Details:
       %   If 2nd arg is hypercubeName_In, hypercubeName = hypercubeName_In.
       % If 2nd arg is arrayObj, check if hypercubeName = arrayObj.hypercubeName
-      % exists. If not, use obj.nextMdDataFieldName.
-      %   If hypercubeName is already a field in mdData without a trailing index,
+      % exists. If not, use obj.nextModelFieldName.
+      %   If hypercubeName is already a field in model without a trailing index,
       % add a 1 to original and make this new one with suffix 2. If exists with
       % index, increment to find next index.
       
-      if isa(src, 'MDD') % or gvArray
+      if isa(src, 'MDD') || isa(src, 'MDDRef') % or gvArray
         if isfield(src.meta, 'hypercubeName')
           fldIn = src.meta.hypercubeName;
         else
@@ -428,7 +456,7 @@ classdef gv < handle
       end
       
       if ~isempty(fldIn)
-        flds = fieldnames(obj.mdData);
+        flds = fieldnames(gvObj.model.data);
         
         hypercubeNameAlreadyExist = any(~cellfun(@isempty, regexp(flds, ['^' fldIn])));
         if hypercubeNameAlreadyExist
@@ -441,8 +469,8 @@ classdef gv < handle
             fldOut = [fldInNoDigits num2str(max(inds)+1)];
           else
             % rename field with index 1
-            obj.mdData.([fldIn '1']) = obj.mdData.(fldIn);
-            obj.mdData = rmfield(obj.mdData, fldIn);
+            gvObj.model.data.([fldIn '1']) = gvObj.model.data.(fldIn);
+            gvObj.model.data = rmfield(gvObj.model.data, fldIn);
             
             fldOut = [fldIn '2'];
           end
@@ -450,7 +478,7 @@ classdef gv < handle
           fldOut = fldIn;
         end
       else % isempty(hypercubeName)
-        fldOut = obj.nextMdDataFieldName; % get next fld for mdData.axes#
+        fldOut = gvObj.nextModelFieldName; % get next fld for model.axes#
       end
     end
     
@@ -528,9 +556,9 @@ classdef gv < handle
       
       obj = gv();
       
-      fld = obj.nextMdDataFieldName; % get next fld for mdData.axes#
+      fld = obj.nextModelFieldName; % get next fld for model.axes#
       
-      obj.mdData.(fld) = gvArray.ImportFile(varargin{:});
+      obj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
     end
     
     %% Running
@@ -552,7 +580,7 @@ classdef gv < handle
     %% Misc
     
     
-  end % methods (Static)
+  end % static methods
   
   %   methods (Static, Access = protected)
   %
@@ -564,8 +592,8 @@ classdef gv < handle
     
     function propPostSetCallback(src,event)
       switch src.Name
-        case 'mdData'
-          % mdData has triggered an event
+        case 'model'
+          % model has triggered an event
           
         case 'meta'
           % meta has triggered an event
@@ -582,9 +610,9 @@ classdef gv < handle
       switch event.EventName
         case 'mainWindowChange'
           % Enabled status based on whether main window is open
-          [obj.propListeners.Enabled] = deal( isValidFigHandle(obj.gui.data.mainPanel.obj) );
+          [obj.propListeners.Enabled] = deal( isValidFigHandle(obj.gui.data.mainWindow.obj) );
       end
     end
-  end
+  end % static methods
   
-end
+end % classdef

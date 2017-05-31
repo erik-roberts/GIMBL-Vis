@@ -13,6 +13,8 @@
 % Methods (static):
 %   MDD2gv - convert MDD superclass object to gvArray subclass
 %
+% Author: Erik Roberts
+%
 % See also: MDD documentation
 
 classdef gvArray < MDD
