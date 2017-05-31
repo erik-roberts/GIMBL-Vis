@@ -33,7 +33,7 @@ To Use GV with Dynasim:
   - After creating this mat file, subsequent calls to gvRunDS should be instantaneous
 - Plotting
   - Check the view boxes corresponding to dimensions to be viewed
-  - At any time, the "Open Plot" button restores the plot panel
+  - At any time, the "Open Plot" button restores the plot window
   - The sliders enable slicing through the remaining dimensions
   - All sliders can be moved with a mouse scroll wheel
   - With 1 or 2 variables being viewed, the sliders and value edit boxes are disabled since all of the correponding data is viewed, so slicing would not achieve anything.
@@ -49,7 +49,7 @@ To Use GV with Dynasim:
   - The available types of images will populate the dropdown menu
     - These different types are the prefixes of the various images
   - The images must have 'sim#' in the name for GV to find them
-  - To view images, simply move the mouse over the plot markers in the plot panel. The corresponding image will be shown in the image panel.
+  - To view images, simply move the mouse over the plot markers in the plot window. The corresponding image will be shown in the image window.
 
 ## Implementation Details
 Internally, `gv` objects store each `hypercube` dataset inside a field of the `mdData` structure property (i.e. object variable). The field name corresponds to the `hypercube` name. Each `hypercube` dataset is stored in a `gvArray`, which is a subclass of the MultiDimensional Dictionary ([MDD](https://github.com/davestanley/MultiDimensionalDictionary)) class. The default `MDDAxis` objects inside of `MDD` are replaced with a `gvArrayAxis` subclass for `gvArrays`.
