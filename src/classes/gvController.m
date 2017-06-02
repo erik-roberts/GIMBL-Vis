@@ -8,7 +8,7 @@ classdef gvController < handle
     data = struct()
   end % public properties
   
-  properties %(Access = private)
+  properties % TODO (Access = private)
     app
     model
     view

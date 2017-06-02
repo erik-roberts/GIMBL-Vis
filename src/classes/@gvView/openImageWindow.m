@@ -2,7 +2,7 @@ function openImageWindow(viewObj)
 
 mainWindowExistBool = viewObj.checkMainWindowExists;
 
-if mainWindowExistBool && ~isValidFigHandle(viewObj.imageWindow.windowHandle)
+if mainWindowExistBool && ~isValidFigHandle(viewObj.imageWindow.handle)
   plotDir = viewObj.app.plotDir;
   
   if exist(plotDir, 'dir')
@@ -35,7 +35,7 @@ end
 
   %% Nested Functions
   function createImageWindow(viewObj)
-    plotPanPos = viewObj.plotWindow.windowHandle.Position;
+    plotPanPos = viewObj.plotWindow.handle.Position;
     newPos = plotPanPos; % same size as plot window
     newPos(1) = newPos(1)+newPos(3)+50; % move right
     %       newPos(3:4) = newPos(3:4)*.8; %shrink
@@ -44,8 +44,8 @@ end
     axes(imageWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
       'XTick',[], 'YTick',[]);
     
-    % set image windowHandle
-    viewObj.imageWindow.windowHandle = imageWindowHandle;
+    % set image handle
+    viewObj.imageWindow.handle = imageWindowHandle;
   end
 
 end

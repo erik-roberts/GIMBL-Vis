@@ -5,22 +5,22 @@ mainWindowExistBool = viewObj.checkMainWindowExists;
 nViewDims = viewObj.plotWindow.nViewDims;
 nViewDimsLast = viewObj.plotWindow.nViewDimsLast;
 
-if mainWindowExistBool && ~isValidFigHandle(viewObj.plotWindow.windowHandle) || nViewDims ~= nViewDimsLast
+if mainWindowExistBool && ~isValidFigHandle(viewObj.plotWindow.handle) || nViewDims ~= nViewDimsLast
   
   % Make New Panel
-  if ~isValidFigHandle(viewObj.plotWindow.windowHandle)
-    mainWindowPos = viewObj.mainWindow.windowHandle.Position;
+  if ~isValidFigHandle(viewObj.plotWindow.handle)
+    mainWindowPos = viewObj.mainWindow.handle.Position;
     
     plotWindowHandle = figure('Name','Plot Window','NumberTitle','off',...
       'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500]);
     plotWindowHandle.WindowButtonMotionFcn = @gvPlotWindowMouseMoveCallback;
     
-    % set plot windowHandle
-    viewObj.plotWindow.windowHandle = plotWindowHandle;
+    % set plot handle
+    viewObj.plotWindow.handle = plotWindowHandle;
     
     newPanelBool = true;
   else
-    plotWindowHandle = viewObj.plotWindow.windowHandle;
+    plotWindowHandle = viewObj.plotWindow.handle;
     
     newPanelBool = false;
   end

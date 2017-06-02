@@ -2,26 +2,44 @@
 %
 % Author: Erik Roberts
   
-classdef gvView < handle
+classdef gvView < handle & gvUI % gvUI adds GUI creation methods
   
+  %% Public Properties %%
   properties
-    data = struct()
-    mainWindow = struct()
-    plotWindow = struct()
-    legendWindow = struct()
-    imageWindow = struct()
-    activeHypercube % current gvArrayRef
-  end % public properties
+    % GUI data inherited from gvUI
+    % For reference:
+    %     mainWindow = struct()
+        plotWindow = struct()
+        legendWindow = struct()
+        imageWindow = struct()
+  end
   
-  properties %(Access = private)
+  properties (SetObservable)
+    % Settings
+    activeHypercube % current gvArrayRef
+    fontScale = 1; % scale baseFont
+  end % public properties
+    
+  %% Private Properties %%
+  properties % TODO (Access = private)
     app
     model
     controller
     listeners
+    
+    % settings
+    baseFontSize = 14 % points
   end % private properties
   
+  properties (Dependent) %TODO (Access = private)
+    fontSize
+  end
+  
+  
+  %% Events %%
   events
   end % events
+  
   
   %% Public Methods %%
   methods
@@ -36,11 +54,19 @@ classdef gvView < handle
       viewObj.setWindowHandlesEmpty();
     end
     
+    function value = get.fontSize(viewObj)
+      value = viewObj.baseFontSize * viewObj.fontScale;
+    end
+    
+    function value = ndims(viewObj)
+      value = ndims(viewObj.activeHypercube);
+    end
+    
     function setWindowHandlesEmpty(viewObj)
-      viewObj.mainWindow.windowHandle = [];
-      viewObj.plotWindow.windowHandle = [];
-      viewObj.legendWindow.windowHandle = [];
-      viewObj.imageWindow.windowHandle = [];
+      viewObj.mainWindow.handle = [];
+      viewObj.plotWindow.handle = [];
+      viewObj.legendWindow.handle = [];
+      viewObj.imageWindow.handle = [];
     end
 
     
@@ -65,7 +91,7 @@ classdef gvView < handle
   methods (Access = protected)
     
     function existBool = checkMainWindowExists(viewObj)
-      existBool = isValidFigHandle(viewObj.mainWindow.windowHandle);
+      existBool = isValidFigHandle(viewObj.mainWindow.handle);
       if ~existBool
         wprintf('Main window does not exist yet')
       end

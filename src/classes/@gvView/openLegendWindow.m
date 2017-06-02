@@ -2,7 +2,7 @@ function openLegendWindow(viewObj)
 
 mainWindowExistBool = viewObj.checkMainWindowExists;
 
-if mainWindowExistBool && ~isValidFigHandle(viewObj.legendWindow.windowHandle)
+if mainWindowExistBool && ~isValidFigHandle(viewObj.legendWindow.handle)
   createLegendWindow(viewObj);
   
   hcData = viewObj.activeHypercube;
@@ -31,7 +31,7 @@ end
 
   %% Nested Functions
   function createLegendWindow(viewObj)
-    mainWindowPos = viewObj.mainWindow.windowHandle.Position;
+    mainWindowPos = viewObj.mainWindow.handle.Position;
     ht = 30 * length(handles.PlotWindow.Label.names);
     legendWindowHandle = figure('Name','Legend Window','NumberTitle','off','menubar','none',...
       'Position',[mainWindowPos(1),max(mainWindowPos(2)-ht-50, 0),250,ht]);
@@ -39,8 +39,8 @@ end
     axes(legendWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
       'XTick',[], 'YTick',[]);
     
-    % set legend windowHandle
-    viewObj.legendWindow.windowHandle = legendWindowHandle;
+    % set legend handle
+    viewObj.legendWindow.handle = legendWindowHandle;
   end
 
 end

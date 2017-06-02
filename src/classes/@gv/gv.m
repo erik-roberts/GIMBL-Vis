@@ -12,10 +12,6 @@
 %   summary: print model gvArray summaries
 %   cwdChild: get name of most descendant directory for cwd path
 %
-% Methods (protected):
-%   nextModelFieldName: get next default field for model
-%   checkModelFieldName: check if hypercubeName exists as field in model
-%
 % Methods (static):
 %   Load: load gv or gvArray object data
 %   ImportDsData: import dynasim data
@@ -80,7 +76,7 @@ classdef gv < handle
   
   
   %% Private Properties %%
-  properties %(Access = private)
+  properties % TODO (Access = private)
     model % = gvModel(gvObj)
     controller % = gvController(gvObj)
     view % = gvView(gvObj)
@@ -149,20 +145,20 @@ classdef gv < handle
         
         % Check hypercubeName if given as varargin{1}
         if exist('fld', 'var')
-          [gvObj, fld] = checkModelFieldName(gvObj, fld);
+          [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
         end
         
         if iscell(varargin{1}) || isnumeric(varargin{1}) % varargin{1} is built-in data array
           % 4) Call gvArray constructor on cell/numeric array data.
           if ~exist('fld', 'var')
-            fld = gvObj.nextModelFieldName; % get next fld for model.axes#
+            fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
           gvObj.view.activeHypercube = gvObj.model.data.(fld);
         elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
           % 3) Call gvArray constructor on gvArray/MDD data
           if ~exist('fld', 'var')
-            [gvObj, fld] = checkModelFieldName(gvObj, data);
+            [gvObj.model, fld] = checkModelFieldName(gvObj.model, data);
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
         end
@@ -201,9 +197,9 @@ classdef gv < handle
       
       % Determine fld/hypercubeName
       if isempty(fld)
-        fld = gvObj.nextModelFieldName; % get next fld for model.axes#
+        fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
       else
-        [gvObj, fld] = checkModelFieldName(gvObj, fld);
+        [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
       end
       
       % parse src
@@ -237,7 +233,7 @@ classdef gv < handle
         if ~staticBool
           for modelFld = fieldnames(data.model)'
             modelFld = modelFld{1};
-            [gvObj, modelFldNew] = checkModelFieldName(gvObj, modelFld); % check fld name
+            [gvObj.model, modelFldNew] = checkModelFieldName(gvObj.model, modelFld); % check fld name
             gvObj.model.data.(modelFldNew) = data.model.(modelFld); % add fld to checked fld name
           end
         else
@@ -289,9 +285,9 @@ classdef gv < handle
       %   MDD.ImportFile documentation for more information.
       
       if isempty(fld)
-        fld = gvObj.nextModelFieldName; % get next fld for model.axes#
+        fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
       else
-        [gvObj, fld] = checkModelFieldName(gvObj, fld);
+        [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
       end
       
       gvObj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
@@ -412,77 +408,9 @@ classdef gv < handle
   
   
   %% Protected Methods %%
-  methods (Access = protected)
-    
-    function fld = nextModelFieldName(gvObj)
-      % nextModelFieldName - get next default fld for model.defaultName#
-      
-      flds = fieldnames(gvObj.model.data);
-      tokens = regexp(flds,'hypercube(\d+)$', 'tokens');
-      tokens = [tokens{:}]; % enter cells
-      if ~isempty(tokens)
-        tokens = [tokens{:}]; % get ind
-        inds = str2double(tokens);
-        fld = ['hypercube' num2str(max(inds)+1)];
-      else
-        fld = 'hypercube1';
-      end
-    end
-    
-    function [gvObj, fldOut] = checkModelFieldName(gvObj, src)
-      % Purpose: check if hypercubeName exists as field in model.
-      %
-      % Usage: [gvObj, hypercubeName_Out] = gvObj.checkModelFieldName(hypercubeName_In)
-      %        [gvObj, hypercubeName_Out] = gvObj.checkModelFieldName(arrayObj)
-      %
-      % Details:
-      %   If 2nd arg is hypercubeName_In, hypercubeName = hypercubeName_In.
-      % If 2nd arg is arrayObj, check if hypercubeName = arrayObj.hypercubeName
-      % exists. If not, use obj.nextModelFieldName.
-      %   If hypercubeName is already a field in model without a trailing index,
-      % add a 1 to original and make this new one with suffix 2. If exists with
-      % index, increment to find next index.
-      
-      if isa(src, 'MDD') || isa(src, 'MDDRef') % or gvArray
-        if isfield(src.meta, 'hypercubeName')
-          fldIn = src.meta.hypercubeName;
-        else
-          fldIn = [];
-        end
-      elseif ischar(src)
-        fldIn = src;
-      else
-        error('Unknown input')
-      end
-      
-      if ~isempty(fldIn)
-        flds = fieldnames(gvObj.model.data);
-        
-        hypercubeNameAlreadyExist = any(~cellfun(@isempty, regexp(flds, ['^' fldIn])));
-        if hypercubeNameAlreadyExist
-          fldInNoDigits = fldIn(1:find(~isstrprop(fldIn, 'digit'), 1, 'last'));
-          tokens = regexp(flds,['^' fldInNoDigits '(\d+)$'], 'tokens');
-          tokens = [tokens{:}]; % enter cells
-          if ~isempty(tokens)
-            tokens = [tokens{:}]; % get ind
-            inds = str2double(tokens);
-            fldOut = [fldInNoDigits num2str(max(inds)+1)];
-          else
-            % rename field with index 1
-            gvObj.model.data.([fldIn '1']) = gvObj.model.data.(fldIn);
-            gvObj.model.data = rmfield(gvObj.model.data, fldIn);
-            
-            fldOut = [fldIn '2'];
-          end
-        else
-          fldOut = fldIn;
-        end
-      else % isempty(hypercubeName)
-        fldOut = gvObj.nextModelFieldName; % get next fld for model.axes#
-      end
-    end
-    
-  end % methods (Access = protected)
+%   methods (Access = protected)
+%     
+%   end % methods (Access = protected)
   
   
   %% Static Methods %%
@@ -556,7 +484,7 @@ classdef gv < handle
       
       obj = gv();
       
-      fld = obj.nextModelFieldName; % get next fld for model.axes#
+      fld = obj.model.nextModelFieldName; % get next fld for model.axes#
       
       obj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
     end
@@ -578,7 +506,28 @@ classdef gv < handle
     end
     
     %% Misc
-    
+    function pathstr = RootPath
+      % RootPath - Path to gv root directory
+      
+      pathstr = cd(fullfile(fileparts(which('gv')), '..', '..', '..'));
+    end
+
+    function GenerateDocumentation
+      %GenerateDocumentation - Build GIMBL-Vis documentation
+      cwd = pwd; % store current working dir
+      
+      cd(gv.RootPath());
+      
+      m2html('mfiles',{'src'},...
+        'htmldir','offline_docs',...
+        'recursive','on',...
+        'global','on',...
+        'template','frame',...
+        'index','menu',...
+        'graph','on');
+      
+      cd(cwd);
+    end
     
   end % static methods
   
@@ -588,7 +537,7 @@ classdef gv < handle
   
   
   %% Event Callbacks %%
-  methods (Static)
+  methods (Static, Access = protected)
     
     function propPostSetCallback(src,event)
       switch src.Name
