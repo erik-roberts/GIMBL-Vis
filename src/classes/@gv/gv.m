@@ -38,9 +38,10 @@
 %     marker type
 %   convert methods to handle style methods
 %   tell people not to call static methods on objects
-%   2ref
+%   model value2ref
 %   function for classifying inputs and swtich to case
 %   gv merge
+%   move data handling methods to model
 
 classdef gv < handle
   
@@ -100,14 +101,14 @@ classdef gv < handle
       %
       %   2) Call load method on file/dir
       %       gvObj = gv(file/dir)
-      %      gvObj = gv(file/dir, hypercubeName)
+      %       gvObj = gv(file/dir, hypercubeName)
       %
       %   3) Call gvArray constructor on gvArray/MDD data
       %       gvObj = gv(gvArrayData)
       %       gvObj = gv(hypercubeName, gvArrayData)
       %
       %   4) Call gvArray constructor on cell/numeric array data. Can be linear
-      %         or multidimensional array data.
+      %      or multidimensional array data.
       %       gvObj = gv(cell_or_numeric_array)
       %       gvObj = gv(hypercubeName, cell_or_numeric_array)
       %       gvObj = gv(cell_or_numeric_array, axis_vals, axis_names)
@@ -145,7 +146,7 @@ classdef gv < handle
         
         % Check hypercubeName if given as varargin{1}
         if exist('fld', 'var')
-          [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
+          [gvObj.model, fld] = checkHypercubeName(gvObj.model, fld);
         end
         
         if iscell(varargin{1}) || isnumeric(varargin{1}) % varargin{1} is built-in data array
@@ -154,11 +155,12 @@ classdef gv < handle
             fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
-          gvObj.view.activeHypercube = gvObj.model.data.(fld);
+          
+          gvObj.view.setActiveHypercube(fld);
         elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
           % 3) Call gvArray constructor on gvArray/MDD data
           if ~exist('fld', 'var')
-            [gvObj.model, fld] = checkModelFieldName(gvObj.model, data);
+            [gvObj.model, fld] = gvObj.model.checkHypercubeName(varargin{1});
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
         end
@@ -169,8 +171,7 @@ classdef gv < handle
     
     
     %% Loading
-    % TODO Move to separate function or gvModel/Controller
-    function gvObj = load(gvObj, src, fld, staticBool)
+    function load(gvObj, varargin)
       % load - load gv or gvArray object data
       %
       % Usage: gvObj.load()
@@ -184,68 +185,8 @@ classdef gv < handle
       %
       % See also: gv.Load (static method)
       
-      % Setup args
-      if nargin < 2 || isempty(src)
-        src = pwd;
-      end
-      if nargin < 3
-        fld = [];
-      end
-      if nargin < 4
-        staticBool = false;
-      end
+      gvObj.model.load(varargin{:}) % interface: load(obj, src, fld, staticBool)
       
-      % Determine fld/hypercubeName
-      if isempty(fld)
-        fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
-      else
-        [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
-      end
-      
-      % parse src
-      if exist(src, 'dir')
-        matFile = lscell(fullfile(src, '*.mat'));
-        if ~isempty(matFile)
-          if any(strcmp(matFile, 'gvData.mat'))
-            src = fullfile(src, 'gvData.mat');
-          else
-            if length(matFile) > 1
-              error('Found multiple mat files in dir. Please specify path to which mat file to load.')
-            end
-            src = fullfile(src, matFile{1});
-          end
-          
-          % in case specify dynasim data dir
-          if strcmp(matFile{1}, 'studyinfo.mat')
-            gvObj = gv.ImportDsData(src); % ignore src
-            return
-          end
-        else
-          error('No mat files found in dir for loading.')
-        end
-      elseif ~exist(src, 'file')
-        error('Load source not found. Use ''obj.importTabularDataFromFile'' instead for non-mat files.')
-      end
-      
-      % import data
-      data = importdata(src);
-      if isa(data, 'gv')
-        if ~staticBool
-          for modelFld = fieldnames(data.model)'
-            modelFld = modelFld{1};
-            [gvObj.model, modelFldNew] = checkModelFieldName(gvObj.model, modelFld); % check fld name
-            gvObj.model.data.(modelFldNew) = data.model.(modelFld); % add fld to checked fld name
-          end
-        else
-          gvObj = data;
-        end
-        fprintf('Loaded gv object data.\n')
-      elseif isa(data, 'MDD') || isa(data, 'MDDRef') % || isa(data, 'gvArray')
-        gvObj.model.data.(fld) = gvArrayRef(data);
-        fprintf('Loaded multidimensional array object data.\n')
-      else
-        error('Attempting to load non-gv data. Use ''obj.importTabularDataFromFile'' instead.')
-      end
     end
     
     
@@ -287,7 +228,7 @@ classdef gv < handle
       if isempty(fld)
         fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
       else
-        [gvObj.model, fld] = checkModelFieldName(gvObj.model, fld);
+        [gvObj.model, fld] = checkHypercubeName(gvObj.model, fld);
       end
       
       gvObj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
@@ -341,19 +282,29 @@ classdef gv < handle
       end
     end
     
-    function summary(gvObj)
-      % summary - print model gvArray summaries
-      %
-      % See also: gvArray/summary
-      
-      flds = fieldnames(gvObj.model.data)';
-      if ~isempty(flds)
-        for modelFld = flds
-          fprintf(['Hypercube: ' modelFld{1} '\n'])
-          summary(gvObj.model.data.(modelFld{1}))
-          fprintf('\n')
-        end
+    
+    function varargout = listHypercubes(gvObj)
+      if nargout
+        varargout = gvObj.model.listHypercubes();
+      else
+        gvObj.model.listHypercubes();
       end
+    end
+    
+    
+    function summary(gvObj)
+      % summary - print gv object summary
+      %
+      % See also: gvModel/summary, gvArray/summary
+      
+      fprintf('GIMBL-Vis Object Summary:\n')
+      fprintf('-------------------------\n')
+      
+      % Print model summary
+      gvObj.model.summary;
+      
+      % Print view summary
+      gvObj.view.summary;
     end
     
     
@@ -408,9 +359,25 @@ classdef gv < handle
   
   
   %% Protected Methods %%
-%   methods (Access = protected)
-%     
-%   end % methods (Access = protected)
+  methods % TODO (Access = protected)
+    
+    function replaceApp(gvObj, newObj)
+      % replaceApp - replace gv object with supplied one
+      
+      gvObj.delete();
+      
+      gvObj = gv();
+      
+      gvMeta = ?gv;
+      props = {gvMeta.PropertyList.Name};
+      props = props(~[gvMeta.PropertyList.Dependent]);
+      
+      for prop = props
+        gvObj.(prop{1}) = newObj.(prop{1});
+      end
+    end
+    
+  end % methods (Access = protected)
   
   
   %% Static Methods %%

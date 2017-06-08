@@ -1,16 +1,16 @@
-function dataPanelheight = createDataPanelControls(viewObj, parentHandle)
+function dataPanelheight = createDataPanelControls(windowObj, parentHandle)
 %% createHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 % Outputs:
 %   dataPanelheight - height in px of all rows
 
-nDims = ndims(viewObj);
+nDims = ndims(windowObj.viewObj); % TODO remove dependency
 
 % Notes
 % - set the container to be based on amount of dims
 
-fontSize = viewObj.fontSize;
+fontSize = windowObj.fontSize;
 
 spacing = 10; % px
 padding = 5; % px
@@ -40,8 +40,7 @@ set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,30,30])
 dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
 
 % Store Handles
-viewObj.mainWindow.dataPanel.controlHandles = catstruct(viewObj.mainWindow.dataPanel.controlHandles, uiControlsHandles); % add to handles from createDataPanelTitles
-
+windowObj.handles.dataPanel.controls = catstruct(windowObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
 
 %% Nested fn
   function makeVarCol(dataPanelGrid)
@@ -101,6 +100,8 @@ viewObj.mainWindow.dataPanel.controlHandles = catstruct(viewObj.mainWindow.dataP
 
 
   function makeViewCol(dataPanelGrid)
+    windowObj.handles.dataPanel.viewCheckboxHandles = cell(1, nDims);
+    
     % Row 2:nDims+1
     for n = 1:nDims
       nStr = num2str(n);
@@ -112,11 +113,15 @@ viewObj.mainWindow.dataPanel.controlHandles = catstruct(viewObj.mainWindow.dataP
         'Value',0,...
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
         'Parent',dataPanelGrid);
+      
+      windowObj.handles.dataPanel.viewCheckboxHandles{n} = uiControlsHandles.(['viewCheckbox' nStr]);
     end
   end
 
 
   function makeLockCol(dataPanelGrid)
+    windowObj.handles.dataPanel.lockCheckboxHandles = cell(1, nDims);
+    
     % Row 2:nDims+1
     for n = 1:nDims
       nStr = num2str(n);
@@ -128,6 +133,8 @@ viewObj.mainWindow.dataPanel.controlHandles = catstruct(viewObj.mainWindow.dataP
         'Value',0,...
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
         'Parent',dataPanelGrid);
+      
+      windowObj.handles.dataPanel.lockCheckboxHandles{n} = uiControlsHandles.(['lockCheckbox' nStr]);
     end
   end
 

@@ -1,9 +1,9 @@
-function createImagePanelControls(viewObj, parentHandle)
+function createImagePanelControls(windowObj, parentHandle)
 %% createImagePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = viewObj.fontSize;
+fontSize = windowObj.fontSize;
 spacing = 2; % px
 padding = 2; % px
 
@@ -19,7 +19,7 @@ makeRow1Hbox(row1hBox);
 uix.Empty('Parent', vBox);
 
 % Store Handles
-viewObj.mainWindow.imagePanel.controlHandles = uiControlsHandles;
+windowObj.handles.imagePanel.controls = uiControlsHandles;
 
 
 %% Nested fn

@@ -1,39 +1,65 @@
 %% gvMainWindow - UI Main Window Class for GIMBL-Vis
 %
-% Description: This class is intended to be inherited by gvView to extend its
-% methods to supprt a GIMB-Vis main window
+% Description: An object of this class becomes a property of gvView to provide 
+%              methods for a GIMB-Vis main window
 
-classdef gvMainWindow < handle
+classdef gvMainWindow < gvWindow
   
+  %% Public properties %%
   properties
-    mainWindow = struct()
+    metadata = struct()
+    handles = struct()
+    
+    viewObj
   end
   
+  
+  %% Other properties %%
+  properties (Constant, Hidden)
+    windowName = 'mainWindow';
+  end
+  
+  
+  %% Public methods %%
   methods
-    openMainWindow(viewObj)
     
-    createMainWindowFig(viewObj)
+    function windowObj = gvMainWindow(varargin)
+      windowObj@gvWindow(varargin{:});
+    end
     
-    createMenu(viewObj, parentHandle)
+    openWindow(viewObj)
     
-    dataPanelheight = createDataPanelControls(viewObj, parentHandle)
+  end
+  
+  
+  %% Protected methods %%
+  methods (Access = protected)
     
-    createDataPanelTitles(viewObj, parentHandle)
+    function value = fontSize(windowObj)
+      value = windowObj.viewObj.fontSize;
+    end
     
-    createHypercubePanelControls(viewObj, parentHandle)
+    createFig(windowObj)
     
-    createImagePanelControls(viewObj, parentHandle)
+    createMenu(windowObj, parentHandle)
     
-    createPlotMarkerPanelControls(viewObj, parentHandle)
+    dataPanelheight = createDataPanelControls(windowObj, parentHandle)
     
-    createPlotPanelControls(viewObj, parentHandle)
+    createDataPanelTitles(windowObj, parentHandle)
+    
+    createHypercubePanelControls(windowObj, parentHandle)
+    
+    createImagePanelControls(windowObj, parentHandle)
+    
+    createPlotMarkerPanelControls(windowObj, parentHandle)
+    
+    createPlotPanelControls(windowObj, parentHandle)
+    
   end
   
   %% Callbacks
-  methods (Static)
-    function resetCallback(src, evnt)
-      src.UserData.openMainWindow(); % reopen main window
-    end
+  methods (Static) % TODO (Access = protected)
+    
   end
   
 end

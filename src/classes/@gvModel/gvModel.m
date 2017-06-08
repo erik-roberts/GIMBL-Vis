@@ -5,7 +5,7 @@
 %
 % Methods (protected):
 %   nextModelFieldName - get next default field for model
-%   checkModelFieldName - check if hypercubeName exists as field in model
+%   checkHypercubeName - check if hypercubeName exists as field in model
 %
 % Author: Erik Roberts
 
@@ -15,12 +15,15 @@ classdef gvModel < handle
     data = struct() % of gvArrayRef
   end % public properties
   
-  properties % TODO (Access = private)
+  properties (Hidden, SetAccess = immutable)
     app
     view
     controller
+  end
+  
+  properties (Access = protected)
     listeners
-  end % private properties
+  end
   
   %% Events %%
   events
@@ -37,34 +40,69 @@ classdef gvModel < handle
       end
     end
     
+    
+    function varargout = listHypercubes(modelObj)
+      flds = fieldnames(modelObj.data);
+      if isempty(flds)
+        flds = {'[ None ]'};
+      end
+      
+      if nargout
+        varargout{1} = flds;
+      else
+        fprintf(['Hypercubes:\n\t' strjoin(flds,'\n\t') '\n'])
+      end
+    end
+    
+    
+    function summary(modelObj)
+      % summary - print gvModel object summary
+      %
+      % See also: gv/summary, gvView/summary, gvArray/summary
+      
+      fprintf('Model Summary:\n')
+      
+      flds = fieldnames(modelObj.data)';
+      if ~isempty(flds)
+        for modelFld = flds
+          fprintf(['Hypercube: ' modelFld{1} '\n'])
+          modelObj.data.(modelFld{1}).summary()
+          fprintf('\n')
+        end
+      else
+        fprintf('\t[ Empty Model ]\n')
+      end
+    end
+    
 
-    function obj = toRef(obj, flds)
+    function modelObj = toRef(modelObj, flds)
       %toRef - convert all model data to gvArrayRef
       
       if ~exist('flds','var') || isempty(flds)
-        flds = fieldnames(obj.data);
+        flds = fieldnames(modelObj.data);
       end
       
       for iFld = 1:length(flds)
         fld = flds{iFld};
-        if ~isa(obj.data.(fld), 'gvArrayRef')
-          obj.data.(fld) = gvArrayRef(obj.data.(fld));
+        if ~isa(modelObj.data.(fld), 'gvArrayRef')
+          modelObj.data.(fld) = gvArrayRef(modelObj.data.(fld));
         end
       end
     end
     
+    
     %% Loading
-    obj = load(obj, src, fld, staticBool)
+    modelObj = load(modelObj, src, fld, staticBool)
     
   end % public methods
   
   %% Protected Methods %%
-  methods (Access = protected)
+  methods % TODO (Access = protected)
     
-    function fld = nextModelFieldName(obj)
+    function fld = nextModelFieldName(modelObj)
       % nextModelFieldName - get next default fld for .defaultName#
       
-      flds = fieldnames(obj.data);
+      flds = fieldnames(modelObj.data);
       tokens = regexp(flds,'hypercube(\d+)$', 'tokens');
       tokens = [tokens{:}]; % enter cells
       if ~isempty(tokens)
@@ -77,11 +115,11 @@ classdef gvModel < handle
     end
     
     
-    function [obj, fldOut] = checkModelFieldName(obj, src)
-      % checkModelFieldName - check if hypercubeName exists as field in model.
+    function [modelObj, fldOut] = checkHypercubeName(modelObj, src)
+      % checkHypercubeName - check if hypercubeName exists as field in model.
       %
-      % Usage: [obj, hypercubeName_Out] = obj.checkModelFieldName(hypercubeName_In)
-      %        [obj, hypercubeName_Out] = obj.checkModelFieldName(arrayObj)
+      % Usage: [obj, hypercubeName_Out] = obj.checkHypercubeName(hypercubeName_In)
+      %        [obj, hypercubeName_Out] = obj.checkHypercubeName(arrayObj)
       %
       % Details:
       %   If 2nd arg is hypercubeName_In, hypercubeName = hypercubeName_In.
@@ -92,8 +130,10 @@ classdef gvModel < handle
       % index, increment to find next index.
       
       if isa(src, 'MDD') || isa(src, 'MDDRef') % or gvArray
-        if isfield(src.meta, 'hypercubeName')
-          fldIn = src.meta.hypercubeName;
+        if ~isempty(src.hypercubeName)
+          fldIn = src.hypercubeName;
+        elseif isfield(src.meta, 'defaultHypercubeName')
+          fldIn = src.meta.defaultHypercubeName;
         else
           fldIn = [];
         end
@@ -104,7 +144,7 @@ classdef gvModel < handle
       end
       
       if ~isempty(fldIn)
-        flds = fieldnames(obj.data);
+        flds = fieldnames(modelObj.data);
         
         hypercubeNameAlreadyExist = any(~cellfun(@isempty, regexp(flds, ['^' fldIn])));
         if hypercubeNameAlreadyExist
@@ -117,8 +157,8 @@ classdef gvModel < handle
             fldOut = [fldInNoDigits num2str(max(inds)+1)];
           else
             % rename field with index 1
-            obj.data.([fldIn '1']) = obj.data.(fldIn);
-            obj.data = rmfield(obj.data, fldIn);
+            modelObj.data.([fldIn '1']) = modelObj.data.(fldIn);
+            modelObj.data = rmfield(modelObj.data, fldIn);
             
             fldOut = [fldIn '2'];
           end
@@ -126,7 +166,7 @@ classdef gvModel < handle
           fldOut = fldIn;
         end
       else % isempty(hypercubeName)
-        fldOut = obj.nextModelFieldName; % get next fld for model.axes#
+        fldOut = modelObj.nextModelFieldName; % get next fld for model.axes#
       end
     end
     

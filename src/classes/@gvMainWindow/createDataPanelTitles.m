@@ -1,9 +1,9 @@
-function createDataPanelTitles(viewObj, parentHandle)
+function createDataPanelTitles(windowObj, parentHandle)
 %% createDataPanelTitles
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = viewObj.fontSize;
+fontSize = windowObj.fontSize;
 titleFontWeight = 'bold';
 
 padding = 5; % px
@@ -58,6 +58,6 @@ uiControlsHandles.lockTitle = uicontrol(...
 set(dataTitlesHbox, 'Widths',[-5,-6,-2.5,40,40])
 
 % Store Handles
-viewObj.mainWindow.dataPanel.controlHandles = uiControlsHandles;
+windowObj.handles.dataPanel.controls = uiControlsHandles;
 
 end

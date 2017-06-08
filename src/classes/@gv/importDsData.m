@@ -226,7 +226,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   
   dynasimData = gvArray;
   dynasimData.meta.dataType = {};
-  dynasimData.meta.hypercubeName = hypercubeName;
+  dynasimData.meta.defaultHypercubeName = hypercubeName;
   
   % store simID
   simID = gvArray;

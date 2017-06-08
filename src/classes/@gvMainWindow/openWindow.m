@@ -1,23 +1,24 @@
-function openMainWindow(viewObj)
+function openWindow(windowObj)
 
-if isValidFigHandle(viewObj.mainWindow.handle)
-  try
-    viewObj.app.vprintf('Reopening main window\n')
-  end
+% check for main window
+mainWindowExistBool = windowObj.viewObj.checkMainWindowExists();
+
+if mainWindowExistBool
+  windowObj.vprintf('Reopening main window\n')
   
-  viewObj.mainWindow.handle.delete()
+  windowObj.handles.fig.delete()
 end
 
 %% Main Window Fig
-viewObj.createMainWindowFig();
+windowObj.createFig();
 
 %% Layout
 spacing = 5;
 padding = 5;
-panelTitleFontSize = viewObj.baseFontSize;
+panelTitleFontSize = windowObj.fontSize;
 
 % main vBox
-mainVbox = uix.VBoxFlex('Parent',viewObj.mainWindow.handle, 'Spacing',spacing, 'Padding', padding);
+mainVbox = uix.VBoxFlex('Parent',windowObj.handles.fig, 'Spacing',spacing, 'Padding', padding);
 
 % panel grid
 panelGrid = uix.Grid('Parent',mainVbox, 'Spacing',spacing, 'Padding', padding);
@@ -30,7 +31,7 @@ plotPanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-viewObj.mainWindow.plotPanel.handle = plotPanel;
+windowObj.handles.plotPanel.handle = plotPanel;
 
 % plot marker panel
 plotMarkerPanel = uix.Panel(...
@@ -40,7 +41,7 @@ plotMarkerPanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-viewObj.mainWindow.plotMarkerPanel.handle = plotMarkerPanel;
+windowObj.handles.plotMarkerPanel.handle = plotMarkerPanel;
 
 
 % image panel
@@ -51,7 +52,7 @@ imagePanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-viewObj.mainWindow.imagePanel.handle = imagePanel;
+windowObj.handles.imagePanel.handle = imagePanel;
 
 
 % hypercube panel
@@ -62,7 +63,7 @@ hypercubePanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-viewObj.mainWindow.hypercubePanel.handle = hypercubePanel;
+windowObj.handles.hypercubePanel.handle = hypercubePanel;
 
 % data panel
 dataPanel = uix.Panel(...
@@ -75,24 +76,24 @@ dataPanel = uix.Panel(...
 
 dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
 
-createDataPanelTitles(viewObj, dataVbox); % row 1
+createDataPanelTitles(windowObj, dataVbox); % row 1
 
 dataScrollingPanel = uix.ScrollingPanel(...
   'Tag','dataScrollingPanel',...
   'Parent', dataVbox...
 ); % row 2
-viewObj.mainWindow.dataPanel.handle = dataPanel;
+windowObj.handles.dataPanel.handle = dataPanel;
 
 %% UI Controls
-viewObj.createPlotPanelControls(plotPanel);
+windowObj.createPlotPanelControls(plotPanel);
 
-viewObj.createPlotMarkerPanelControls(plotMarkerPanel);
+windowObj.createPlotMarkerPanelControls(plotMarkerPanel);
 
-viewObj.createImagePanelControls(imagePanel);
+windowObj.createImagePanelControls(imagePanel);
 
-dataPanelheight = viewObj.createDataPanelControls(dataScrollingPanel);
+dataPanelheight = windowObj.createDataPanelControls(dataScrollingPanel);
 
-viewObj.createHypercubePanelControls(hypercubePanel);
+windowObj.createHypercubePanelControls(hypercubePanel);
 
 %% Set layout sizes
 set(panelGrid, 'Widths',[-1 -1], 'Heights',[-1 -1])
@@ -105,6 +106,6 @@ set(dataScrollingPanel, 'Heights',dataPanelheight)
 % These handles are arranged in a cell matrix corresponding to the positions in 
 % the toolbar and menu columns. The first row contains the toolbar titles.
 
-createMenu(viewObj, viewObj.mainWindow.handle);
+createMenu(windowObj, windowObj.handles.fig);
 
 end

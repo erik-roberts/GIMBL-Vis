@@ -1,9 +1,9 @@
-function createPlotPanelControls(viewObj, parentHandle)
+function createPlotPanelControls(windowObj, parentHandle)
 %% createPlotPanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = viewObj.fontSize;
+fontSize = windowObj.fontSize;
 spacing = 2; % px
 padding = 2; % px
 
@@ -20,7 +20,7 @@ uiControlsHandles.openPlotButton = uicontrol(...
 'FontUnits','points',...
 'FontSize',fontSize,...
 'String','Open Plot',...
-'Callback',@(hObject,eventdata)gvMainWindow_export('makePlotButton_Callback',hObject,eventdata,guidata(hObject)),...
+'Callback',@(src, evnt) windowObj.viewObj.openWindow('plotWindow'),...
 'Parent',grid2x2);
 
 % (2,1)
@@ -57,7 +57,7 @@ makeDelayHbox(delayHbox);
 set(grid2x2, 'Heights',[-1 -1], 'Widths',[-1 -1]);
 
 % Store Handles
-viewObj.mainWindow.plotPanel.controlHandles = uiControlsHandles;
+windowObj.handles.plotPanel.controls = uiControlsHandles;
 
 
 %% Nested fn

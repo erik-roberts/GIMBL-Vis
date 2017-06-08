@@ -25,6 +25,10 @@ classdef gvArray < MDD
     axisClass = gvArrayAxis
   end
   
+  properties (Hidden)
+    hypercubeName = ''
+  end
+  
   methods
     
     function obj = gvArray(varargin)
