@@ -1,7 +1,7 @@
 ![GIMBL-Vis](/docs/gvLogo.jpg)
 
 ## Introduction
-GIMBL-Vis (GV) is an interactive multi-dimensional visualization toolbox.
+GIMBL-Vis (GV) is an extensible interactive multi-dimensional visualization toolbox.
 
 Currently, it supports interaction with numeric or cell array data from the Matlab workspace or saved mat files, as well as with tabular data from saved spreadsheets. Imported data may already be in the form of high dimensional arrays, or converted from a 2D tabular form.
 
