@@ -2,7 +2,7 @@ function gvImageTypeMenuCallback(hObject, eventdata, handles)
 
 if hObject.UserData.lastVal ~= hObject.Value
   % update plot type
-  handles.ImagePanel.plotType = hObject.String{hObject.Value};
+  handles.ImageWindow.plotType = hObject.String{hObject.Value};
   
   % Update last value
   hObject.UserData.lastVal = hObject.Value;

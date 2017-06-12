@@ -1,11 +1,11 @@
 function gvViewDimCallback(hObject, eventdata, handles)
 
-vdH = handles.MainPanel.HandlesNames.vdH;
-sH = handles.MainPanel.HandlesNames.sH;
-svH = handles.MainPanel.HandlesNames.svH;
+vdH = handles.MainWindow.HandlesNames.vdH;
+sH = handles.MainWindow.HandlesNames.sH;
+svH = handles.MainWindow.HandlesNames.svH;
 
-nAxDims = handles.PlotPanel.nAxDims;
-lockedDims = handles.PlotPanel.lockedDims;
+nAxDims = handles.PlotWindow.nAxDims;
+lockedDims = handles.PlotWindow.lockedDims;
 
 % Determine number of checked ViewDim boxes
 nViewDims = 0;
@@ -24,7 +24,7 @@ if nViewDims > 3
   viewDims(str2double(hObject.Tag(end))) = 0;
 end
 
-handles.PlotPanel.nViewDims = nViewDims;
+handles.PlotWindow.nViewDims = nViewDims;
 
 % Disable sliders when all data is shown (dim < 3)
 axDims = 1:nAxDims;
@@ -46,16 +46,16 @@ for hInd = axDims(~disabledDims)
 end
 
 % Update viewDims
-handles.PlotPanel.viewDims = viewDims;
+handles.PlotWindow.viewDims = viewDims;
 
 % Update disabledDims
-handles.PlotPanel.disabledDims = disabledDims;
+handles.PlotWindow.disabledDims = disabledDims;
 
 % Update Multi Dim Plot
-handles = gvPlotPanel(hObject, eventdata, handles);
+handles = gvPlotWindow(hObject, eventdata, handles);
 
 % Update nViewDimsLast
-handles.PlotPanel.nViewDimsLast = nViewDims;
+handles.PlotWindow.nViewDimsLast = nViewDims;
 
 % Update handles structure
 guidata(hObject, handles);

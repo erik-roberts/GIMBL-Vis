@@ -6,7 +6,7 @@ mousePosPx = get(figH, 'CurrentPoint'); %pixels
 
 handles = gvHandlesFromFig(figH);
 
-nVarSliders = length(handles.MainPanel.Handles.sH);
+nVarSliders = length(handles.MainWindow.Handles.sH);
 
 % Get marker slider imbeded in box pos
 figPosPx = handles.output.Position;
@@ -19,7 +19,7 @@ markerSliderPos(1:2) = (markerSliderPosRel2Box(1:2) + 1) .* boxPosPx(1:2) ./ fig
 markerSliderPos(3:4) = markerSliderPosRel2Box(3:4) .* boxPos(3:4);
 
 % combined sliders pos
-sliderPos = vertcat(cat(1,handles.MainPanel.Handles.sH.Position), markerSliderPos);
+sliderPos = vertcat(cat(1,handles.MainWindow.Handles.sH.Position), markerSliderPos);
 
 % Find Positions of LL and UR corners for each slider
 sliderLLx  = sliderPos(:,1)*figPosPx(3);
@@ -37,7 +37,7 @@ if sliderInd %if in any slider
   eventdata = scrollData.VerticalScrollAmount*scrollData.VerticalScrollCount;
 
   if sliderInd <= nVarSliders % var slider
-    hObject = handles.MainPanel.Handles.sH(sliderInd);
+    hObject = handles.MainWindow.Handles.sH(sliderInd);
     if strcmp(hObject.Enable, 'on')
       gvSliderChangeCallback(hObject, eventdata, handles)
     end

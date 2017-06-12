@@ -1,12 +1,12 @@
 function gvLockDimCallback(hObject, eventdata, handles)
 
-ldH = handles.MainPanel.Handles.ldH;
-sH = handles.MainPanel.Handles.sH;
-svH = handles.MainPanel.Handles.svH;
+ldH = handles.MainWindow.Handles.ldH;
+sH = handles.MainWindow.Handles.sH;
+svH = handles.MainWindow.Handles.svH;
 
-nAxDims = handles.PlotPanel.nAxDims;
-nViewDims = handles.PlotPanel.nViewDims;
-viewDims = handles.PlotPanel.viewDims;
+nAxDims = handles.PlotWindow.nAxDims;
+nViewDims = handles.PlotWindow.nViewDims;
+viewDims = handles.PlotWindow.viewDims;
 
 % Determine number of checked locked boxes
 nLockedDims = 0;
@@ -36,13 +36,13 @@ for hInd = axDims(~disabledDims)
 end
 
 % Update lockedDims
-handles.PlotPanel.lockedDims = logical(lockedDims);
+handles.PlotWindow.lockedDims = logical(lockedDims);
 
 % Update disabledDims
-handles.PlotPanel.disabledDims = disabledDims;
+handles.PlotWindow.disabledDims = disabledDims;
 
 % Update nLockDimsLast
-handles.PlotPanel.nLockedDimsLast = nLockedDims;
+handles.PlotWindow.nLockedDimsLast = nLockedDims;
 
 % Update handles structure
 guidata(hObject, handles);

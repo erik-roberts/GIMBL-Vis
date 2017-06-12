@@ -1,4 +1,4 @@
-function gvMainPanelSetup(hObject, eventdata, handles, varargin)
+function gvMainWindowSetup(hObject, eventdata, handles, varargin)
 
 %% TODO
 % have a common way to get to obj
@@ -13,8 +13,8 @@ else
 end
 
 % store hObject handle in gvObj
-gvObj.guiData.mainPanel.obj = hObject;
-gvObj.guiData.mainPanel.handles = handles; % check this
+gvObj.guiData.mainWindow.obj = hObject;
+gvObj.guiData.mainWindow.handles = handles; % check this
 
 % store gvObj reference in hObject
 handles.gvObj = gvObj;
@@ -31,7 +31,7 @@ handles.mdData = mdData;
 
 %   dataName = sprintf('%iD Data', mdData.nDims); % in case want dimensions later
 
-% Choose default command line output for gvMainPanel
+% Choose default command line output for gvMainWindow
 handles.output = hObject;
 
 % Setup var names
@@ -46,10 +46,10 @@ axDimNames = dimNames;
 % data.Table.Properties.UserData.axDimNames = axDimNames;
 nAxDims = length(axDimNames);
 
-%% Setup Main Panel Vars
+%% Setup Main Window Vars
 
 % Set title
-handles.panelTitle.String = 'GIMBL-Vis Main Panel';
+handles.panelTitle.String = 'GIMBL-Vis Main Window';
 
 % Change iterateToggle String
 handles.iterateToggle.String = sprintf('( %s ) Iterate', char(9654)); %start char (arrow)
@@ -63,19 +63,19 @@ vdH = sort(flds(~cellfun(@isempty,(strfind(flds, 'viewDim')))));
 ldH = sort(flds(~cellfun(@isempty,(strfind(flds, 'lockDim')))));
 
 % Handles Names
-gvObj.guiData.mainPanel.HandlesNames.txtH = txtH;
-gvObj.guiData.mainPanel.HandlesNames.sH = sH;
-gvObj.guiData.mainPanel.HandlesNames.svH = svH;
-gvObj.guiData.mainPanel.HandlesNames.vdH = vdH;
-gvObj.guiData.mainPanel.HandlesNames.ldH = ldH;
+gvObj.guiData.mainWindow.HandlesNames.txtH = txtH;
+gvObj.guiData.mainWindow.HandlesNames.sH = sH;
+gvObj.guiData.mainWindow.HandlesNames.svH = svH;
+gvObj.guiData.mainWindow.HandlesNames.vdH = vdH;
+gvObj.guiData.mainWindow.HandlesNames.ldH = ldH;
 
 % Handles Types
 for iDim = 1:nAxDims
-  gvObj.guiData.mainPanel.Handles.txtH(iDim) = handles.(txtH{iDim});
-  gvObj.guiData.mainPanel.Handles.sH(iDim) = handles.(sH{iDim});
-  gvObj.guiData.mainPanel.Handles.svH(iDim) = handles.(svH{iDim});
-  gvObj.guiData.mainPanel.Handles.vdH(iDim) = handles.(vdH{iDim});
-  gvObj.guiData.mainPanel.Handles.ldH(iDim) = handles.(ldH{iDim});
+  gvObj.guiData.mainWindow.Handles.txtH(iDim) = handles.(txtH{iDim});
+  gvObj.guiData.mainWindow.Handles.sH(iDim) = handles.(sH{iDim});
+  gvObj.guiData.mainWindow.Handles.svH(iDim) = handles.(svH{iDim});
+  gvObj.guiData.mainWindow.Handles.vdH(iDim) = handles.(vdH{iDim});
+  gvObj.guiData.mainWindow.Handles.ldH(iDim) = handles.(ldH{iDim});
 end
 
 for iDim = 1:nAxDims
@@ -127,7 +127,7 @@ end
 hObject.WindowScrollWheelFcn = @gvScrollCallback;
 
 % Makes Plot Legend Boolean
-gvObj.guiData.mainPanel.legendBool = true;
+gvObj.guiData.mainWindow.legendBool = true;
 
 % MarkerTypes
 handles.markerTypeMenu.String = {'scatter', 'pcolor'};
@@ -135,59 +135,59 @@ handles.markerTypeMenu.UserData.lastVal = 1;
 
 hObject.CloseRequestFcn = @gvCloseRequestFcn;
 
-%% Plot Panel Vars
+%% Plot Window Vars
 % Set 0 checked view dims
-gvObj.guiData.plotPanel.viewDims = zeros(1, nAxDims);
-gvObj.guiData.plotPanel.nViewDims = 0;
-gvObj.guiData.plotPanel.nViewDimsLast = 0;
+gvObj.guiData.plotWindow.viewDims = zeros(1, nAxDims);
+gvObj.guiData.plotWindow.nViewDims = 0;
+gvObj.guiData.plotWindow.nViewDimsLast = 0;
 
 % Set 0 checked locked dims
-gvObj.guiData.plotPanel.lockedDims = zeros(1, nAxDims);
-gvObj.guiData.plotPanel.nLockedDims = 0;
-gvObj.guiData.plotPanel.nLockedDimsLast = 0;
+gvObj.guiData.plotWindow.lockedDims = zeros(1, nAxDims);
+gvObj.guiData.plotWindow.nLockedDims = 0;
+gvObj.guiData.plotWindow.nLockedDimsLast = 0;
 
-gvObj.guiData.plotPanel.disabledDims = zeros(1, nAxDims);
+gvObj.guiData.plotWindow.disabledDims = zeros(1, nAxDims);
 
-gvObj.guiData.plotPanel.nAxDims = nAxDims;
+gvObj.guiData.plotWindow.nAxDims = nAxDims;
 
-gvObj.guiData.plotPanel.figHandle = [];
-gvObj.guiData.plotPanel.axHandle = [];
+gvObj.guiData.plotWindow.figHandle = [];
+gvObj.guiData.plotWindow.axHandle = [];
 
 % set marker type for plotting
-gvObj.guiData.plotPanel.markerType = handles.markerTypeMenu.String{handles.markerTypeMenu.UserData.lastVal};
+gvObj.guiData.plotWindow.markerType = handles.markerTypeMenu.String{handles.markerTypeMenu.UserData.lastVal};
 
 % Check for index variable
-gvObj.guiData.plotPanel.indVarNum = find(strcmp('index', mdData.dataTypes));
+gvObj.guiData.plotWindow.indVarNum = find(strcmp('index', mdData.dataTypes));
 
 % Check for label variable
 if isfield(data, 'Label')
-  gvObj.guiData.plotPanel.Label = data.Label;
-  gvObj.guiData.plotPanel.Label.varNum = data.Label.multiDimNum;
+  gvObj.guiData.plotWindow.Label = data.Label;
+  gvObj.guiData.plotWindow.Label.varNum = data.Label.multiDimNum;
   nClasses = length(data.Label.names);
   
   % Make unique colors
   if ~isfield(data.Label, 'colors')
-    gvObj.guiData.plotPanel.Label.colors = num2cell(distinguishable_colors(nClasses),2);
+    gvObj.guiData.plotWindow.Label.colors = num2cell(distinguishable_colors(nClasses),2);
   end
   
   % Assign all markers to be '.'
   if ~isfield(data.Label, 'markers')
-    gvObj.guiData.plotPanel.Label.markers = cell(nClasses,1);
-    [gvObj.guiData.plotPanel.Label.markers{:}] = deal('.');
+    gvObj.guiData.plotWindow.Label.markers = cell(nClasses,1);
+    [gvObj.guiData.plotWindow.Label.markers{:}] = deal('.');
   end
 end
 
 % Assign starting axis index corresponding to slider position
-gvObj.guiData.plotPanel.axInd = ones(1, nAxDims);
+gvObj.guiData.plotWindow.axInd = ones(1, nAxDims);
 
-%% Image Panel Vars
-handles.ImagePanel.handle = [];
+%% Image Window Vars
+handles.ImageWindow.handle = [];
 data_dir = data.workingDir;
-handles.ImagePanel.plotDir = fullfile(data_dir, 'plots');
+handles.ImageWindow.plotDir = fullfile(data_dir, 'plots');
 handles.imageTypeMenu.UserData.lastVal = [];
 
-%% Legend Panel Vars
-handles.LegendPanel.handle = [];
+%% Legend Window Vars
+handles.LegendWindow.handle = [];
 
 
 %% Update handles structure

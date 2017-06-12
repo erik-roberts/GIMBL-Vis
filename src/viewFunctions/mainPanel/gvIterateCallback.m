@@ -1,8 +1,8 @@
 function gvIterateCallback(hObject, eventdata, handles)
-disabledDims = handles.PlotPanel.disabledDims;
+disabledDims = handles.PlotWindow.disabledDims;
 
-if hObject.Value && (~isValidFigHandle('handles.PlotPanel.figHandle') || ~handles.PlotPanel.nViewDims) || all(disabledDims)
-  wprintf('Cannot iterate without a visible Plot Panel, at least 1 "view" variable, and at least 1 variable not disabled.')
+if hObject.Value && (~isValidFigHandle('handles.PlotWindow.figHandle') || ~handles.PlotWindow.nViewDims) || all(disabledDims)
+  wprintf('Cannot iterate without a visible Plot Window, at least 1 "view" variable, and at least 1 variable not disabled.')
   hObject.Value = 0;
   return
 elseif hObject.Value% turned on
@@ -14,7 +14,7 @@ end
 % Vars
 nDimVals = handles.mdData.nDimVals;
 
-viewDims = handles.PlotPanel.viewDims;
+viewDims = handles.PlotWindow.viewDims;
 if sum(viewDims) > 2
   viewDims(:) = 0;
 end
@@ -41,7 +41,7 @@ end
   function incrementSliders()
     handles = getappdata(handles.output, 'UsedByGUIData_m');
     
-    axInd = handles.PlotPanel.axInd;
+    axInd = handles.PlotWindow.axInd;
     axInd(disabledDims) = nDimVals(disabledDims); % set disabled dims to max
     
     
@@ -55,7 +55,7 @@ end
       incrAxLogical = logical(incrAxLogical);
       
       % change slider that icnrements
-      sliderObject = handles.MainPanel.Handles.sH(incrAxLogical);
+      sliderObject = handles.MainWindow.Handles.sH(incrAxLogical);
       sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
       handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
     else
@@ -67,7 +67,7 @@ end
     % loop over slider handles and set value to min
     if any(resetAx)
       for iSlider = find(resetAx) %logical to indices
-        sliderObject = handles.MainPanel.Handles.sH(iSlider);
+        sliderObject = handles.MainWindow.Handles.sH(iSlider);
         sliderObject.Value = -inf;
         
         handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
@@ -82,7 +82,7 @@ end
     handles = gvPlot(hObject, eventdata, handles);
     
     % reshow image
-    gvPlotPanelMouseMoveCallback(handles.PlotPanel.figHandle, []);
+    gvPlotWindowMouseMoveCallback(handles.PlotWindow.figHandle, []);
     
     % Update handles structure
     guidata(hObject, handles);

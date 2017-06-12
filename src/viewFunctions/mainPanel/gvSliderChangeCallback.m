@@ -69,7 +69,7 @@ switch hObject.Style
 end
 
 % Add index
-handles.PlotPanel.axInd(hNum) = nearestValInd;
+handles.PlotWindow.axInd(hNum) = nearestValInd;
 
 %% Replot
 % Check if reset from iterate or hit boundaries

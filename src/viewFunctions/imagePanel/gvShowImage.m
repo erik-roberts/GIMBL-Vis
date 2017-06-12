@@ -1,15 +1,15 @@
 function gvShowImage(handles)
 
-plotDir = handles.ImagePanel.plotDir;
-plotFiles = handles.ImagePanel.plotFiles;
-plotType = handles.ImagePanel.plotType;
-simID = handles.ImagePanel.simID;
+plotDir = handles.ImageWindow.plotDir;
+plotFiles = handles.ImageWindow.plotFiles;
+plotType = handles.ImageWindow.plotType;
+simID = handles.ImageWindow.simID;
 
 simFiles = regexp(plotFiles, [plotType '.*sim' num2str(simID)]);
 filenameCell = plotFiles(~cellfun(@isempty, simFiles));
 
 
-imgPanelH = handles.ImagePanel.handle;
+imgPanelH = handles.ImageWindow.handle;
 imAxH = findobj(imgPanelH.Children,'type','axes');
 
 if ~isempty(filenameCell)

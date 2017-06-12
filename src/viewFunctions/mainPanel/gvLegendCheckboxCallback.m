@@ -1,9 +1,9 @@
 function gvLegendCheckboxCallback(hObject, eventdata, handles)
 
 if hObject.Value
-  handles.MainPanel.legendBool = true;
+  handles.MainWindow.legendBool = true;
 else
-  handles.MainPanel.legendBool = false;
+  handles.MainWindow.legendBool = false;
 end
 
 % Update handles structure
