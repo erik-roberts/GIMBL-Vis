@@ -8,13 +8,16 @@ classdef (Abstract) gvWindow < handle
   %% Abstract Properties %%
   properties (Abstract)
     metadata
+  end
+  
+  properties (Abstract, Hidden)
+    view
     handles
-    
-    viewObj
   end
   
   properties (Abstract, Constant, Hidden)
     windowName
+    windowFieldName
   end
   
   properties (Access = protected)
@@ -54,7 +57,7 @@ classdef (Abstract) gvWindow < handle
     
     
     function removeWindowFromView(windowObj)
-      windowObj.viewObj.removeWindow( windowObj.windowName );
+      windowObj.viewObj.removeWindow( windowObj.windowFieldName );
     end
     
   end

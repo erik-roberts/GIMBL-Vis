@@ -75,18 +75,17 @@ classdef gv < handle
 %   
 %     end
   
-  
   %% Private Properties %%
-  properties % TODO (Access = private)
+  properties (Access = private)
     model % = gvModel(gvObj)
     controller % = gvController(gvObj)
     view % = gvView(gvObj)
   end
   
-  %% Events %%
-  events
-    mainWindowChange
+  properties (Constant, Access = private)
+    defaultPlugins = {'gvMainWindow', 'gvPlotWindow'}; % TODO add the rest 
   end
+  
   
   %% Public Methods %%
   methods
@@ -503,34 +502,5 @@ classdef gv < handle
   %   methods (Static, Access = protected)
   %
   %   end
-  
-  
-  %% Event Callbacks %%
-  methods (Static, Access = protected)
-    
-    function propPostSetCallback(src,event)
-      switch src.Name
-        case 'model'
-          % model has triggered an event
-          
-        case 'meta'
-          % meta has triggered an event
-          
-        case 'gui'
-          % gui.data has triggered an event
-          fprintf('Test')
-      end
-    end
-    
-    
-    function guiWindowChangeCallback(src, event)
-      obj = src;
-      switch event.EventName
-        case 'mainWindowChange'
-          % Enabled status based on whether main window is open
-          [obj.propListeners.Enabled] = deal( isValidFigHandle(obj.gui.data.mainWindow.obj) );
-      end
-    end
-  end % static methods
   
 end % classdef

@@ -16,7 +16,8 @@ classdef gvPlotWindow < gvWindow
   
   %% Other properties %%
   properties (Constant, Hidden)
-    windowName = 'plotWindow';
+    windowName = 'Plot';
+    windowFieldName = 'plotWindow';
   end
   
   

@@ -16,7 +16,8 @@ classdef gvMainWindow < gvWindow
   
   %% Other properties %%
   properties (Constant, Hidden)
-    windowName = 'mainWindow';
+    windowName = 'Main';
+    windowFieldName = 'mainWindow';
   end
   
   

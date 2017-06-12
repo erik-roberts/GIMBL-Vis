@@ -100,34 +100,34 @@ classdef gvView < handle
     
     
     function addWindow(viewObj, windowObj)
-      windowName = getDefaultPropertyValue(windowObj, 'windowName');
+      windowFieldName = getDefaultPropertyValue(windowObj, 'windowFieldName');
 
       % add window to view
       if isobject(windowObj)
-        viewObj.windows.(windowName) = windowObj;
+        viewObj.windows.(windowFieldName) = windowObj;
       else
-        viewObj.windows.(windowName) = feval(windowObj);
+        viewObj.windows.(windowFieldName) = feval(windowObj);
       end
       
       % add view to window
-      viewObj.windows.(windowName).viewObj = viewObj;
+      viewObj.windows.(windowFieldName).view = viewObj;
       
-      notify(viewObj, 'windowAdded', gvEvent('windowName',windowName) );
+      notify(viewObj, 'windowAdded', gvEvent('windowFieldName',windowFieldName) );
     end
     
     
-    function removeWindow(viewObj, windowName)
-      viewObj.windows = rmfield(viewObj.windows, windowName);
+    function removeWindow(viewObj, windowFieldName)
+      viewObj.windows = rmfield(viewObj.windows, windowFieldName);
       
-      notify(viewObj, 'windowRemoved', gvEvent('windowName',windowName) );
+      notify(viewObj, 'windowRemoved', gvEvent('windowFieldName',windowFieldName) );
     end
     
     
-    function openWindow(viewObj, windowName)
-      if isfield(viewObj.windows, windowName)
-        viewObj.windows.(windowName).openWindow;
+    function openWindow(viewObj, windowFieldName)
+      if isfield(viewObj.windows, windowFieldName)
+        viewObj.windows.(windowFieldName).openWindow;
       else
-        wprintf('Window "%s" is not found', windowName)
+        wprintf('Window "%s" is not found', windowFieldName)
       end
     end
 
