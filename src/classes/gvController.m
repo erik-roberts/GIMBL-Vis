@@ -35,6 +35,11 @@ classdef gvController < handle
     
     
     function addPlugin(cntrlObj, pluginSrc)
+      % addPlugin
+      %
+      % Inputs:
+      %   pluginSrc: pluginFieldName string or pluginObj object
+      
       pluginFieldName = getDefaultPropertyValue(pluginSrc, 'pluginFieldName');
 
       % add plugin to view
@@ -51,15 +56,27 @@ classdef gvController < handle
     end
     
     
-    function removePlugin(cntrlObj, pluginName)
-      cntrlObj.plugins = rmfield(cntrlObj.plugins, pluginName);
+    function removePlugin(cntrlObj, pluginFieldName)
+      cntrlObj.plugins = rmfield(cntrlObj.plugins, pluginFieldName);
       
-      notify(cntrlObj, 'pluginRemoved', gvEvent('pluginFieldName',pluginName) );
+      notify(cntrlObj, 'pluginRemoved', gvEvent('pluginFieldName',pluginFieldName) );
     end
     
   end % public methods
   
   %% Other Methods %%
+  methods (Hidden)
+    
+    function pluginsOut = guiPlugins(cntrlObj)
+      allPlugins = cntrlObj.plugins;
+      
+      % TODO figure out which plugins are gui
+      pluginsOut = 1;
+    end
+    
+  end
+  
+  
   methods (Access = protected)
     
     function loadDefaultPlugins(cntrlObj)
