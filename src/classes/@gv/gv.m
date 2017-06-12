@@ -305,6 +305,8 @@ classdef gv < handle
       
       % Print view summary
       gvObj.view.summary;
+      
+      fprintf('\n')
     end
     
     
