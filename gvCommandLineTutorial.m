@@ -1,4 +1,10 @@
-%% GIMBL-Vis Tutorial
+%% GIMBL-Vis Matlab Command Line Interface Tutorial
+% This is a tutorial explaining the command line interface for GIMBL-Vis (using 
+% the Matlab command window).
+%
+% For a tutorial on the easier-to-use graphical interface, see the slides at:
+%   http://www.earoberts.com/GIMBL-Vis-Docs/slides.html
+
 
 %% Setup
 
@@ -34,23 +40,34 @@ gvObj.summary;
 
 %   2) Call load method on file/dir. If dir, must have only 1 mat file. File can
 %   store a gv, gvArray, or MDD object.
-gvObj = gv(gvFile);
-
-
-gvObj = gv(gvFile, hypercubeName);
-gvObj.listHypercubes;
+% gvObj = gv(gvFile);
+% gvObj.summary;
+% 
+% gvObj = gv(gvFile, hypercubeName);
+% gvObj.summary;
 
 
 %   3) Call gvArray constructor on gvArray/MDD data
 gvObj = gv(sampleGvArray);
+gvObj.summary;
+gvObj.listHypercubes;
+
 gvObj = gv(hypercubeName, sampleGvArray);
+gvObj.listHypercubes;
 %
 %   4) Call gvArray constructor on cell/numeric array data. Can be linear
 %         or multidimensional array data.
 gvObj = gv(sampleData);
+gvObj.summary;
+
 gvObj = gv(hypercubeName, sampleData);
+gvObj.summary;
+
 gvObj = gv(sampleData, axis_vals, axis_names);
+gvObj.summary;
+
 gvObj = gv(hypercubeName, sampleData, axis_vals, axis_names);
+gvObj.summary;
 
 %% Advanced
 
