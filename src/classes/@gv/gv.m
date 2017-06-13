@@ -42,6 +42,8 @@
 %   function for classifying inputs and swtich to case
 %   gv merge
 %   move data handling methods to model
+%   panel store handles
+%   prefix tags for createPanel
 
 classdef gv < handle
   
@@ -312,7 +314,7 @@ classdef gv < handle
         gv.MakeDefaultConfig();
       end
       
-      fid = fopen(gvConfigFile);
+      fid = fopen(gvConfigFile, 'r');
       gvVarCells = textscan(fid, '%s = %q');
       fclose(fid);
       

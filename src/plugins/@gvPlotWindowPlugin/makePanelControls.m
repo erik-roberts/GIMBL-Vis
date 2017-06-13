@@ -1,9 +1,12 @@
-function makeControls(pluginObj, parentHandle)
+function panelHandle = makePanelControls(pluginObj, parentHandle)
+% makePanelControls - make plot panel for tab in main window
 
-%% Layout
+% params
 spacing = 5;
 padding = 5;
 panelTitleFontSize = pluginObj.fontSize;
+
+uiControlsHandles = struct();
 
 % 1)
 % main vBox
@@ -22,7 +25,7 @@ plotPanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-pluginObj.handles.plotPanel.handle = plotPanel;
+uiControlsHandles.plotPanel.handle = plotPanel;
 
 % 1.1.2)
 % plot marker panel
@@ -33,22 +36,8 @@ plotMarkerPanel = uix.Panel(...
   'FontUnits','points',...
   'FontSize',panelTitleFontSize...
 );
-pluginObj.handles.plotMarkerPanel.handle = plotMarkerPanel;
+uiControlsHandles.plotMarkerPanel.handle = plotMarkerPanel;
 
-
-% 1.1.3)
-% hypercube panel
-hypercubePanel = uix.Panel(...
-  'Tag','hypercubePanel',...
-  'Parent',panelGrid,...
-  'Title','Active Hypercube',...
-  'FontUnits','points',...
-  'FontSize',panelTitleFontSize...
-);
-pluginObj.handles.hypercubePanel.handle = hypercubePanel;
-
-% 1.1.4)
-pluginObj.handles.hypercubePanel.handle = uix.empty;
 
 % 1.2)
 % data panel
@@ -70,7 +59,7 @@ dataScrollingPanel = uix.ScrollingPanel(...
   'Tag','dataScrollingPanel',...
   'Parent', dataVbox...
 ); % row 2
-pluginObj.handles.dataPanel.handle = dataPanel;
+uiControlsHandles.dataPanel.handle = dataPanel;
 
 %% UI Controls
 pluginObj.createPlotPanelControls(plotPanel);
@@ -82,9 +71,12 @@ dataPanelheight = pluginObj.createDataPanelControls(dataScrollingPanel);
 % pluginObj.createHypercubePanelControls(hypercubePanel);
 
 %% Set layout sizes
-set(panelGrid, 'Widths',[-1 -1], 'Heights',[-1 -1])
-set(mainVbox, 'Heights',[180 -1])
+set(mainVbox, 'Heights',[100 -1])
+set(panelGrid, 'Widths',[-1 -1], 'Heights',[-1])
 set(dataVbox, 'Heights',[30,-1])
 set(dataScrollingPanel, 'Heights',dataPanelheight)
+
+%% argout
+panelHandle = mainVbox;
 
 end

@@ -46,7 +46,7 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
   
   %% Abstract Methods %%
   methods (Abstract, Hidden)
-    makeControls(pluginObj, parentHandle)
+    panelHandle = makePanelControls(pluginObj, parentHandle)
   end
   
 end

@@ -3,7 +3,7 @@ function MakeDefaultConfig()
 
 %% Get Vars
 defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvPlotWindowPlugin''}';
-baseFontSize = '14';
+baseFontSize = '12';
 
 %% Write vars to disk
 vars = who; % get all vars

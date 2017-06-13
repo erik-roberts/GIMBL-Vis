@@ -50,7 +50,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
   %% Hidden methods %%
   methods (Hidden)
     
-    makeControls(pluginObj, parentHandle)
+    panelHandle = makePanelControls(pluginObj, parentHandle)
     
   end
   

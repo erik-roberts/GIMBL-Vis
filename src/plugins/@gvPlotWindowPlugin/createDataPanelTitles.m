@@ -58,6 +58,6 @@ uiControlsHandles.lockTitle = uicontrol(...
 set(dataTitlesHbox, 'Widths',[-5,-6,-2.5,40,40])
 
 % Store Handles
-pluginObj.handles.dataPanel.controls = uiControlsHandles;
+% pluginObj.handles.dataPanel.controls = uiControlsHandles;
 
 end

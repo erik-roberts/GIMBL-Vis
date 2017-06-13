@@ -40,7 +40,9 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   
   %% Hidden methods %%
   methods (Hidden)
-    makeControls(pluginObj, parentHandle)
+    panelHandle = makePanelControls(pluginObj, parentHandle)
+    
+    makeWindowControls(pluginObj, parentHandle)
   end
   
   
@@ -51,7 +53,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     createMenu(pluginObj, parentHandle)
     
-%     createHypercubePanelControls(pluginObj, parentHandle)
+    createHypercubePanelControls(pluginObj, parentHandle)
 
   end
   

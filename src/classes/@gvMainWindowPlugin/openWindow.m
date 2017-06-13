@@ -13,7 +13,7 @@ end
 pluginObj.createFig();
 
 %% Layout
-pluginObj.makeControls( pluginObj.handles.fig );
+pluginObj.makeWindowControls( pluginObj.handles.fig );
 
 %% Menu
 % These handles are arranged in a cell matrix corresponding to the positions in 

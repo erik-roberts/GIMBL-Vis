@@ -40,7 +40,7 @@ set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,30,30])
 dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
 
 % Store Handles
-pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
+% pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
 
 %% Nested fn
   function makeVarCol(dataPanelGrid)

@@ -13,16 +13,16 @@ classdef testPlugin2 < gvGuiPlugin
   end
   
   properties (Constant, Hidden)
-    pluginName = 'test'
-    pluginFieldName = 'test'
+    pluginName = 'Test2'
+    pluginFieldName = 'test2'
   end
   
   methods
   end
   
   methods (Hidden)
-    function makeControls(pluginObj, parentHandle)
-      uix.Empty('Parent',parentHandle);
+    function put = makePanelControls(pluginObj, parentHandle)
+      out = uix.Empty('Parent',parentHandle);
     end
   end
   

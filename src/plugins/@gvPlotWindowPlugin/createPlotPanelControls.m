@@ -57,7 +57,7 @@ makeDelayHbox(delayHbox);
 set(grid2x2, 'Heights',[-1 -1], 'Widths',[-1 -1]);
 
 % Store Handles
-pluginObj.handles.plotPanel.controls = uiControlsHandles;
+% pluginObj.handles.plotPanel.controls = uiControlsHandles;
 
 
 %% Nested fn
@@ -83,7 +83,7 @@ pluginObj.handles.plotPanel.controls = uiControlsHandles;
       'Callback',@(hObject,eventdata)gvMainWindow_export('delayBox_Callback',hObject,eventdata,guidata(hObject)),...
       'Parent',delayHbox);
     
-      set(delayHbox, 'Widths',[-1, -1])
+      set(delayHbox, 'Widths',[-3, -1.3])
   end
 
 end

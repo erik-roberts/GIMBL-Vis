@@ -29,7 +29,7 @@ makeRow2hBox(row2hBox);
 set(vBox, 'Heights',[-1 -1]);
 
 % Store Handles
-pluginObj.handles.plotMarkerPanel.controls = uiControlsHandles;
+% pluginObj.handles.plotMarkerPanel.controls = uiControlsHandles;
 
 
 %% Nested fn
