@@ -91,6 +91,11 @@ classdef gvView < handle
         
         viewObj.controller.prior_activeHypercubeName = viewObj.controller.activeHypercubeName;
       elseif ischar(argin)
+        if strcmp(argin, '[None]')
+          wprintf('Import data before selecting a hypercube.')
+          return
+        end
+        
         viewObj.controller.activeHypercubeName = argin;
         viewObj.controller.activeHypercube = viewObj.model.data.(argin);
         
