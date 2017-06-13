@@ -12,14 +12,14 @@ classdef gvLegendWindow < handle
     end
     
     
-    function openLegendWindow(viewObj)
+    function openLegendWindow(pluginObj)
       
-      mainWindowExistBool = viewObj.checkMainWindowExists;
+      mainWindowExistBool = pluginObj.checkMainWindowExists;
       
-      if mainWindowExistBool && ~isValidFigHandle(viewObj.legendWindow.handle)
-        createLegendWindow(viewObj);
+      if mainWindowExistBool && ~isValidFigHandle(pluginObj.legendWindow.handle)
+        createLegendWindow(pluginObj);
         
-        hcData = viewObj.activeHypercube;
+        hcData = pluginObj.activeHypercube;
         
         colors = cat(1,handles.PlotWindow.Label.colors{:});
         markers = handles.PlotWindow.Label.markers;
@@ -44,8 +44,8 @@ classdef gvLegendWindow < handle
       end
       
       %% Nested Functions
-      function createLegendWindow(viewObj)
-        mainWindowPos = viewObj.mainWindow.handle.Position;
+      function createLegendWindow(pluginObj)
+        mainWindowPos = pluginObj.mainWindow.handle.Position;
         ht = 30 * length(handles.PlotWindow.Label.names);
         legendWindowHandle = figure('Name','Legend Window','NumberTitle','off','menubar','none',...
           'Position',[mainWindowPos(1),max(mainWindowPos(2)-ht-50, 0),250,ht]);
@@ -54,7 +54,7 @@ classdef gvLegendWindow < handle
           'XTick',[], 'YTick',[]);
         
         % set legend handle
-        viewObj.legendWindow.handle = legendWindowHandle;
+        pluginObj.legendWindow.handle = legendWindowHandle;
       end
       
     end

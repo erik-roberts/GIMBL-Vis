@@ -8,24 +8,25 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
   %% Abstract Properties %%
   properties (Abstract, Constant, Hidden)
     windowName
-    windowFieldName
   end
   
-  properties (Access = private)
-    userData = struct()
-  end
   
   %% Abstract Methods %%
   methods (Abstract)
-     openWindow(windowObj)
+     openWindow(pluginObj)
   end
+  
+  methods (Abstract, Access = protected)
+    createFig(pluginObj)
+  end
+  
   
   %% Concrete Methods %%
   methods
     
-    function pluginObj = gvWindowPlugin(cntrlObj)
+    function pluginObj = gvWindowPlugin(varargin)
       % superclass constructor
-      pluginObj@gvGuiPlugin(cntrlObj);
+      pluginObj@gvGuiPlugin(varargin{:});
       
       % default values
       pluginObj.handles.fig = [];
@@ -33,21 +34,22 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     end
     
   end
-    
+
+  
   methods (Hidden)
     
-%     function addWindowToView(windowObj, viewObj)
-%       viewObj.addWindow( windowObj );
+%     function addWindowToView(pluginObj, viewObj)
+%       pluginObj.addWindow( pluginObj );
 %     end
 %     
 %     
-%     function removeWindowFromView(windowObj)
-%       windowObj.viewObj.removeWindow( windowObj.windowFieldName );
+%     function removeWindowFromView(pluginObj)
+%       pluginObj.view.removeWindow( pluginObj.windowFieldName );
 %     end
     
   end
   
-  %% Concrete Static Methods %%
+
   methods (Static, Hidden)
     
     function resetWindowCallback(src, evnt)

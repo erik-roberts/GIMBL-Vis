@@ -27,7 +27,7 @@ end
 if isempty(fld)
   fld = modelObj.nextModelFieldName; % get next fld for model.axes#
 else
-  [modelObj, fld] = modelObj.checkHypercubeName(fld);
+  fld = modelObj.checkHypercubeName(fld);
 end
 
 % parse src
@@ -61,7 +61,7 @@ if isa(data, 'gv')
   if ~staticBool
     for modelFld = fieldnames(data.model)'
       modelFld = modelFld{1};
-      [modelObj, modelFldNew] = modelObj.checkHypercubeName(modelFld); % check fld name
+      modelFldNew = modelObj.checkHypercubeName(modelFld); % check fld name
       modelObj.data.(modelFldNew) = data.model.(modelFld); % add fld to checked fld name
       modelObj.data.(modelFldNew).hypercubeName = modelFldNew;
     end

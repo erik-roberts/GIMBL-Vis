@@ -4,7 +4,7 @@ function mouseMoveCallback(src, evnt)
 
 windowFig = src;
 
-viewObj = windowFig.UserData.windowObj.viewObj;
+pluginObj = windowFig.UserData.pluginObj.view;
 
 if ~isempty(windowFig.Children)
   
@@ -43,26 +43,26 @@ if ~isempty(windowFig.Children)
     if nPlotDims > 2 %only 1d or 2d
       return
     end
-    axVals = viewObj.mdData.dimVals(plotDims);
+    axVals = pluginObj.mdData.dimVals(plotDims);
     plotInd = nan(nPlotDims,1);
     for iAx = 1:nPlotDims
       plotInd(iAx) = nearest(axVals{iAx}, mouseAxPosInScale(iAx));
     end
     
     % find corresponding simID
-    fullInd = viewObj.PlotWindow.axInd; % sliderInd
+    fullInd = pluginObj.PlotWindow.axInd; % sliderInd
     fullInd(plotDims) = plotInd; % index of sliders with curr pos
     fullInd = num2cell(fullInd);
-    simID = viewObj.mdData.data{1}{fullInd{:}};
+    simID = pluginObj.mdData.data{1}{fullInd{:}};
     
     % show image
-    viewObj.ImageWindow.simID = simID;
-    if isValidFigHandle(viewObj.ImageWindow.handle)
-      gvShowImage(viewObj);
+    pluginObj.ImageWindow.simID = simID;
+    if isValidFigHandle(pluginObj.ImageWindow.handle)
+      gvShowImage(pluginObj);
     end
     
     % Update handles structure
-    guidata(windowFig.UserData.MainFigH, viewObj);
+    guidata(windowFig.UserData.MainFigH, pluginObj);
     
      % TODO: % check if distance to nearest point is < x% of axis size
     

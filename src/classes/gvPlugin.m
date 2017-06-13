@@ -28,9 +28,9 @@ classdef (Abstract) gvPlugin < handle
   %% Concrete Methods %%
   methods
     
-    function pluginObj = gvPlugin(cntrlObj)
+    function pluginObj = gvPlugin(cntrObj)
       if nargin
-        pluginObj.addPluginToController(cntrlObj);
+        setup(pluginObj, cntrObj);
       end
     end
     
@@ -38,18 +38,35 @@ classdef (Abstract) gvPlugin < handle
     
   methods (Hidden)
     
+    function setup(pluginObj, cntrObj)
+      pluginObj.addController(cntrObj);
+    end
+    
+    
     function vprintf(pluginObj, str)
       pluginObj.cntrlObj.app.vprintf(str);
     end
     
     
-    function addPluginToController(pluginObj, cntrlObj)
+    function addController(pluginObj, cntrlObj)
+      pluginObj.controller = cntrlObj;
+    end
+    
+    
+    function connectToController(pluginObj, cntrlObj)
+      pluginObj.addController(cntrlObj);
       cntrlObj.addPlugin( pluginObj );
     end
     
     
-    function removePlugin(pluginObj)
+    function removeController(pluginObj)
+      pluginObj.controller = [];
+    end
+    
+    
+    function disconnect(pluginObj)
       pluginObj.controller.removePlugin( pluginObj.pluginFieldName );
+      pluginObj.removeController();
     end
     
   end

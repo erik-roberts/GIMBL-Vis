@@ -1,9 +1,9 @@
-function createImagePanelControls(windowObj, parentHandle)
+function createImagePanelControls(pluginObj, parentHandle)
 %% createImagePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 spacing = 2; % px
 padding = 2; % px
 
@@ -19,7 +19,7 @@ makeRow1Hbox(row1hBox);
 uix.Empty('Parent', vBox);
 
 % Store Handles
-windowObj.handles.imagePanel.controls = uiControlsHandles;
+pluginObj.handles.imagePanel.controls = uiControlsHandles;
 
 
 %% Nested fn

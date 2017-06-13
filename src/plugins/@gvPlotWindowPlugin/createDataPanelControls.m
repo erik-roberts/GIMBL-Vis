@@ -1,16 +1,16 @@
-function dataPanelheight = createDataPanelControls(windowObj, parentHandle)
+function dataPanelheight = createDataPanelControls(pluginObj, parentHandle)
 %% createHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 % Outputs:
 %   dataPanelheight - height in px of all rows
 
-nDims = ndims(windowObj.viewObj); % TODO remove dependency
+nDims = ndims(pluginObj.view); % TODO remove dependency
 
 % Notes
 % - set the container to be based on amount of dims
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 
 spacing = 10; % px
 padding = 5; % px
@@ -40,7 +40,7 @@ set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,30,30])
 dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
 
 % Store Handles
-windowObj.handles.dataPanel.controls = catstruct(windowObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
+pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
 
 %% Nested fn
   function makeVarCol(dataPanelGrid)
@@ -100,7 +100,7 @@ windowObj.handles.dataPanel.controls = catstruct(windowObj.handles.dataPanel.con
 
 
   function makeViewCol(dataPanelGrid)
-    windowObj.handles.dataPanel.viewCheckboxHandles = cell(1, nDims);
+    pluginObj.handles.dataPanel.viewCheckboxHandles = cell(1, nDims);
     
     % Row 2:nDims+1
     for n = 1:nDims
@@ -114,13 +114,13 @@ windowObj.handles.dataPanel.controls = catstruct(windowObj.handles.dataPanel.con
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
         'Parent',dataPanelGrid);
       
-      windowObj.handles.dataPanel.viewCheckboxHandles{n} = uiControlsHandles.(['viewCheckbox' nStr]);
+      pluginObj.handles.dataPanel.viewCheckboxHandles{n} = uiControlsHandles.(['viewCheckbox' nStr]);
     end
   end
 
 
   function makeLockCol(dataPanelGrid)
-    windowObj.handles.dataPanel.lockCheckboxHandles = cell(1, nDims);
+    pluginObj.handles.dataPanel.lockCheckboxHandles = cell(1, nDims);
     
     % Row 2:nDims+1
     for n = 1:nDims
@@ -134,7 +134,7 @@ windowObj.handles.dataPanel.controls = catstruct(windowObj.handles.dataPanel.con
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
         'Parent',dataPanelGrid);
       
-      windowObj.handles.dataPanel.lockCheckboxHandles{n} = uiControlsHandles.(['lockCheckbox' nStr]);
+      pluginObj.handles.dataPanel.lockCheckboxHandles{n} = uiControlsHandles.(['lockCheckbox' nStr]);
     end
   end
 

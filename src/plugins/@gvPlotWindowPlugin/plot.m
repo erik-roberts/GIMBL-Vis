@@ -1,20 +1,20 @@
-function plot(viewObj)
+function plot(pluginObj)
 
-hFig = viewObj.plotWindow.handle;
-hAx = viewObj.plotWindow.axHandle;
+hFig = pluginObj.plotWindow.handles.fig;
+hAx = pluginObj.plotWindow.handles.ax;
 
-nViewDims = viewObj.plotWindow.nViewDims;
-viewDims = viewObj.plotWindow.viewDims;
-% nAxDims = viewObj.plotWindow.nAxDims;
-data = viewObj.activeHypercube;
+nViewDims = pluginObj.plotWindow.nViewDims;
+viewDims = pluginObj.plotWindow.viewDims;
+% nAxDims = pluginObj.plotWindow.nAxDims;
+data = pluginObj.activeHypercube;
 dimNames = data.axisNames;
 
 % Find labels for categorical data
-if isfield(viewObj.app.data.meta.classes,'Label')
-  colors = cat(1,viewObj.plotWindow.Label.colors{:});
-  markers = viewObj.plotWindow.Label.markers;
-  groups = viewObj.plotWindow.Label.names;
-  plotVarNum = viewObj.plotWindow.Label.varNum;
+if isfield(pluginObj.app.data.meta.classes,'Label')
+  colors = cat(1,pluginObj.plotWindow.Label.colors{:});
+  markers = pluginObj.plotWindow.Label.markers;
+  groups = pluginObj.plotWindow.Label.names;
+  plotVarNum = pluginObj.plotWindow.Label.varNum;
   plotLabels = data.data{plotVarNum};
 end
 
@@ -27,9 +27,9 @@ switch nViewDims
   case 2
     % 1 2d pane
     plotDims = find(viewDims);
-    if strcmp(viewObj.plotWindow.markerType, 'scatter')
+    if strcmp(pluginObj.plotWindow.markerType, 'scatter')
         make2dPlot(hAx, plotDims);
-    elseif strcmp(viewObj.plotWindow.markerType, 'pcolor')
+    elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
       make2dPcolorPlot(hAx, plotDims);
       % FIXME to use pcolor, need to add extra row,col that arent used for
       % color. the x,y,z are the edge points.  uses the first point in C for the
@@ -46,9 +46,9 @@ switch nViewDims
     plotDims2d = combnk(plotDims,2);
     for iAx = 1:3
       ax2d = hAx(iAx);
-      if strcmp(viewObj.plotWindow.markerType, 'scatter')
+      if strcmp(pluginObj.plotWindow.markerType, 'scatter')
         make2dPlot(ax2d, plotDims2d(iAx,:));
-      elseif strcmp(viewObj.plotWindow.markerType, 'pcolor')
+      elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
       end
     end
@@ -85,7 +85,7 @@ end
     
     axes(hAx)
 
-    sliceInd = viewObj.plotWindow.axInd;
+    sliceInd = pluginObj.plotWindow.axInd;
     sliceInd = num2cell(sliceInd);
     [sliceInd{plotDims}] = deal(':');
     
@@ -142,9 +142,9 @@ end
     end
     
     % Set MarkerSize Slider Val
-    if isfield(viewObj.plotWindow, 'sliderH')
-      viewObj.plotWindow.sliderH.Value = markerSize;
-      gvMarkerSizeSliderCallback(viewObj.plotWindow.sliderH,[])
+    if isfield(pluginObj.plotWindow, 'sliderH')
+      pluginObj.plotWindow.sliderH.Value = markerSize;
+      gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
     end
     
     scatter3dPlot(plotData);
@@ -166,7 +166,7 @@ end
     
     axes(hAx)
     
-    sliceInd = viewObj.plotWindow.axInd;
+    sliceInd = pluginObj.plotWindow.axInd;
     sliceInd = num2cell(sliceInd);
     [sliceInd{plotDims}] = deal(':');
     
@@ -218,9 +218,9 @@ end
     end
     
     % Set MarkerSize Slider Val
-    if isfield(viewObj.plotWindow, 'sliderH')
-      viewObj.plotWindow.sliderH.Value = markerSize;
-      gvMarkerSizeSliderCallback(viewObj.plotWindow.sliderH,[])
+    if isfield(pluginObj.plotWindow, 'sliderH')
+      pluginObj.plotWindow.sliderH.Value = markerSize;
+      gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
     end
     
     scatter2dPlot(plotData);
@@ -245,7 +245,7 @@ end
     
     axes(hAx)
     
-    sliceInd = viewObj.plotWindow.axInd;
+    sliceInd = pluginObj.plotWindow.axInd;
     sliceInd = num2cell(sliceInd);
     [sliceInd{plotDims}] = deal(':');
     
@@ -307,7 +307,7 @@ end
   function make1dPlot(hAx)
     axes(hAx)
     plotDim = find(viewDims);
-    sliceInd = viewObj.plotWindow.axInd;
+    sliceInd = pluginObj.plotWindow.axInd;
     sliceInd = num2cell(sliceInd);
     sliceInd{plotDim} = ':';
     
@@ -348,9 +348,9 @@ end
     end
     
 %     % Set MarkerSize Slider Val
-%     if isfield(viewObj.plotWindow, 'sliderH')
-%       viewObj.plotWindow.sliderH.Value = markerSize;
-%       gvMarkerSizeSliderCallback(viewObj.plotWindow.sliderH,[])
+%     if isfield(pluginObj.plotWindow, 'sliderH')
+%       pluginObj.plotWindow.sliderH.Value = markerSize;
+%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
 %     end
     
     scatter2dPlot(plotData);

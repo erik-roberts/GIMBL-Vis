@@ -1,23 +1,30 @@
 %% gvPlotWindow - UI Plot Window Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
-%              methods for a GIMB-Vis plot window
+%              methods for a GIMBL-Vis plot window
 
-classdef gvPlotWindow < gvWindow
+classdef gvPlotWindowPlugin < gvWindowPlugin
 
   %% Public properties %%
   properties
     metadata = struct()
-    handles = struct()
-    
-    viewObj
   end
   
   
   %% Other properties %%
+  properties (Hidden)
+    controller
+    view
+    
+    handles = struct()
+  end
+  
+  
   properties (Constant, Hidden)
-    windowName = 'Plot';
-    windowFieldName = 'plotWindow';
+    pluginName = 'Plot';
+    pluginFieldName = 'plot';
+    
+    windowName = 'Plot Window';
   end
   
   
@@ -30,46 +37,62 @@ classdef gvPlotWindow < gvWindow
   %% Public methods %%
   methods
     
-    function windowObj = gvPlotWindow(varargin)
-      windowObj@gvWindow(varargin{:});
+    function pluginObj = gvPlotWindowPlugin(varargin)
+      pluginObj@gvWindowPlugin(varargin{:});
     end
 
-    openWindow(windowObj)
+    openWindow(pluginObj)
 
-    plot(windowObj)
+    plot(pluginObj)
 
+  end
+  
+  %% Hidden methods %%
+  methods (Hidden)
+    
+    makeControls(pluginObj, parentHandle)
+    
   end
   
   
   %% Protected methods %%
   methods (Access = protected)
     
-    function createFig(windowObj)
+    dataPanelheight = createDataPanelControls(pluginObj, parentHandle)
+    
+    createDataPanelTitles(pluginObj, parentHandle)
+    
+    createPlotMarkerPanelControls(pluginObj, parentHandle)
+    
+    createPlotPanelControls(pluginObj, parentHandle)
+    
+    
+    function createFig(pluginObj)
       % createFig - create plot window figure
       
-      mainWindowPos = windowObj.viewObj.windows.mainWindow.handles.fig.Position;
+      mainWindowPos = pluginObj.view.windowPlugins.main.handles.fig.Position;
     
       plotWindowHandle = figure(...
         'Name','Plot Window',...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
-        'UserData',windowObj.userData,...
-        'WindowButtonMotionFcn',@gvPlotWindow.mouseMoveCallback...
+        'UserData',pluginObj.userData,...
+        'WindowButtonMotionFcn',@gvPlotWindowPlugin.mouseMoveCallback...
         );
 
       % set plot handle
-      windowObj.handles.fig = plotWindowHandle;
-      windowObj.handles.ax = axes(plotWindowHandle);
+      pluginObj.handles.fig = plotWindowHandle;
+      pluginObj.handles.ax = axes(plotWindowHandle);
     end
     
     
-    function createAxes(windowObj)
+    function createAxes(pluginObj)
       % createAxes - create plot window figure axes grid based on number of viewDims
       
-      plotWindowHandle = windowObj.handles.fig;
+      plotWindowHandle = pluginObj.handles.fig;
       clf(plotWindowHandle) %clear fig
       
-      nViewDims = windowObj.viewObj.nViewDims;
+      nViewDims = pluginObj.view.nViewDims;
       
       gap = 0.1;
       marg_h = 0.1;
@@ -115,32 +138,29 @@ classdef gvPlotWindow < gvWindow
       end
       
       if nViewDims > 0
-        windowObj.handles.ax = hAx; %TODO check handle type
+        pluginObj.handles.ax = hAx; %TODO check handle type
       end
     end
     
     
-    function addDataCursor(windowObj)
-      dcm = datacursormode(windowObj.handles.fig);
-      dcm.UpdateFcn = @gvPlotWindow.dataCursorCallback;
+    function addDataCursor(pluginObj)
+      dcm = datacursormode(pluginObj.handles.fig);
+      dcm.UpdateFcn = @gvPlotWindowPlugin.dataCursorCallback;
     end
-    
-%     createMenu(viewObj, parentHandle)
-    
-%     createControls(viewObj, parentHandle)
+
   end
   
   %% Callbacks %%
   methods (Static, Hidden)
 
     function plotCallback(src, evnt)
-      viewObj = src.viewObj;
+      view = src.view;
       
-      nViewDims = viewObj.nViewDims;
-      nViewDimsLast = viewObj.nViewDimsLast;
+      nViewDims = view.nViewDims;
+      nViewDimsLast = view.nViewDimsLast;
 
       if nViewDims > 0 && nViewDims ~= nViewDimsLast
-        viewObj.plot();
+        view.plot();
       end
     end
     

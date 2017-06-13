@@ -49,9 +49,12 @@ classdef gv < handle
   properties (SetObservable, AbortSet) % allows listener callback, aborts if set to current value
     %meta = struct()
     workingDir = pwd
-    plotDir = fullfile('.', 'plots')
-    
+
     verboseBool = true
+  end
+  
+  properties (SetAccess = private)
+    config
   end
   
 %     %% Set Properties %%
@@ -80,10 +83,6 @@ classdef gv < handle
     model % = gvModel(gvObj)
     controller % = gvController(gvObj)
     view % = gvView(gvObj)
-  end
-  
-  properties (Constant, Access = private)
-    defaultPlugins = {'gvMainWindow', 'gvPlotWindow'}; % TODO add the rest 
   end
   
   
@@ -125,10 +124,9 @@ classdef gv < handle
 %       
 %       [obj.propListeners.Enabled] = deal(false); % disable until window opens
       
-      % Add MVC
-      gvObj.model = gvModel(gvObj);
-      gvObj.controller = gvController(gvObj);
-      gvObj.view = gvView(gvObj);
+      gvObj.updateConfig()
+
+      gvObj.setupMVC();
       
       % TODO Move to separate function or gvModel/Controller
       if nargin
@@ -145,7 +143,7 @@ classdef gv < handle
         
         % Check hypercubeName if given as varargin{1}
         if exist('fld', 'var')
-          [gvObj.model, fld] = checkHypercubeName(gvObj.model, fld);
+          fld = gvObj.model.checkHypercubeName(fld);
         end
         
         if iscell(varargin{1}) || isnumeric(varargin{1}) % varargin{1} is built-in data array
@@ -159,7 +157,7 @@ classdef gv < handle
         elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
           % 3) Call gvArray constructor on gvArray/MDD data
           if ~exist('fld', 'var')
-            [gvObj.model, fld] = gvObj.model.checkHypercubeName(varargin{1});
+            fld = gvObj.model.checkHypercubeName(varargin{1});
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
         end
@@ -252,6 +250,8 @@ classdef gv < handle
       else
         gvObj.workingDir = pwd;
       end
+      
+      gvObj.view.run();
     end
     
     
@@ -275,13 +275,6 @@ classdef gv < handle
     
     
     %% Misc
-    function vprintf(gvObj, str)
-      if gvObj.verboseBool
-        fprintf(str);
-      end
-    end
-    
-    
     function varargout = listHypercubes(gvObj)
       if nargout
         varargout = gvObj.model.listHypercubes();
@@ -302,6 +295,9 @@ classdef gv < handle
       % Print model summary
       gvObj.model.summary;
       
+      % Print controller summary
+      gvObj.controller.summary;
+      
       % Print view summary
       gvObj.view.summary;
       
@@ -309,17 +305,30 @@ classdef gv < handle
     end
     
     
-    function workingDirChild = cwdChild(gvObj)
-      % cwdChild - get name of most descendant directory for cwd path
+    function updateConfig(gvObj)
+      gvConfigFile = fullfile(gv.RootPath(),'gvConfig.txt');
       
-      [workingDir] = fileparts2(gvObj.workingDir);
-      if ~ispc
-        workingDir = strsplit(workingDir, filesep);
-      else
-        workingDir = strsplit(workingDir, '\\');
+      if ~exist(gvConfigFile, 'file')
+        gv.MakeDefaultConfig();
       end
-      workingDir = workingDir(~cellfun(@isempty, workingDir));
-      workingDirChild = workingDir{end};
+      
+      fid = fopen(gvConfigFile);
+      gvVarCells = textscan(fid, '%s = %q');
+      fclose(fid);
+      
+      config = struct();
+      
+      for iRow = 1:size(gvVarCells{1}, 1)
+        thisStr = gvVarCells{2}{iRow};
+        
+        if length(thisStr) > 2 && isequal(thisStr(1:2), '#!')
+          config.(gvVarCells{1}{iRow}) = eval(thisStr(3:end));
+        else
+          config.(gvVarCells{1}{iRow}) = thisStr;
+        end
+      end
+
+      gvObj.config = config;
     end
     
     
@@ -359,8 +368,44 @@ classdef gv < handle
   end % public methods
   
   
+  %% Hidden Methods %%
+  methods (Hidden)
+    
+    function vprintf(gvObj, str)
+      if gvObj.verboseBool
+        fprintf(str);
+      end
+    end
+    
+    
+    function workingDirChild = cwdChild(gvObj)
+      % cwdChild - get name of most descendant directory for cwd path
+      
+      [workingDir] = fileparts2(gvObj.workingDir);
+      if ~ispc
+        workingDir = strsplit(workingDir, filesep);
+      else
+        workingDir = strsplit(workingDir, '\\');
+      end
+      workingDir = workingDir(~cellfun(@isempty, workingDir));
+      workingDirChild = workingDir{end};
+    end
+    
+  end
+  
+  
   %% Protected Methods %%
-  methods % TODO (Access = protected)
+  methods (Access = protected)
+  
+    function setupMVC(gvObj)
+      gvObj.model = gvModel(gvObj);
+      gvObj.view = gvView(gvObj);
+      gvObj.controller = gvController(gvObj);
+      
+      gvObj.model.setup();
+      gvObj.controller.setup();
+      gvObj.view.setup();
+    end
     
     function replaceApp(gvObj, newObj)
       % replaceApp - replace gv object with supplied one
@@ -383,7 +428,7 @@ classdef gv < handle
   
   %% Static Methods %%
   methods (Static)
-    % Static methods will be capitalized
+    % Dev Note: Static methods will be capitalized
     
     %% Loading
     function obj = Load(src, hypercubeName)
@@ -474,13 +519,13 @@ classdef gv < handle
     end
     
     %% Misc
-    function pathstr = RootPath
+    function pathstr = RootPath()
       % RootPath - Path to gv root directory
       
       pathstr = cd(fullfile(fileparts(which('gv')), '..', '..', '..'));
     end
 
-    function GenerateDocumentation
+    function GenerateDocumentation()
       %GenerateDocumentation - Build GIMBL-Vis documentation
       cwd = pwd; % store current working dir
       
@@ -497,10 +542,20 @@ classdef gv < handle
       cd(cwd);
     end
     
+    MakeDefaultConfig()
+    
   end % static methods
   
-  %   methods (Static, Access = protected)
-  %
-  %   end
+  %% Hidden Static Methods %%
+  methods (Static, Hidden)
+    
+    function pluginNames = ListPlugins()
+      pluginFiles = lscell(fullfile(gv.RootPath, 'src', 'plugins'));
+      pluginNames = regexp(pluginFiles, '^@?(\w+)(?:\.\w+)?$','tokens');
+      pluginNames = [pluginNames{:}];
+      pluginNames = [pluginNames{:}];
+    end
+    
+  end
   
 end % classdef

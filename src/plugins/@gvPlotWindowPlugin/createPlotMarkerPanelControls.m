@@ -1,4 +1,4 @@
-function createPlotMarkerPanelControls(windowObj, parentHandle)
+function createPlotMarkerPanelControls(pluginObj, parentHandle)
 %% createPlotMarkerPanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
@@ -7,7 +7,7 @@ markerDefaultSize = 16;
 markerMinSize = 2;
 markerMaxSize = 50;
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 
 spacing = 2; % px
 padding = 2; % px
@@ -29,7 +29,7 @@ makeRow2hBox(row2hBox);
 set(vBox, 'Heights',[-1 -1]);
 
 % Store Handles
-windowObj.handles.plotMarkerPanel.controls = uiControlsHandles;
+pluginObj.handles.plotMarkerPanel.controls = uiControlsHandles;
 
 
 %% Nested fn

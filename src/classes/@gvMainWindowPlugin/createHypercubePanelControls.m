@@ -1,9 +1,9 @@
-function createHypercubePanelControls(windowObj, parentHandle)
+function createHypercubePanelControls(pluginObj, parentHandle)
 %% createHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 % spacing = 2; % px
 % padding = 2; % px
 
@@ -20,6 +20,6 @@ uiControlsHandles.hypercubeMenu = uicontrol(...
 'Parent',parentHandle);
 
 % Store Handles
-windowObj.handles.hypercubePanel.controls = uiControlsHandles;
+pluginObj.handles.hypercubePanel.controls = uiControlsHandles;
 
 end

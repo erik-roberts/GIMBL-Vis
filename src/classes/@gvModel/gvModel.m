@@ -15,7 +15,7 @@ classdef gvModel < handle
     data = struct() % of gvArrayRef
   end % public properties
   
-  properties (Hidden, SetAccess = immutable)
+  properties (Hidden, SetAccess = private)
     app
     view
     controller
@@ -32,11 +32,9 @@ classdef gvModel < handle
   %% Public Methods %%
   methods
     
-    function obj = gvModel(gvObj)
+    function modelObj = gvModel(gvObj)
       if exist('gvObj','var') && ~isempty(gvObj)
-        obj.app = gvObj;
-        obj.view = gvObj.view;
-        obj.controller = gvObj.controller;
+        modelObj.app = gvObj;
       end
     end
     
@@ -96,8 +94,14 @@ classdef gvModel < handle
     
   end % public methods
   
-  %% Protected Methods %%
-  methods % TODO (Access = protected)
+  %% Hidden Methods %%
+  methods (Hidden)
+    
+    function setup(modelObj)
+      modelObj.view = modelObj.app.view;
+      modelObj.controller = modelObj.app.controller;
+    end
+    
     
     function fld = nextModelFieldName(modelObj)
       % nextModelFieldName - get next default fld for .defaultName#
@@ -115,7 +119,7 @@ classdef gvModel < handle
     end
     
     
-    function [modelObj, fldOut] = checkHypercubeName(modelObj, src)
+    function fldOut = checkHypercubeName(modelObj, src)
       % checkHypercubeName - check if hypercubeName exists as field in model.
       %
       % Usage: [obj, hypercubeName_Out] = obj.checkHypercubeName(hypercubeName_In)

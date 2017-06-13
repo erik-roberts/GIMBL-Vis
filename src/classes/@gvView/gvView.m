@@ -13,26 +13,22 @@ classdef gvView < handle
     fontScale = 1; % scale baseFont
   end % public properties
   
-  properties (SetAccess = protected) % read-only
-    windows = struct()
-  end
+%   properties (SetAccess = private) % read-only
+%     windows = struct()
+%   end
     
   %% Other Properties %%
-  properties (Hidden, SetAccess = immutable)
+  properties (Hidden, SetAccess = private)
     app
     model
     controller
   end
   
-  properties (Access = protected)
+  properties (Access = private)
     listeners = {}
     
     % settings
     baseFontSize = 14 % points
-  end
-  
-  properties (Constant, Access = protected)
-    defaultWindowClasses = {'gvMainWindow', 'gvPlotWindow'}; % TODO add the rest 
   end
   
   properties (Hidden)
@@ -45,8 +41,6 @@ classdef gvView < handle
   %% Events %%
   events
     activeHypercubeSet
-    windowAdded
-    windowRemoved
   end % events
   
   
@@ -56,11 +50,12 @@ classdef gvView < handle
     function viewObj = gvView(gvObj)
       if exist('gvObj','var') && ~isempty(gvObj)
         viewObj.app = gvObj;
-        viewObj.model = gvObj.model;
-        viewObj.controller = gvObj.controller;
       end
-      
-      viewObj.addDefaultWindows();
+    end
+    
+    
+    function run(viewObj)
+      viewObj.windowPlugins.main.openWindow();
     end
     
     
@@ -73,7 +68,9 @@ classdef gvView < handle
       
       fprintf('    Active Hypercube:\n        %s\n', viewObj.activeHypercubeName)
       
-      fprintf('    Loaded Windows:\n        %s\n', strjoin(fieldnames(viewObj.windows),'\n        ') )
+      fprintf('    Loaded GUI Plugins:\n        %s\n', strjoin(fieldnames(viewObj.guiPlugins),'\n        ') )
+      
+      fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') )
     end
     
     
@@ -99,33 +96,33 @@ classdef gvView < handle
     end
     
     
-    function addWindow(viewObj, windowObj)
-      windowFieldName = getDefaultPropertyValue(windowObj, 'windowFieldName');
-
-      % add window to view
-      if isobject(windowObj)
-        viewObj.windows.(windowFieldName) = windowObj;
-      else
-        viewObj.windows.(windowFieldName) = feval(windowObj);
-      end
-      
-      % add view to window
-      viewObj.windows.(windowFieldName).view = viewObj;
-      
-      notify(viewObj, 'windowAdded', gvEvent('windowFieldName',windowFieldName) );
-    end
-    
-    
-    function removeWindow(viewObj, windowFieldName)
-      viewObj.windows = rmfield(viewObj.windows, windowFieldName);
-      
-      notify(viewObj, 'windowRemoved', gvEvent('windowFieldName',windowFieldName) );
-    end
+%     function addWindow(viewObj, pluginObj)
+%       windowFieldName = getDefaultPropertyValue(pluginObj, 'windowFieldName');
+% 
+%       % add window to view
+%       if isobject(pluginObj)
+%         viewObj.windows.(windowFieldName) = pluginObj;
+%       else
+%         viewObj.windows.(windowFieldName) = feval(pluginObj);
+%       end
+%       
+%       % add view to window
+%       viewObj.windows.(windowFieldName).view = viewObj;
+%       
+%       notify(viewObj, 'windowAdded', gvEvent('windowFieldName',windowFieldName) );
+%     end
+%     
+%     
+%     function removeWindow(viewObj, windowFieldName)
+%       viewObj.windows = rmfield(viewObj.windows, windowFieldName);
+%       
+%       notify(viewObj, 'windowRemoved', gvEvent('windowFieldName',windowFieldName) );
+%     end
     
     
     function openWindow(viewObj, windowFieldName)
       if isfield(viewObj.windows, windowFieldName)
-        viewObj.windows.(windowFieldName).openWindow;
+        viewObj.windowPlugins.(windowFieldName).openWindow;
       else
         wprintf('Window "%s" is not found', windowFieldName)
       end
@@ -136,19 +133,35 @@ classdef gvView < handle
   %% Hidden Methods %%
   methods (Hidden)
     
+    function setup(viewObj)
+      viewObj.model = viewObj.app.model;
+      viewObj.controller = viewObj.app.controller;
+    end
+    
+    
     function value = fontSize(viewObj)
       value = viewObj.baseFontSize * viewObj.fontScale;
     end
     
+    
     function value = nViewDims(viewObj)
-      handleArray = [viewObj.windows.mainWindow.handles.dataPanel.viewCheckboxHandles{:}];
+      handleArray = [viewObj.windowPlugins.main.handles.dataPanel.viewCheckboxHandles{:}];
       value = sum([handleArray.Value]);
     end
     
     
     function value = nLockDims(viewObj)
-      handleArray = [viewObj.windows.mainWindow.handles.dataPanel.lockCheckboxHandles{:}];
+      handleArray = [viewObj.windowPlugins.main.handles.dataPanel.lockCheckboxHandles{:}];
       value = sum([handleArray.Value]);
+    end
+    
+    
+    function pluginsOut = guiPlugins(viewObj)
+      pluginsOut = viewObj.controller.guiPlugins;
+    end
+    
+    function pluginsOut = windowPlugins(viewObj)
+      pluginsOut = viewObj.controller.windowPlugins;
     end
     
     
@@ -162,7 +175,7 @@ classdef gvView < handle
         warnBool = false;
       end
       
-      existBool = isValidFigHandle(viewObj.windows.mainWindow.handles.fig);
+      existBool = isValidFigHandle(viewObj.windowPlugins.main.handles.fig);
       if ~existBool && warnBool
         wprintf('Main window is not open\n')
       end
@@ -172,12 +185,8 @@ classdef gvView < handle
   
   %% Protected Methods %%
   methods (Access = protected)
+
     
-    function addDefaultWindows(viewObj)
-      for winName = viewObj.defaultWindowClasses(:)'
-        viewObj.addWindow( winName{1} )
-      end
-    end
     
   end % protected methods
   

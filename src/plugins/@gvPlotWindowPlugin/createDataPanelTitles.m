@@ -1,9 +1,9 @@
-function createDataPanelTitles(windowObj, parentHandle)
+function createDataPanelTitles(pluginObj, parentHandle)
 %% createDataPanelTitles
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 titleFontWeight = 'bold';
 
 padding = 5; % px
@@ -58,6 +58,6 @@ uiControlsHandles.lockTitle = uicontrol(...
 set(dataTitlesHbox, 'Widths',[-5,-6,-2.5,40,40])
 
 % Store Handles
-windowObj.handles.dataPanel.controls = uiControlsHandles;
+pluginObj.handles.dataPanel.controls = uiControlsHandles;
 
 end

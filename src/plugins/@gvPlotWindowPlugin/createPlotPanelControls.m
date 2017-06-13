@@ -1,9 +1,9 @@
-function createPlotPanelControls(windowObj, parentHandle)
+function createPlotPanelControls(pluginObj, parentHandle)
 %% createPlotPanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
-fontSize = windowObj.fontSize;
+fontSize = pluginObj.fontSize;
 spacing = 2; % px
 padding = 2; % px
 
@@ -20,7 +20,7 @@ uiControlsHandles.openPlotButton = uicontrol(...
 'FontUnits','points',...
 'FontSize',fontSize,...
 'String','Open Plot',...
-'Callback',@(src, evnt) windowObj.viewObj.openWindow('plotWindow'),...
+'Callback',@(src, evnt) pluginObj.view.openWindow('plotWindow'),...
 'Parent',grid2x2);
 
 % (2,1)
@@ -57,7 +57,7 @@ makeDelayHbox(delayHbox);
 set(grid2x2, 'Heights',[-1 -1], 'Widths',[-1 -1]);
 
 % Store Handles
-windowObj.handles.plotPanel.controls = uiControlsHandles;
+pluginObj.handles.plotPanel.controls = uiControlsHandles;
 
 
 %% Nested fn
