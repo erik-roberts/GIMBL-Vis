@@ -43,7 +43,7 @@
 %   gv merge
 %   move data handling methods to model
 %   panel store handles
-%   prefix tags for createPanel
+%   prefix tags for makePanel
 
 classdef gv < handle
   
@@ -96,7 +96,7 @@ classdef gv < handle
       % gv - constructor
       %
       % Usage:
-      %   1) Create empty gv object
+      %   1) Make empty gv object
       %       gvObj = gv()
       %
       %   2) Call load method on file/dir
@@ -164,7 +164,7 @@ classdef gv < handle
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
         end
       else
-        % 1) Create empty gv object
+        % 1) Make empty gv object
       end
     end
     

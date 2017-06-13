@@ -17,7 +17,7 @@ classdef gvLegendWindow < handle
       mainWindowExistBool = pluginObj.checkMainWindowExists;
       
       if mainWindowExistBool && ~isValidFigHandle(pluginObj.legendWindow.handle)
-        createLegendWindow(pluginObj);
+        makeLegendWindow(pluginObj);
         
         hcData = pluginObj.activeHypercube;
         
@@ -44,7 +44,7 @@ classdef gvLegendWindow < handle
       end
       
       %% Nested Functions
-      function createLegendWindow(pluginObj)
+      function makeLegendWindow(pluginObj)
         mainWindowPos = pluginObj.mainWindow.handle.Position;
         ht = 30 * length(handles.PlotWindow.Label.names);
         legendWindowHandle = figure('Name','Legend Window','NumberTitle','off','menubar','none',...

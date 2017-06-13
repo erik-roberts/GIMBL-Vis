@@ -18,7 +18,7 @@ uiControlsHandles = struct();
 
 mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding); % make box to hold panels
 
-createHypercubePanelControls(pluginObj, mainVbox)
+makeHypercubePanelControls(pluginObj, mainVbox)
 makePluginPanel(mainVbox)
 
 set(mainVbox, 'Heights',[50, -1])

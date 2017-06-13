@@ -28,7 +28,7 @@ elseif ~isempty(ext) && ~strcmp(ext, '.mat')
   % else % given valid mat filename
 end
 
-%% Load or Create gvData
+%% Load or Make gvData
 
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data

@@ -52,7 +52,7 @@ dataPanel = uix.Panel(...
 dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
 
 % 1.2.1)
-createDataPanelTitles(pluginObj, dataVbox); % row 1
+makeDataPanelTitles(pluginObj, dataVbox); % row 1
 
 % 1.2.2)
 dataScrollingPanel = uix.ScrollingPanel(...
@@ -62,13 +62,13 @@ dataScrollingPanel = uix.ScrollingPanel(...
 uiControlsHandles.dataPanel.handle = dataPanel;
 
 %% UI Controls
-pluginObj.createPlotPanelControls(plotPanel);
+pluginObj.makePlotPanelControls(plotPanel);
 
-pluginObj.createPlotMarkerPanelControls(plotMarkerPanel);
+pluginObj.makePlotMarkerPanelControls(plotMarkerPanel);
 
-dataPanelheight = pluginObj.createDataPanelControls(dataScrollingPanel);
+dataPanelheight = pluginObj.makeDataPanelControls(dataScrollingPanel);
 
-% pluginObj.createHypercubePanelControls(hypercubePanel);
+% pluginObj.makeHypercubePanelControls(hypercubePanel);
 
 %% Set layout sizes
 set(mainVbox, 'Heights',[100 -1])

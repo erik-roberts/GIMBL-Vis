@@ -26,8 +26,8 @@ if mainWindowExistBool && ~isValidFigHandle(pluginObj.imageWindow.handle)
     pluginObj.imageWindow.handles.imageTypeMenu.UserData.lastVal = 1;
     pluginObj.imageWindow.handles.ImageWindow.plotType = plotTypes{1};
     
-    %% Create Image Window
-    pluginObj.createFig();
+    %% Make Image Window
+    pluginObj.makeFig();
   else
     wprintf('Plot dir not found. Set plot dir using ''gvObj.plotDir'' property.');
   end

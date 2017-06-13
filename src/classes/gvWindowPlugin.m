@@ -17,7 +17,7 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
   end
   
   methods (Abstract, Access = protected)
-    createFig(pluginObj)
+    makeFig(pluginObj)
   end
   
   

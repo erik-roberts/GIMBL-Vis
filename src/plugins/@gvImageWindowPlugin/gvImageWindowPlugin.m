@@ -58,8 +58,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
     
-    function createFig(pluginObj)
-      % createFig - create image window figure
+    function makeFig(pluginObj)
+      % makeFig - make image window figure
       
       plotPanPos = pluginObj.controller.plugins.plot.handles.fig.Position;
       newPos = plotPanPos; % same size as plot window
@@ -74,7 +74,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj.handles.fig = imageWindowHandle;
     end
     
-    createImagePanelControls(pluginObj, parentHandle)
+    makeImagePanelControls(pluginObj, parentHandle)
 
   end
   

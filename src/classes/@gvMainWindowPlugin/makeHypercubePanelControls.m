@@ -1,5 +1,5 @@
-function createHypercubePanelControls(pluginObj, parentHandle)
-%% createHypercubePanelControls
+function makeHypercubePanelControls(pluginObj, parentHandle)
+%% makeHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 

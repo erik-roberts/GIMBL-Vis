@@ -58,17 +58,17 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
     
-    dataPanelheight = createDataPanelControls(pluginObj, parentHandle)
+    dataPanelheight = makeDataPanelControls(pluginObj, parentHandle)
     
-    createDataPanelTitles(pluginObj, parentHandle)
+    makeDataPanelTitles(pluginObj, parentHandle)
     
-    createPlotMarkerPanelControls(pluginObj, parentHandle)
+    makePlotMarkerPanelControls(pluginObj, parentHandle)
     
-    createPlotPanelControls(pluginObj, parentHandle)
+    makePlotPanelControls(pluginObj, parentHandle)
     
     
-    function createFig(pluginObj)
-      % createFig - create plot window figure
+    function makeFig(pluginObj)
+      % makeFig - make plot window figure
       
       mainWindowPos = pluginObj.view.windowPlugins.main.handles.fig.Position;
     
@@ -86,8 +86,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
-    function createAxes(pluginObj)
-      % createAxes - create plot window figure axes grid based on number of viewDims
+    function makeAxes(pluginObj)
+      % makeAxes - make plot window figure axes grid based on number of viewDims
       
       plotWindowHandle = pluginObj.handles.fig;
       clf(plotWindowHandle) %clear fig

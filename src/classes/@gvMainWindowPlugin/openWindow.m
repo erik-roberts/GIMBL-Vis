@@ -10,7 +10,7 @@ if mainWindowExistBool
 end
 
 %% Main Window Fig
-pluginObj.createFig();
+pluginObj.makeFig();
 
 %% Layout
 pluginObj.makeWindowControls( pluginObj.handles.fig );
@@ -19,6 +19,6 @@ pluginObj.makeWindowControls( pluginObj.handles.fig );
 % These handles are arranged in a cell matrix corresponding to the positions in 
 % the toolbar and menu columns. The first row contains the toolbar titles.
 
-createMenu(pluginObj, pluginObj.handles.fig);
+makeMenu(pluginObj, pluginObj.handles.fig);
 
 end

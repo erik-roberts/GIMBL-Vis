@@ -49,11 +49,11 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
      
-    createFig(pluginObj)
+    makeFig(pluginObj)
     
-    createMenu(pluginObj, parentHandle)
+    makeMenu(pluginObj, parentHandle)
     
-    createHypercubePanelControls(pluginObj, parentHandle)
+    makeHypercubePanelControls(pluginObj, parentHandle)
 
   end
   

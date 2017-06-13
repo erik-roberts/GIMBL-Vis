@@ -1,5 +1,5 @@
-function createImagePanelControls(pluginObj, parentHandle)
-%% createImagePanelControls
+function makeImagePanelControls(pluginObj, parentHandle)
+%% makeImagePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 

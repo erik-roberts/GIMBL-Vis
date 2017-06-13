@@ -1,6 +1,6 @@
 function varargout = gvMainWindow(varargin)
 % gvMainWindow MATLAB code for gvMainWindow.fig
-%      gvMainWindow, by itself, creates a new gvMainWindow or raises the existing
+%      gvMainWindow, by itself, makes a new gvMainWindow or raises the existing
 %      singleton*.
 %
 %      H = gvMainWindow returns the handle to a new gvMainWindow or the handle to
@@ -9,7 +9,7 @@ function varargout = gvMainWindow(varargin)
 %      gvMainWindow('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in gvMainWindow.M with the given input arguments.
 %
-%      gvMainWindow('Property','Value',...) creates a new gvMainWindow or raises the
+%      gvMainWindow('Property','Value',...) makes a new gvMainWindow or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
 %      applied to the GUI before gvMainWindow_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
@@ -80,10 +80,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider1_CreateFcn(hObject, eventdata, handles)
+function slider1_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -102,10 +102,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider2_CreateFcn(hObject, eventdata, handles)
+function slider2_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -124,10 +124,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider3_CreateFcn(hObject, eventdata, handles)
+function slider3_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -146,10 +146,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider4_CreateFcn(hObject, eventdata, handles)
+function slider4_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -168,10 +168,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider5_CreateFcn(hObject, eventdata, handles)
+function slider5_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -190,10 +190,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider6_CreateFcn(hObject, eventdata, handles)
+function slider6_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -212,10 +212,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider7_CreateFcn(hObject, eventdata, handles)
+function slider7_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -234,10 +234,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function slider8_CreateFcn(hObject, eventdata, handles)
+function slider8_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to slider8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -256,10 +256,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal1_CreateFcn(hObject, eventdata, handles)
+function sliderVal1_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -279,10 +279,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal2_CreateFcn(hObject, eventdata, handles)
+function sliderVal2_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -302,10 +302,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal3_CreateFcn(hObject, eventdata, handles)
+function sliderVal3_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -325,10 +325,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal4_CreateFcn(hObject, eventdata, handles)
+function sliderVal4_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -348,10 +348,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal5_CreateFcn(hObject, eventdata, handles)
+function sliderVal5_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -371,10 +371,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal6_CreateFcn(hObject, eventdata, handles)
+function sliderVal6_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -394,10 +394,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal7_CreateFcn(hObject, eventdata, handles)
+function sliderVal7_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -417,10 +417,10 @@ gvSliderChangeCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function sliderVal8_CreateFcn(hObject, eventdata, handles)
+function sliderVal8_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to sliderVal8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -530,10 +530,10 @@ gvDelayCallback(hObject, eventdata, handles)
 
 
 % --- Executes during object creation, after setting all properties.
-function delayBox_CreateFcn(hObject, eventdata, handles)
+function delayBox_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to delayBox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -570,10 +570,10 @@ gvMarkerSizeSliderCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function markerSizeSlider_CreateFcn(hObject, eventdata, handles)
+function markerSizeSlider_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to markerSizeSlider (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -592,10 +592,10 @@ gvImageTypeMenuCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function imageTypeMenu_CreateFcn(hObject, eventdata, handles)
+function imageTypeMenu_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to imageTypeMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -624,10 +624,10 @@ gvMarkerTypeMenuCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function markerTypeMenu_CreateFcn(hObject, eventdata, handles)
+function markerTypeMenu_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to markerTypeMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
@@ -727,10 +727,10 @@ gvHypercubeMenuCallback(hObject, eventdata, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function hypercubeMenu_CreateFcn(hObject, eventdata, handles)
+function hypercubeMenu_MakeFcn(hObject, eventdata, handles)
 % hObject    handle to hypercubeMenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+% handles    empty - handles not made until after all MakeFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.

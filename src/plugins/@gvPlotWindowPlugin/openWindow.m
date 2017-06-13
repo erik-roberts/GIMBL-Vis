@@ -17,7 +17,7 @@ if mainWindowExistBool
   end
   
   % Make New Panel
-  pluginObj.createFig(pluginObj);
+  pluginObj.makeFig(pluginObj);
   
   % Add listeners
   plotListener = addlistener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
@@ -26,8 +26,8 @@ if mainWindowExistBool
   % Data cursor
   pluginObj.addDataCursor();
   
-  % Create Axes/Update Panel
-  pluginObj.createAxes();
+  % Make Axes/Update Panel
+  pluginObj.makeAxes();
   
   % Plot
   notify(pluginObj, 'plotEvent'); % TODO change this

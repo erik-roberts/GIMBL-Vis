@@ -1,5 +1,5 @@
-function createDataPanelTitles(pluginObj, parentHandle)
-%% createDataPanelTitles
+function makeDataPanelTitles(pluginObj, parentHandle)
+%% makeDataPanelTitles
 %
 % Input: parentHandle - handle for uicontrol parent
 

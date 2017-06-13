@@ -1,5 +1,5 @@
-function createPlotMarkerPanelControls(pluginObj, parentHandle)
-%% createPlotMarkerPanelControls
+function makePlotMarkerPanelControls(pluginObj, parentHandle)
+%% makePlotMarkerPanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 

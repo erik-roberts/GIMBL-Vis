@@ -1,5 +1,5 @@
-function dataPanelheight = createDataPanelControls(pluginObj, parentHandle)
-%% createHypercubePanelControls
+function dataPanelheight = makeDataPanelControls(pluginObj, parentHandle)
+%% makeHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 % Outputs:
@@ -40,12 +40,12 @@ set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,30,30])
 dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
 
 % Store Handles
-% pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from createDataPanelTitles
+% pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from makeDataPanelTitles
 
 %% Nested fn
   function makeVarCol(dataPanelGrid)
     % Row 1
-    %   titles from 'createDataPanelTitles.m'
+    %   titles from 'makeDataPanelTitles.m'
     
     % Row 2:nDims+1
     for n = 1:nDims

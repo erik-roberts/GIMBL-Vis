@@ -1,5 +1,5 @@
-function createMenu(pluginObj, parentHandle)
-%% createMainWindowMenu
+function makeMenu(pluginObj, parentHandle)
+%% makeMainWindowMenu
 %
 % Input: parentHandle - handle for uimenu parent
 %
