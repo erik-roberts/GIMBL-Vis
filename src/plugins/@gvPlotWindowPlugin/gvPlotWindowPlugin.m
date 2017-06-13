@@ -42,6 +42,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
 
     openWindow(pluginObj)
+    
+    openLegendWindow(pluginObj)
 
     plot(pluginObj)
 
@@ -65,7 +67,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     makePlotMarkerPanelControls(pluginObj, parentHandle)
     
     makePlotPanelControls(pluginObj, parentHandle)
-    
     
     function makeFig(pluginObj)
       % makeFig - make plot window figure
@@ -153,6 +154,20 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Hidden)
 
+    function openWindowCallback(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      pluginObj.openWindow();
+    end
+    
+    
+    function openLegendWindowCallback(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      pluginObj.openLegendWindow();
+    end
+    
+    
     function plotCallback(src, evnt)
       view = src.view;
       

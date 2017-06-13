@@ -1,6 +1,8 @@
 function openWindow(pluginObj)
 
-mainWindowExistBool = pluginObj.view.checkMainWindowExists(true);
+% check for main window
+warnBool = true;
+mainWindowExistBool = pluginObj.view.checkMainWindowExists(warnBool);
 
 if mainWindowExistBool && ~isValidFigHandle(pluginObj.imageWindow.handle)
   plotDir = pluginObj.plotDir;

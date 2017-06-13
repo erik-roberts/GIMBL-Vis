@@ -13,6 +13,15 @@ classdef gvView < handle
     fontScale = 1; % scale baseFont
   end % public properties
   
+  properties (Dependent)
+    activeHypercubeName
+  end
+  
+  methods
+    function value = get.activeHypercubeName(viewObj)
+      value = viewObj.controller.activeHypercubeName;
+    end
+  end
 
   %% Other Properties %%
   properties (Hidden, SetAccess = private)
@@ -20,13 +29,13 @@ classdef gvView < handle
     model
     controller
     
-    listeners = {}
+%     listeners = {}
   end
   
   properties (Hidden)
-    nViewDimsLast = 0
-    activeHypercube = [] % current gvArrayRef
-    activeHypercubeName = []
+%     nViewDimsLast = 0
+%     activeHypercube = [] % current gvArrayRef
+%     activeHypercubeName = []
     
     baseFontSize
   end
@@ -34,7 +43,7 @@ classdef gvView < handle
   
   %% Events %%
   events
-    activeHypercubeSet
+%     activeHypercubeSet
   end % events
   
   
@@ -58,13 +67,13 @@ classdef gvView < handle
       %
       % See also: gv/summary, gvModel/summary, gvArray/summary
       
-      fprintf('View Summary:\n')
+      fprintf('View Summary:\n');
       
-      fprintf('    Active Hypercube:\n        %s\n', viewObj.activeHypercubeName)
+      fprintf('    Active Hypercube:\n        %s\n', viewObj.activeHypercubeName);
       
-      fprintf('    Loaded GUI Plugins:\n        %s\n', strjoin(fieldnames(viewObj.guiPlugins),'\n        ') )
+      fprintf('    Loaded GUI Plugins:\n        %s\n', strjoin(fieldnames(viewObj.guiPlugins),'\n        ') );
       
-      fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') )
+      fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') );
     end
     
     
@@ -75,45 +84,25 @@ classdef gvView < handle
     
     function setActiveHypercube(viewObj, argin)
       if isobject(argin)
-        viewObj.activeHypercube = argin;
-        viewObj.activeHypercubeName = argin.hypercubeName;
+        viewObj.controller.activeHypercube = argin;
+        viewObj.controller.activeHypercubeName = argin.hypercubeName;
         
-        notify(viewObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) );
+        notify(viewObj.controller, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) );
+        
+        viewObj.controller.prior_activeHypercubeName = viewObj.controller.activeHypercubeName;
       elseif ischar(argin)
-        viewObj.activeHypercubeName = argin;
-        viewObj.activeHypercube = viewObj.model.data.(argin);
+        viewObj.controller.activeHypercubeName = argin;
+        viewObj.controller.activeHypercube = viewObj.model.data.(argin);
         
-        notify(viewObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) )
+        notify(viewObj.controller, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) );
+        
+        viewObj.controller.prior_activeHypercubeName = viewObj.controller.activeHypercubeName;
       else
         error('Unknown hypercube input')
       end
     end
     
-    
-%     function addWindow(viewObj, pluginObj)
-%       windowFieldName = getDefaultPropertyValue(pluginObj, 'windowFieldName');
-% 
-%       % add window to view
-%       if isobject(pluginObj)
-%         viewObj.windows.(windowFieldName) = pluginObj;
-%       else
-%         viewObj.windows.(windowFieldName) = feval(pluginObj);
-%       end
-%       
-%       % add view to window
-%       viewObj.windows.(windowFieldName).view = viewObj;
-%       
-%       notify(viewObj, 'windowAdded', gvEvent('windowFieldName',windowFieldName) );
-%     end
-%     
-%     
-%     function removeWindow(viewObj, windowFieldName)
-%       viewObj.windows = rmfield(viewObj.windows, windowFieldName);
-%       
-%       notify(viewObj, 'windowRemoved', gvEvent('windowFieldName',windowFieldName) );
-%     end
-    
-    
+
     function openWindow(viewObj, windowFieldName)
       if isfield(viewObj.windows, windowFieldName)
         viewObj.windowPlugins.(windowFieldName).openWindow;
@@ -140,16 +129,20 @@ classdef gvView < handle
     end
     
     
-    function value = nViewDims(viewObj)
-      handleArray = [viewObj.windowPlugins.main.handles.dataPanel.viewCheckboxHandles{:}];
-      value = sum([handleArray.Value]);
+    function obj = activeHypercube(viewObj)
+      obj = viewObj.controller.activeHypercube;
     end
     
-    
-    function value = nLockDims(viewObj)
-      handleArray = [viewObj.windowPlugins.main.handles.dataPanel.lockCheckboxHandles{:}];
-      value = sum([handleArray.Value]);
-    end
+%     function value = nViewDims(viewObj)
+%       handleArray = [viewObj.windowPlugins.main.handles.dataPanel.viewCheckboxHandles{:}];
+%       value = sum([handleArray.Value]);
+%     end
+%     
+%     
+%     function value = nLockDims(viewObj)
+%       handleArray = [viewObj.windowPlugins.main.handles.dataPanel.lockCheckboxHandles{:}];
+%       value = sum([handleArray.Value]);
+%     end
     
     
     function pluginsOut = guiPlugins(viewObj)
@@ -158,11 +151,6 @@ classdef gvView < handle
     
     function pluginsOut = windowPlugins(viewObj)
       pluginsOut = viewObj.controller.windowPlugins;
-    end
-    
-    
-    function newListener(viewObj, listener)
-      viewObj.listeners{end+1} = listener;
     end
     
     

@@ -17,7 +17,7 @@ if mainWindowExistBool
   end
   
   % Make New Panel
-  pluginObj.makeFig(pluginObj);
+  pluginObj.makeFig();
   
   % Add listeners
   plotListener = addlistener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);

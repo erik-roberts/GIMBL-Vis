@@ -60,6 +60,15 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Access = protected)
     
+    function activeHyperCubeMenuCallback(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      newActiveHypercube = src.String{src.Value};
+      
+      pluginObj.controller.view.setActiveHypercube(newActiveHypercube);
+    end
+    
+    
     function loadPluginCheckboxCallback(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       

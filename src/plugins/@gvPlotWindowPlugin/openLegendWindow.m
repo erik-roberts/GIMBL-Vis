@@ -3,13 +3,13 @@
 % Description: An object of this class becomes a property of gvView to provide 
 %              methods for a GIMB-Vis legend window
 
-classdef gvLegendWindow < handle
-  
-  methods
-    
-    function obj = gvLegendWindow()
-      
-    end
+% classdef gvLegendWindow < handle
+%   
+%   methods
+%     
+%     function obj = gvLegendWindow()
+%       
+%     end
     
     
     function openLegendWindow(pluginObj)
@@ -59,6 +59,6 @@ classdef gvLegendWindow < handle
       
     end
     
-  end
-  
-end
+%   end
+%   
+% end

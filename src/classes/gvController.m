@@ -4,10 +4,21 @@
 
 classdef gvController < handle
   
-  %% Properties %%
+  %% Public Properties %%
   properties
     metadata = struct()
   end % public properties
+  
+  properties (SetAccess = private) % read-only
+    plugins = struct()
+  end % read-only properties
+  
+  %% Hidden Properties %%
+  properties (Hidden)
+    activeHypercube = [] % current gvArrayRef
+    activeHypercubeName = ''
+    prior_activeHypercubeName = ''
+  end
   
   properties (Hidden, SetAccess = private)
     app
@@ -17,14 +28,17 @@ classdef gvController < handle
     listeners
   end % private properties
   
-  properties (SetAccess = private) % read-only
-    plugins = struct()
-  end % read-only properties
   
   %% Events %%
   events
+    % model events
+    
+    % controller events
     pluginAdded
     pluginRemoved
+    
+    % view events
+    activeHypercubeSet
   end
   
   %% Public Methods %%
@@ -134,9 +148,21 @@ classdef gvController < handle
     
     
     function addDefaultListeners(cntrlObj)
-      % Plugins
-      addlistener(cntrlObj, 'pluginAdded', @gvController.pluginChangeCallback);
-      addlistener(cntrlObj, 'pluginRemoved', @gvController.pluginChangeCallback);
+      % model events
+      
+      % controller events
+      cntrlObj.newListener('pluginAdded', @gvController.pluginChangeCallback);
+      cntrlObj.newListener('pluginRemoved', @gvController.pluginChangeCallback);
+      
+      % view events
+      cntrlObj.newListener('activeHypercubeSet', @gvController.activeHypercubeChangeCallback);
+    end
+    
+    
+    function newListener(obj, varargin)
+      % newListener - call addlistener and add to listerners property
+      
+      obj.listeners{end+1} = addlistener(obj, varargin{:});
     end
     
     
@@ -193,6 +219,19 @@ classdef gvController < handle
       pluginClassName = evnt.data.pluginClassName;
       if isa(feval(pluginClassName), 'gvGuiPlugin')
         src.plugins.main.openWindow(); % reset window
+      end
+    end
+    
+    function activeHypercubeChangeCallback(src, evnt)
+      cntrlObj = src;
+      new_activeHypercubeName = evnt.data.activeHypercubeName;
+      prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
+      if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
+        cntrlObj.vprintf('New activeHypercube: %s\n',new_activeHypercubeName);
+        
+        if cntrlObj.view.checkMainWindowExists()
+          cntrlObj.plugins.main.openWindow(); % reopen window
+        end
       end
     end
     
