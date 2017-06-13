@@ -316,19 +316,23 @@ classdef gv < handle
       gvVarCells = textscan(fid, '%s = %q');
       fclose(fid);
       
-      config = struct();
+      gvConfig = struct();
       
       for iRow = 1:size(gvVarCells{1}, 1)
         thisStr = gvVarCells{2}{iRow};
         
+        if ~isnan(str2double(thisStr))
+          thisStr = str2double(thisStr);
+        end
+        
         if length(thisStr) > 2 && isequal(thisStr(1:2), '#!')
-          config.(gvVarCells{1}{iRow}) = eval(thisStr(3:end));
+          gvConfig.(gvVarCells{1}{iRow}) = eval(thisStr(3:end));
         else
-          config.(gvVarCells{1}{iRow}) = thisStr;
+          gvConfig.(gvVarCells{1}{iRow}) = thisStr;
         end
       end
 
-      gvObj.config = config;
+      gvObj.config = gvConfig;
     end
     
     

@@ -28,7 +28,7 @@ classdef gvView < handle
     listeners = {}
     
     % settings
-    baseFontSize = 14 % points
+    baseFontSize
   end
   
   properties (Hidden)
@@ -136,6 +136,8 @@ classdef gvView < handle
     function setup(viewObj)
       viewObj.model = viewObj.app.model;
       viewObj.controller = viewObj.app.controller;
+      
+      viewObj.baseFontSize = viewObj.app.config.baseFontSize;
     end
     
     
