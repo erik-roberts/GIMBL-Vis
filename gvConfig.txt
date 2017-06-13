@@ -1,2 +1,0 @@
-baseFontSize = "14"
-defaultPlugins = "#!{'gvMainWindowPlugin', 'gvPlotWindowPlugin'}"
