@@ -1,5 +1,4 @@
-classdef testPlugin2 < gvGuiPlugin
-  %TESTPLUGIN2
+classdef minimalGuiPlugin < gvGuiPlugin
   
   properties
     metadata
@@ -13,15 +12,15 @@ classdef testPlugin2 < gvGuiPlugin
   end
   
   properties (Constant, Hidden)
-    pluginName = 'Test2'
-    pluginFieldName = 'test2'
+    pluginName = 'MinimalGuiPlugin'
+    pluginFieldName = 'minimalGuiPlugin'
   end
   
   methods
   end
   
   methods (Hidden)
-    function put = makePanelControls(pluginObj, parentHandle)
+    function out = makePanelControls(pluginObj, parentHandle)
       out = uix.Empty('Parent',parentHandle);
     end
   end

@@ -57,8 +57,21 @@ classdef gvMainWindowPlugin < gvWindowPlugin
 
   end
   
-  %% Callbacks
-  methods (Static) % TODO (Access = protected)
+  %% Callbacks %%
+  methods (Static, Access = protected)
+    
+    function loadPluginCheckboxCallback(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      checkBool = src.Value;
+      if checkBool
+        pluginClassName = src.UserData.pluginClassName;
+        pluginObj.controller.connectPlugin(pluginClassName);
+      else
+        pluginFieldName = src.UserData.pluginFieldName;
+        pluginObj.controller.disconnectPlugin(pluginFieldName);
+      end
+    end
     
   end
   

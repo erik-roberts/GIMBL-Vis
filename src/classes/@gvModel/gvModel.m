@@ -101,7 +101,7 @@ classdef gvModel < handle
       modelObj.view = modelObj.app.view;
       modelObj.controller = modelObj.app.controller;
     end
-    
+        
     
     function fld = nextModelFieldName(modelObj)
       % nextModelFieldName - get next default fld for .defaultName#
@@ -175,5 +175,15 @@ classdef gvModel < handle
     end
     
   end
+  
+  
+  %% Protected Methods %%
+  methods (Access = protected)
+
+    function vprintf(obj, varargin)
+      obj.app.vprintf(varargin{:});
+    end
+    
+  end % protected methods
   
 end % classdef

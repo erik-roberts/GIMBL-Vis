@@ -19,6 +19,11 @@ classdef (Abstract) gvPlugin < handle
     pluginFieldName
   end
   
+  %% Concrete Properties %%
+  properties
+    pluginClassName
+  end
+  
   
   %% Abstract Methods %%
   methods (Abstract)
@@ -29,6 +34,8 @@ classdef (Abstract) gvPlugin < handle
   methods
     
     function pluginObj = gvPlugin(cntrObj)
+      pluginObj.pluginClassName = class(pluginObj);
+      
       if nargin
         setup(pluginObj, cntrObj);
       end
@@ -44,7 +51,7 @@ classdef (Abstract) gvPlugin < handle
     
     
     function vprintf(pluginObj, str)
-      pluginObj.cntrlObj.app.vprintf(str);
+      pluginObj.controller.app.vprintf(str);
     end
     
     

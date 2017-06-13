@@ -16,7 +16,7 @@ Valid `hypercube` names begin with a letter, and can contain letters, digits, an
 
 One can zoom in on a region of high dimensional space by taking a subset of a `hypercube`. This has the effect of changing the axis limits of the `hypercube`. One can `reset` the `hypercube` to return to the original limits. If one doesn't intend to restore the original limits, the excess data can be removed from memory with a `trim` operation.
 
-## Installation and Usage Instructions:
+## Installation and Usage Instructions
 To use GV:
 - Download the zip file or clone the git repository for GIMBL-Vis
 - Do the same for the [MultiDimensional Dictionary (MDD)](https://github.com/davestanley/MultiDimensionalDictionary) class.
@@ -51,5 +51,10 @@ To Use GV with Dynasim:
   - The images must have 'sim#' in the name for GV to find them
   - To view images, simply move the mouse over the plot markers in the plot window. The corresponding image will be shown in the image window.
 
+## Warnings to User
+- Don't call class static methods (uppercase methods) on objects
+
 ## Implementation Details
-Internally, `gv` objects store each `hypercube` dataset inside a field of the `mdData` structure property (i.e. object variable). The field name corresponds to the `hypercube` name. Each `hypercube` dataset is stored in a `gvArray`, which is a subclass of the MultiDimensional Dictionary ([MDD](https://github.com/davestanley/MultiDimensionalDictionary)) class. The default `MDDAxis` objects inside of `MDD` are replaced with a `gvArrayAxis` subclass for `gvArrays`.
+Internally, the `gv` object is primarily composed of gvModel, gvView, and gvController objects, in order to implement a Model-View-Ctronoller.
+
+Each `hypercube` dataset is stored inside a field of the gvModel `data` structure property. The field name corresponds to the `hypercube` name. Each `hypercube` dataset is stored in a `gvArray`, which is a subclass of the MultiDimensional Dictionary ([MDD](https://github.com/davestanley/MultiDimensionalDictionary)) class. The default `MDDAxis` objects inside of `MDD` are replaced with a `gvArrayAxis` subclass for `gvArrays`.

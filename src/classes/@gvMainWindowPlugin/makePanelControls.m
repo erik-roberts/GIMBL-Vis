@@ -109,8 +109,9 @@ panelHandle = mainVbox;
   function makePluginNamesCol(parentHandle)
     % Row 1
     %   titles from 'makePluginGridTitles.m'
+    %
+    % Row 2:nPlugins
     
-    % Row 2:nPlugins+1
     for n = 1:nPlugins
       nStr = num2str(n);
       plugin = plugins{n};
@@ -127,19 +128,28 @@ panelHandle = mainVbox;
 
 
   function makeLoadCol(parentHandle)
-    % Row 2:nPlugins+1
+    % Row 1
+    %   titles from 'makePluginGridTitles.m'
+    %
+    % Row 2:nPlugins
+    
     for n = 1:nPlugins
       nStr = num2str(n);
-      
-      pluginFieldName = plugins{n}.pluginFieldName;
+      plugin = plugins{n};
+      pluginFieldName = plugin.pluginFieldName;
+      pluginClassName = class(plugin);
       loadedBool = any(strcmp(fieldnames(pluginObj.controller.plugins), pluginFieldName));
+      
+      thisUserData = catstruct(pluginObj.userData,...
+        struct('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName));
       
       % viewCheckbox
       uiControlsHandles.(['pluginCheckbox' nStr]) = uicontrol(...
         'Tag',['mainLoadCheckbox' nStr],...
         'Style','checkbox',...
         'Value',loadedBool,...
-        'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
+        'UserData',thisUserData,...
+        'Callback',@gvMainWindowPlugin.loadPluginCheckboxCallback,...
         'Parent',parentHandle);
     end
   end

@@ -13,28 +13,22 @@ classdef gvView < handle
     fontScale = 1; % scale baseFont
   end % public properties
   
-%   properties (SetAccess = private) % read-only
-%     windows = struct()
-%   end
-    
+
   %% Other Properties %%
   properties (Hidden, SetAccess = private)
     app
     model
     controller
-  end
-  
-  properties (Access = private)
-    listeners = {}
     
-    % settings
-    baseFontSize
+    listeners = {}
   end
   
   properties (Hidden)
     nViewDimsLast = 0
     activeHypercube = [] % current gvArrayRef
     activeHypercubeName = []
+    
+    baseFontSize
   end
   
   
@@ -188,7 +182,9 @@ classdef gvView < handle
   %% Protected Methods %%
   methods (Access = protected)
 
-    
+    function vprintf(obj, varargin)
+      obj.app.vprintf(varargin{:});
+    end
     
   end % protected methods
   

@@ -30,7 +30,6 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
       
       % default values
       pluginObj.handles.fig = [];
-      pluginObj.userData.pluginObj = pluginObj; % for use with figure/control objects
     end
     
   end

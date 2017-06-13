@@ -1,5 +1,4 @@
-classdef testPlugin < gvGuiPlugin
-  %TESTPLUGIN
+classdef minimalPlugin < gvPlugin
   
   properties
     metadata
@@ -13,8 +12,8 @@ classdef testPlugin < gvGuiPlugin
   end
   
   properties (Constant, Hidden)
-    pluginName = 'Test'
-    pluginFieldName = 'test'
+    pluginName = 'MinimalPlugin'
+    pluginFieldName = 'minimalPlugin'
   end
   
   methods

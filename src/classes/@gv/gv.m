@@ -36,14 +36,14 @@
 %     lock
 %     plot marker
 %     marker type
-%   convert methods to handle style methods
 %   tell people not to call static methods on objects
 %   model value2ref
 %   function for classifying inputs and swtich to case
-%   gv merge
+%   gvModel merge, delete and in view
 %   move data handling methods to model
 %   panel store handles
 %   prefix tags for makePanel
+%   dependencies
 
 classdef gv < handle
   
@@ -377,9 +377,9 @@ classdef gv < handle
   %% Hidden Methods %%
   methods (Hidden)
     
-    function vprintf(gvObj, str)
+    function vprintf(gvObj, varargin)
       if gvObj.verboseBool
-        fprintf(str);
+        fprintf(varargin{:});
       end
     end
     
@@ -528,7 +528,7 @@ classdef gv < handle
     function pathstr = RootPath()
       % RootPath - Path to gv root directory
       
-      pathstr = cd(fullfile(fileparts(which('gv')), '..', '..', '..'));
+      pathstr = fullfile(fileparts(which('gv')), '..', '..', '..');
     end
 
     function GenerateDocumentation()
@@ -560,6 +560,7 @@ classdef gv < handle
       pluginNames = regexp(pluginFiles, '^@?(\w+)(?:\.\w+)?$','tokens');
       pluginNames = [pluginNames{:}];
       pluginNames = [pluginNames{:}];
+      pluginNames = sort(pluginNames);
     end
     
   end

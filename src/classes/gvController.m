@@ -6,13 +6,15 @@ classdef gvController < handle
   
   %% Properties %%
   properties
-    data = struct()
+    metadata = struct()
   end % public properties
   
   properties (Hidden, SetAccess = private)
     app
     model
     view
+    
+    listeners
   end % private properties
   
   properties (SetAccess = private) % read-only
@@ -65,8 +67,13 @@ classdef gvController < handle
       else
         cntrlObj.plugins.(pluginFieldName) = feval(pluginSrc);
       end
+      
+      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
             
-      notify(cntrlObj, 'pluginAdded', gvEvent('pluginFieldName',pluginFieldName) );
+      notify(cntrlObj, 'pluginAdded',...
+        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
+      
+      cntrlObj.vprintf('Plugin ''%s'' added.\n', pluginFieldName);
     end
     
     
@@ -74,7 +81,7 @@ classdef gvController < handle
       % connectPlugin - bidirectional add
       %
       % Inputs:
-      %   pluginSrc: pluginFieldName string or pluginObj object
+      %   pluginSrc: plugin class name string or pluginObj object
       
       pluginFieldName = getDefaultPropertyValue(pluginSrc, 'pluginFieldName');
       
@@ -90,9 +97,14 @@ classdef gvController < handle
     function removePlugin(cntrlObj, pluginFieldName)
       % removePlugin - unidirectional remove
       
+      cntrlObj.vprintf('Plugin ''%s'' removed.\n', pluginFieldName);
+      
+      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
+      
       cntrlObj.plugins = rmfield(cntrlObj.plugins, pluginFieldName);
       
-      notify(cntrlObj, 'pluginRemoved', gvEvent('pluginFieldName',pluginFieldName) );
+      notify(cntrlObj, 'pluginRemoved',...
+        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
     end
     
     
@@ -115,8 +127,18 @@ classdef gvController < handle
       cntrlObj.model = cntrlObj.app.model;
       cntrlObj.view = cntrlObj.app.view;
       
-      loadDefaultPlugins(cntrlObj)
+      cntrlObj.loadDefaultPlugins()
+      
+      cntrlObj.addDefaultListeners()
     end
+    
+    
+    function addDefaultListeners(cntrlObj)
+      % Plugins
+      addlistener(cntrlObj, 'pluginAdded', @gvController.pluginChangeCallback);
+      addlistener(cntrlObj, 'pluginRemoved', @gvController.pluginChangeCallback);
+    end
+    
     
     function pluginsOut = guiPlugins(cntrlObj)
       pluginsOut = struct();
@@ -147,11 +169,30 @@ classdef gvController < handle
   %% Protected Methods %%
   methods (Access = protected)
     
+    function vprintf(obj, varargin)
+      obj.app.vprintf(varargin{:});
+    end
+    
+    
     function loadDefaultPlugins(cntrlObj)
       pluginList = cntrlObj.app.config.defaultPlugins;
       
       for pluginStr = pluginList(:)'
         cntrlObj.connectPlugin(pluginStr{1});
+      end
+    end
+    
+  end
+  
+  %% Static Methods %%
+  
+  %% Callbacks %%
+  methods (Static, Access = protected)
+    
+    function pluginChangeCallback(src, evnt)
+      pluginClassName = evnt.data.pluginClassName;
+      if isa(feval(pluginClassName), 'gvGuiPlugin')
+        src.plugins.main.openWindow(); % reset window
       end
     end
     
