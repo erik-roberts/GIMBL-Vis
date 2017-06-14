@@ -7,26 +7,23 @@ classdef gvController < handle
   %% Public Properties %%
   properties
     metadata = struct()
-  end % public properties
-  
-  properties (SetAccess = private) % read-only
-    plugins = struct()
-  end % read-only properties
-  
-  %% Hidden Properties %%
-  properties (Hidden)
+    
     activeHypercube = [] % current gvArrayRef
     activeHypercubeName = ''
     prior_activeHypercubeName = ''
-  end
+  end % public properties
   
-  properties (Hidden, SetAccess = private)
+  
+  %% Read-only Properties %%
+  properties (SetAccess = private) % read-only
     app
     model
     view
     
-    listeners
-  end % private properties
+    listeners = {}
+    
+    plugins = struct()
+  end
   
   
   %% Events %%
@@ -40,6 +37,7 @@ classdef gvController < handle
     % view events
     activeHypercubeSet
   end
+  
   
   %% Public Methods %%
   methods
@@ -132,10 +130,6 @@ classdef gvController < handle
       removePlugin(cntrlObj, pluginFieldName);
     end
     
-  end % public methods
-  
-  %% Hidden Methods %%
-  methods (Hidden)
     
     function setup(cntrlObj)
       cntrlObj.model = cntrlObj.app.model;
@@ -144,18 +138,6 @@ classdef gvController < handle
       cntrlObj.loadDefaultPlugins()
       
       cntrlObj.addDefaultListeners()
-    end
-    
-    
-    function addDefaultListeners(cntrlObj)
-      % model events
-      
-      % controller events
-      cntrlObj.newListener('pluginAdded', @gvController.pluginChangedCallback);
-      cntrlObj.newListener('pluginRemoved', @gvController.pluginChangedCallback);
-      
-      % view events
-      cntrlObj.newListener('activeHypercubeSet', @gvController.activeHypercubeChangedCallback);
     end
     
     
@@ -208,11 +190,23 @@ classdef gvController < handle
       end
     end
     
+    
+    function addDefaultListeners(cntrlObj)
+      % model events
+      
+      % controller events
+      cntrlObj.newListener('pluginAdded', @gvController.pluginChangedCallback);
+      cntrlObj.newListener('pluginRemoved', @gvController.pluginChangedCallback);
+      
+      % view events
+      cntrlObj.newListener('activeHypercubeSet', @gvController.activeHypercubeChangedCallback);
+    end
+    
   end
   
   %% Static Methods %%
   
-  %% Callbacks %%
+  %% Callbacks
   methods (Static, Access = protected)
     
     function pluginChangedCallback(src, evnt)
@@ -221,6 +215,7 @@ classdef gvController < handle
         src.plugins.main.openWindow(); % reset window
       end
     end
+    
     
     function activeHypercubeChangedCallback(src, evnt)
       cntrlObj = src;

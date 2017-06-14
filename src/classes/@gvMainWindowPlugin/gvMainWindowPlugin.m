@@ -11,19 +11,13 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     handles = struct()
   end
   
-  
-  %% Other properties %%
-  properties (Hidden)
-    controller
-    view
-  end
-  
-  properties (Constant, Hidden)
+  properties (Constant)
     pluginName = 'Main';
     pluginFieldName = 'main';
     
     windowName = 'GIMBL-Vis Toolbox';
   end
+
   
   
   %% Public methods %%
@@ -33,16 +27,11 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj@gvWindowPlugin(varargin{:});
     end
     
+    
     openWindow(pluginObj)
     
-  end
-  
-  
-  %% Hidden methods %%
-  methods (Hidden)
     panelHandle = makePanelControls(pluginObj, parentHandle)
-    
-    makeWindowControls(pluginObj, parentHandle)
+
   end
   
   
@@ -50,6 +39,8 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   methods (Access = protected)
      
     makeFig(pluginObj)
+    
+    makeWindowControls(pluginObj, parentHandle)
     
     makeMenu(pluginObj, parentHandle)
     
@@ -60,15 +51,22 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Access = protected)
     
-    function CloseRequestFcn(src, evnt)
+    function Callback_closeRequestFcn(src, ~)
       % Close request function
+ 
+      pluginObj = src.UserData.pluginObj;
+      closeMainWindowSaveDialogBool = pluginObj.controller.app.config.closeMainWindowSaveDialogBool;
+      
+      if ~closeMainWindowSaveDialogBool
+        return % if config turns off this dialog win
+      end
       
       selection = questdlg('Save GIMBL-Vis object before closing?',...
         'GIMBL-Vis',...
         'Cancel','Yes','No', 'No');
       switch selection
         case 'No'
-          delete(gcf)
+          delete(pluginObj.handles.fig)
         case 'Yes'
           % TODO
           error('Not implemented yet');
@@ -78,7 +76,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_activeHyperCubeMenu(src, evnt)
+    function Callback_activeHyperCubeMenu(src, ~)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       newActiveHypercube = src.String{src.Value};
@@ -87,7 +85,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_loadPluginCheckbox(src, evnt)
+    function Callback_loadPluginCheckbox(src, ~)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       checkBool = src.Value;

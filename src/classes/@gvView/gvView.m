@@ -8,43 +8,48 @@
 classdef gvView < handle
   
   %% Public Properties %%
-  properties (SetObservable)
-    % Settings
-    fontScale = 1; % scale baseFont
+  properties
+    fontSize
   end % public properties
   
+  
+  %% Dependent Properties %%
   properties (Dependent)
+    activeHypercube
     activeHypercubeName
+    
+    guiPlugins
+    windowPlugins
   end
   
   methods
+    
+    function value = get.activeHypercube(viewObj)
+      value = viewObj.controller.activeHypercube;
+    end
+    
     function value = get.activeHypercubeName(viewObj)
       value = viewObj.controller.activeHypercubeName;
+    end   
+    
+    function pluginsOut = get.guiPlugins(viewObj)
+      pluginsOut = viewObj.controller.guiPlugins;
     end
+    
+    function pluginsOut = get.windowPlugins(viewObj)
+      pluginsOut = viewObj.controller.windowPlugins;
+    end
+    
+    
   end
 
-  %% Other Properties %%
-  properties (Hidden, SetAccess = private)
+  
+  %% Read-only Properties %%
+  properties (SetAccess = private)
     app
     model
     controller
-    
-%     listeners = {}
   end
-  
-  properties (Hidden)
-%     nViewDimsLast = 0
-%     activeHypercube = [] % current gvArrayRef
-%     activeHypercubeName = []
-    
-    baseFontSize
-  end
-  
-  
-  %% Events %%
-  events
-%     activeHypercubeSet
-  end % events
   
   
   %% Public Methods %%
@@ -74,11 +79,6 @@ classdef gvView < handle
       fprintf('    Loaded GUI Plugins:\n        %s\n', strjoin(fieldnames(viewObj.guiPlugins),'\n        ') );
       
       fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') );
-    end
-    
-    
-    function value = ndims(viewObj)
-      value = ndims(viewObj.activeHypercube);
     end
     
     
@@ -116,48 +116,14 @@ classdef gvView < handle
       end
     end
 
-  end % public methods
-  
-  %% Hidden Methods %%
-  methods (Hidden)
     
     function setup(viewObj)
       viewObj.model = viewObj.app.model;
       viewObj.controller = viewObj.app.controller;
       
-      viewObj.baseFontSize = viewObj.app.config.baseFontSize;
+      viewObj.fontSize = viewObj.app.config.baseFontSize;
     end
-    
-    
-    function value = fontSize(viewObj)
-      value = viewObj.baseFontSize * viewObj.fontScale;
-    end
-    
-    
-    function obj = activeHypercube(viewObj)
-      obj = viewObj.controller.activeHypercube;
-    end
-    
-%     function value = nViewDims(viewObj)
-%       handleArray = [viewObj.windowPlugins.main.handles.dataPanel.viewCheckboxHandles{:}];
-%       value = sum([handleArray.Value]);
-%     end
-%     
-%     
-%     function value = nLockDims(viewObj)
-%       handleArray = [viewObj.windowPlugins.main.handles.dataPanel.lockCheckboxHandles{:}];
-%       value = sum([handleArray.Value]);
-%     end
-    
-    
-    function pluginsOut = guiPlugins(viewObj)
-      pluginsOut = viewObj.controller.guiPlugins;
-    end
-    
-    function pluginsOut = windowPlugins(viewObj)
-      pluginsOut = viewObj.controller.windowPlugins;
-    end
-    
+
     
     function existBool = checkMainWindowExists(viewObj, warnBool)
       if nargin < 2
@@ -170,14 +136,16 @@ classdef gvView < handle
       end
     end
     
-  end
-  
-  %% Protected Methods %%
-  methods (Access = protected)
-
+    
     function vprintf(obj, varargin)
       obj.app.vprintf(varargin{:});
     end
+    
+  end
+  
+  
+  %% Protected Methods %%
+  methods (Access = protected)
     
   end % protected methods
   

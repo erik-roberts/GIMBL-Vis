@@ -1,18 +1,18 @@
 %% gvGuiPlugin - Abstract GUI Plugin Class for GIMBL-Vis
 %
-% Description: This abstract class provides a template interface for GIMBL-Vis 
+% Description: This abstract class provides a template interface for GIMBL-Vis
 %              gui plugins
 
 classdef (Abstract) gvGuiPlugin < gvPlugin
-
+  
   %% Abstract Properties %%
-  properties (Abstract, Hidden)
-    view
-    
+  properties (Abstract)
     handles
   end
   
-  properties (Access = protected)
+  properties (SetAccess = protected) % read-only
+    view
+    
     userData = struct()
   end
   
@@ -26,9 +26,6 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
       pluginObj.userData.pluginObj = pluginObj;
     end
     
-  end
-  
-  methods (Hidden)
     
     function setup(pluginObj, cntrObj)
       % overload setup to add view
@@ -38,6 +35,7 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
       pluginObj.view = pluginObj.controller.view;
     end
     
+    
     function value = fontSize(pluginObj)
       value = pluginObj.view.fontSize;
     end
@@ -45,7 +43,7 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
   end
   
   %% Abstract Methods %%
-  methods (Abstract, Hidden)
+  methods (Abstract)
     panelHandle = makePanelControls(pluginObj, parentHandle)
   end
   

@@ -6,7 +6,7 @@
 classdef (Abstract) gvWindowPlugin < gvGuiPlugin
 
   %% Abstract Properties %%
-  properties (Abstract, Constant, Hidden)
+  properties (Abstract, Constant)
     windowName
   end
   
@@ -33,25 +33,12 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     end
     
   end
-
-  
-  methods (Hidden)
-    
-%     function addWindowToView(pluginObj, viewObj)
-%       pluginObj.addWindow( pluginObj );
-%     end
-%     
-%     
-%     function removeWindowFromView(pluginObj)
-%       pluginObj.view.removeWindow( pluginObj.windowFieldName );
-%     end
-    
-  end
   
 
-  methods (Static, Hidden)
+  %% Static Methods %%
+  methods (Static)
     
-    function resetWindowCallback(src, evnt)
+    function Callback_resetWindow(src, evnt)
       pluginObj = src.UserData.pluginObj;
       pluginObj.openWindow(); % reopen window
     end

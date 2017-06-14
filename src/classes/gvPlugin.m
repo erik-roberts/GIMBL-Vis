@@ -7,21 +7,24 @@ classdef (Abstract) gvPlugin < handle
 
   %% Abstract Properties %%
   properties (Abstract)
-    metadata
+    metadata 
   end
   
-  properties (Abstract, Hidden)
-    controller
-  end
-  
-  properties (Abstract, Constant, Hidden)
+  properties (Abstract, Constant)
     pluginName
     pluginFieldName
   end
   
+  
   %% Concrete Properties %%
   properties
     pluginClassName
+    
+    pluginType = []
+  end
+  
+  properties (SetAccess = protected)
+    controller
   end
   
   
@@ -41,9 +44,6 @@ classdef (Abstract) gvPlugin < handle
       end
     end
     
-  end
-    
-  methods (Hidden)
     
     function setup(pluginObj, cntrObj)
       pluginObj.addController(cntrObj);
@@ -56,22 +56,34 @@ classdef (Abstract) gvPlugin < handle
     
     
     function addController(pluginObj, cntrlObj)
+      % uni add
+      %
+      % use connectToController for bi
+      
       pluginObj.controller = cntrlObj;
     end
     
     
     function connectToController(pluginObj, cntrlObj)
+      % See also: gvController/connectPlugin
+      
       pluginObj.addController(cntrlObj);
       cntrlObj.addPlugin( pluginObj );
     end
     
     
     function removeController(pluginObj)
+      % uni remove
+      %
+      % use disconnect for bi
+      
       pluginObj.controller = [];
     end
     
     
-    function disconnect(pluginObj)
+    function disconnectFromController(pluginObj)
+      % See also: gvController/disconnectPlugin
+      
       pluginObj.controller.removePlugin( pluginObj.pluginFieldName );
       pluginObj.removeController();
     end
@@ -79,7 +91,7 @@ classdef (Abstract) gvPlugin < handle
   end
   
   %% Concrete Static Methods %%
-  methods (Static, Hidden)
+  methods (Static)
     
   end
   

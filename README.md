@@ -52,9 +52,4 @@ To Use GV with Dynasim:
   - To view images, simply move the mouse over the plot markers in the plot window. The corresponding image will be shown in the image window.
 
 ## Warnings to User
-- Don't call class static methods (uppercase methods) on objects
-
-## Implementation Details
-Internally, the `gv` object is primarily composed of gvModel, gvView, and gvController objects, in order to implement a Model-View-Ctronoller.
-
-Each `hypercube` dataset is stored inside a field of the gvModel `data` structure property. The field name corresponds to the `hypercube` name. Each `hypercube` dataset is stored in a `gvArray`, which is a subclass of the MultiDimensional Dictionary ([MDD](https://github.com/davestanley/MultiDimensionalDictionary)) class. The default `MDDAxis` objects inside of `MDD` are replaced with a `gvArrayAxis` subclass for `gvArrays`.
+- Never call static/class methods (Uppercase methods) on objects--usually there is an equivalent object method (lowercase) that should be used instead. E.g. `gv.Run` and `obj=gv(); obj.run()` are fine. `obj=gv(); obj.Run()` should be avoided.

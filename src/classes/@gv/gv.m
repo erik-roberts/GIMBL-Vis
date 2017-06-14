@@ -57,11 +57,9 @@
 classdef gv < handle
   
   %% Public Properties %%
-  properties (SetObservable, AbortSet) % allows listener callback, aborts if set to current value
+  properties %(SetObservable, AbortSet) % allows listener callback, aborts if set to current value
     %meta = struct()
     workingDir = pwd
-
-    verboseBool = true
   end
   
   properties (SetAccess = private)
@@ -252,7 +250,6 @@ classdef gv < handle
       options = checkOptions(varargin,{...
         'workingDir',[],[],...
         'overwriteBool', 0, {0,1},...
-        'verboseBool', 1, {0,1},...
         },false);
       
       % if specify load path
@@ -387,7 +384,7 @@ classdef gv < handle
   methods (Hidden)
     
     function vprintf(gvObj, varargin)
-      if gvObj.verboseBool
+      if gvObj.config.verboseModeBool
         fprintf(varargin{:});
       end
     end

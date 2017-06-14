@@ -10,19 +10,12 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     metadata = struct()
     
     plotDir = fullfile('.', 'plots')
-  end
-  
-  
-  %% Other properties %%
-  properties (Hidden)
-    controller
-    view
     
     handles = struct()
   end
   
   
-  properties (Constant, Hidden)
+  properties (Constant)
     pluginName = 'Image';
     pluginFieldName = 'image';
     
@@ -44,11 +37,6 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
 
     openWindow(pluginObj)
-    
-  end
-  
-  %% Hidden methods %%
-  methods (Hidden)
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
@@ -79,9 +67,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
   end
   
   %% Callbacks %%
-  methods (Static, Hidden)
-
-    
+  methods (Static)
     
   end
   

@@ -16,7 +16,6 @@ gvObj = gv();
 options = checkOptions(varargin,{...
   'classifyFn', [], [],...
   'overwriteBool', 0, {0,1},...
-  'verboseBool', 1, {0,1},...
   },false);
 
 %% Parse src
@@ -295,7 +294,7 @@ end
 
 %% Nested Fns
   function vfprintf(varargin)
-    if options.verboseBool
+    if options.verboseModeBool
       fprintf(varargin{:})
     end
   end

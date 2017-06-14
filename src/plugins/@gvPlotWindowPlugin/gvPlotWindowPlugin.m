@@ -8,19 +8,12 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Public properties %%
   properties
     metadata = struct()
-  end
-  
-  
-  %% Other properties %%
-  properties (Hidden)
-    controller
-    view
     
     handles = struct()
   end
   
   
-  properties (Constant, Hidden)
+  properties (Constant)
     pluginName = 'Plot';
     pluginFieldName = 'plot';
     
@@ -47,11 +40,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
     plot(pluginObj)
 
-  end
-  
-  %% Hidden methods %%
-  methods (Hidden)
-    
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
   end
@@ -152,7 +140,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   end
   
   %% Callbacks %%
-  methods (Static, Hidden)
+  methods (Static)
 
     function openWindowCallback(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
