@@ -60,7 +60,25 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Access = protected)
     
-    function activeHyperCubeMenuCallback(src, evnt)
+    function CloseRequestFcn(src, evnt)
+      % Close request function
+      
+      selection = questdlg('Save GIMBL-Vis object before closing?',...
+        'GIMBL-Vis',...
+        'Cancel','Yes','No', 'No');
+      switch selection
+        case 'No'
+          delete(gcf)
+        case 'Yes'
+          % TODO
+          error('Not implemented yet');
+        case 'Cancel'
+          return
+      end
+    end
+    
+    
+    function Callback_activeHyperCubeMenu(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       newActiveHypercube = src.String{src.Value};
@@ -69,7 +87,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
-    function loadPluginCheckboxCallback(src, evnt)
+    function Callback_loadPluginCheckbox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       checkBool = src.Value;

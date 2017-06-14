@@ -25,25 +25,34 @@
 
 
 % TODO:
-%   fill nans in gvarray and have index
-%   load new axes vs load merge axes
-%   add propListeners
-%   add callbacks
-%     hypercube
-%     axis name
-%     slider/val
-%     view
-%     lock
-%     plot marker
-%     marker type
-%   tell people not to call static methods on objects
-%   model value2ref
-%   function for classifying inputs and swtich to case
-%   gvModel merge, delete and in view
-%   move data handling methods to model
-%   panel store handles
-%   prefix tags for makePanel
-%   dependencies
+% fill nans in gvarray and have index
+% load new axes vs load merge axes
+% add propListeners
+% add callbacks
+%   hypercube
+%   axis name
+%   slider/val
+%   view
+%   lock
+%   plot marker
+%   marker type
+% model value2ref
+% function for classifying inputs and swtich to case
+% gvModel merge, delete and in view
+% move data handling methods to model
+%
+% panel store handles
+% dependencies
+%
+% automate callback names from tags
+% prefix tags for makePanel
+% have CLI property for accessing methods
+% make plot into data selector
+% reset just ui element that needs to change
+% inner and outer analysis + plots, outer images
+% plot overlays
+% remove hidden functions from hidden/private properties. just have read only
+%   when shouldnt be set by user.
 
 classdef gv < handle
   

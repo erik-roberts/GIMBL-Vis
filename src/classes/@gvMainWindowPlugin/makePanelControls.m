@@ -18,8 +18,8 @@ uiControlsHandles = struct();
 
 mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding); % make box to hold panels
 
-makeHypercubePanelControls(pluginObj, mainVbox)
-makePluginPanel(mainVbox)
+pluginObj.makeHypercubePanelControls(mainVbox);
+makePluginPanel(mainVbox);
 
 set(mainVbox, 'Heights',[50, -1])
 
@@ -149,7 +149,7 @@ panelHandle = mainVbox;
         'Style','checkbox',...
         'Value',loadedBool,...
         'UserData',thisUserData,...
-        'Callback',@gvMainWindowPlugin.loadPluginCheckboxCallback,...
+        'Callback',@gvMainWindowPlugin.Callback_loadPluginCheckbox,...
         'Parent',parentHandle);
     end
   end
