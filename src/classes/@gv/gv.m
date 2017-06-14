@@ -53,6 +53,9 @@
 % plot overlays
 % remove hidden functions from hidden/private properties. just have read only
 %   when shouldnt be set by user.
+%
+% have gen data selector which adds a hypercube that only has the selected values
+% make fn that returns currently selected hypercube indicies
 
 classdef gv < handle
   
