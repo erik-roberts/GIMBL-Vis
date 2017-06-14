@@ -6,7 +6,8 @@ spacing = 5;
 padding = 5;
 fontSize = pluginObj.fontSize;
 panelTitleFontSize = fontSize;
-pxHeight = 20; % px
+fontHeight = pluginObj.fontHeight;
+pxHeight = fontHeight + spacing; % px
 
 % plugin info
 loadedPlugins=[];
@@ -21,7 +22,7 @@ mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding)
 pluginObj.makeHypercubePanelControls(mainVbox);
 makePluginPanel(mainVbox);
 
-set(mainVbox, 'Heights',[50, -1])
+set(mainVbox, 'Heights',[fontHeight*4, -1])
 
 panelHandle = mainVbox;
 
@@ -64,15 +65,17 @@ panelHandle = mainVbox;
       );
     uiControlsHandles.scrollingPanel = scrollingPanel;
     
+    % TODO fix scrolling
+    
     pluginGrid = uix.Grid('Tag','mainPluginGrid', 'Parent',scrollingPanel, 'Spacing',spacing, 'Padding',padding);
     uiControlsHandles.pluginGrid = pluginGrid;
     
     makePluginNamesCol(pluginGrid)
     makeLoadCol(pluginGrid)
     
-    set(pluginGrid, 'Heights',pxHeight*ones(1, nPlugins), 'Widths',[-10,-1])
+    set(pluginGrid, 'Heights',pxHeight*ones(1, nPlugins), 'Widths',[-10,-1]);
     
-    set(pluginVbox, 'Heights',[30, -1])
+    set(pluginVbox, 'Heights',[fontHeight*2, -1]);
   end
 
 

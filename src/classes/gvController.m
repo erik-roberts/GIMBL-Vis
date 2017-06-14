@@ -79,12 +79,7 @@ classdef gvController < handle
       else
         cntrlObj.plugins.(pluginFieldName) = feval(pluginSrc);
       end
-      
-      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
-            
-      notify(cntrlObj, 'pluginAdded',...
-        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
-      
+
       cntrlObj.vprintf('Plugin ''%s'' added.\n', pluginFieldName);
     end
     
@@ -100,34 +95,39 @@ classdef gvController < handle
       % add plugin to controller
       cntrlObj.addPlugin(pluginSrc);
       
+      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
+      
       % add controller to plugin
       cntrlObj.plugins.(pluginFieldName).addController(cntrlObj);
       cntrlObj.plugins.(pluginFieldName).setup(cntrlObj);
+      
+      notify(cntrlObj, 'pluginAdded',...
+        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
     end
     
     
     function removePlugin(cntrlObj, pluginFieldName)
       % removePlugin - unidirectional remove
       
-      cntrlObj.vprintf('Plugin ''%s'' removed.\n', pluginFieldName);
-      
-      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
-      
       cntrlObj.plugins = rmfield(cntrlObj.plugins, pluginFieldName);
       
-      notify(cntrlObj, 'pluginRemoved',...
-        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
+      cntrlObj.vprintf('Plugin ''%s'' removed.\n', pluginFieldName);
     end
     
     
     function disconnectPlugin(cntrlObj, pluginFieldName)
       % disconnectPlugin - bidirectional remove
       
+      pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
+      
       % remove controller from plugin
       cntrlObj.plugins.(pluginFieldName).removeController();
       
       % remove plugin from controller
       removePlugin(cntrlObj, pluginFieldName);
+      
+      notify(cntrlObj, 'pluginRemoved',...
+        gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
     end
     
     

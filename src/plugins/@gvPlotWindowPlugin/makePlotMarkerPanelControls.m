@@ -33,7 +33,7 @@ set(vBox, 'Heights',[-1 -1]);
 
 
 %% Nested fn
-  function makeRow1hBox(row1hBox)
+  function makeRow1hBox(parentHandle)
     % autoSizeMarkerLabel
     uiControlsHandles.autoSizeMarkerLabel = uicontrol(...
       'Tag','autoSizeMarkerLabel',...    
@@ -45,7 +45,7 @@ set(vBox, 'Heights',[-1 -1]);
       'Min',get(0,'defaultuicontrolMin'),...
       'SliderStep',get(0,'defaultuicontrolSliderStep'),...
       'Value',get(0,'defaultuicontrolValue'),...
-      'Parent',row1hBox);
+      'Parent',parentHandle);
     
     
     % autoSizeMarkerCheckbox
@@ -56,7 +56,7 @@ set(vBox, 'Heights',[-1 -1]);
       'FontSize',fontSize,...
       'Value',1,...
       'Callback',@(hObject,eventdata)gvMainWindow_export('autoSizeMarkerCheckbox_Callback',hObject,eventdata,guidata(hObject)),...
-      'Parent',row1hBox);
+      'Parent',parentHandle);
     
     
     % markerSizeSlider
@@ -70,14 +70,14 @@ set(vBox, 'Heights',[-1 -1]);
       'Value',markerDefaultSize,...  
       'SliderStep',get(0,'defaultuicontrolSliderStep'),...
       'Callback',@(hObject,eventdata)gvMainWindow_export('markerSizeSlider_Callback',hObject,eventdata,guidata(hObject)),...
-      'Parent',row1hBox);
+      'Parent',parentHandle);
     
     % Set Box Widths
-    set(row1hBox, 'Widths',[-3 -1 -6]);
+    set(parentHandle, 'Widths',[-3 -1 -6]);
   end
 
 
-  function makeRow2hBox(row2hBox)
+  function makeRow2hBox(parentHandle)
     
     % markerTypeLabel
     uiControlsHandles.markerTypeLabel = uicontrol(...
@@ -86,7 +86,7 @@ set(vBox, 'Heights',[-1 -1]);
       'FontUnits','points',...
       'FontSize',fontSize,...
       'String','MarkerType:',...
-      'Parent',row2hBox);
+      'Parent',parentHandle);
     
     
     % markerTypeMenu
@@ -98,10 +98,10 @@ set(vBox, 'Heights',[-1 -1]);
       'String','markerType',...
       'Value',1,...
       'Callback',@(hObject,eventdata)gvMainWindow_export('markerTypeMenu_Callback',hObject,eventdata,guidata(hObject)),...
-      'Parent',row2hBox);
+      'Parent',parentHandle);
     
     % Set row2hBox Widths
-    set(row2hBox, 'Widths',[-2 -3]);
+    set(parentHandle, 'Widths',[-2 -3]);
   end
 
 end

@@ -2,7 +2,7 @@ function MakeDefaultConfig()
 % Dev Notes: make first characters '#!' for eval on load
 
 %% Get Vars
-defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvPlotWindowPlugin''}';
+defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvSelectPlugin'', ''gvPlotWindowPlugin''}';
 baseFontSize = '12';
 closeMainWindowSaveDialogBool = 'true';
 verboseModeBool = 'true';

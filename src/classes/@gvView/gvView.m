@@ -8,7 +8,7 @@
 classdef gvView < handle
   
   %% Public Properties %%
-  properties
+  properties (SetObservable)
     fontSize
   end % public properties
   
@@ -49,6 +49,9 @@ classdef gvView < handle
     app
     model
     controller
+    
+    fontHeight
+    fontWidth
   end
   
   
@@ -59,6 +62,8 @@ classdef gvView < handle
       if exist('gvObj','var') && ~isempty(gvObj)
         viewObj.app = gvObj;
       end
+      
+      addlistener(viewObj,'fontSize','PostSet',@gvView.Callback_fontSize);
     end
     
     
@@ -123,6 +128,11 @@ classdef gvView < handle
       
       viewObj.fontSize = viewObj.app.config.baseFontSize;
     end
+    
+    
+    function updateFontWidthHeight(viewObj)
+      [viewObj.fontWidth, viewObj.fontHeight] = getFontSizeInPixels(viewObj.fontSize);
+    end
 
     
     function existBool = checkMainWindowExists(viewObj, warnBool)
@@ -148,5 +158,14 @@ classdef gvView < handle
   methods (Access = protected)
     
   end % protected methods
+  
+  methods (Static)
+    
+    function Callback_fontSize(src, evnt)
+      viewObj = evnt.AffectedObject;
+      viewObj.updateFontWidthHeight;
+    end
+    
+  end
   
 end % classdef

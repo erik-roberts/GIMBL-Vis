@@ -1,4 +1,4 @@
-%% gvPlotWindow - UI Plot Window Class for GIMBL-Vis
+%% gvPlotWindow - Plot Window Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
 %              methods for a GIMBL-Vis plot window
@@ -47,10 +47,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   
   %% Protected methods %%
   methods (Access = protected)
-    
-    dataPanelheight = makeDataPanelControls(pluginObj, parentHandle)
-    
-    makeDataPanelTitles(pluginObj, parentHandle)
     
     makePlotMarkerPanelControls(pluginObj, parentHandle)
     

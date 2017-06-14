@@ -1,4 +1,4 @@
-%% gvMainWindowPlugin - UI Main Window Class for GIMBL-Vis
+%% gvMainWindowPlugin - Main Window Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
 %              methods for a GIMBL-Vis main window

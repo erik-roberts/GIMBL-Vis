@@ -5,12 +5,14 @@ function dataPanelheight = makeDataPanelControls(pluginObj, parentHandle)
 % Outputs:
 %   dataPanelheight - height in px of all rows
 
-nDims = ndims(pluginObj.view); % TODO remove dependency
+nDims = ndims(pluginObj.controller.activeHypercube);
 
 % Notes
 % - set the container to be based on amount of dims
 
 fontSize = pluginObj.fontSize;
+fontWidth = pluginObj.fontWidth;
+fontHeight = pluginObj.fontHeight;
 
 spacing = 10; % px
 padding = 5; % px
@@ -18,7 +20,7 @@ padding = 5; % px
 
 uiControlsHandles = struct();
 
-% Make grid of (nDims+1) x 4
+% Make grid of nDims x 4
 dataPanelGrid = uix.Grid('Tag','dataPanelGrid', 'Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
 uiControlsHandles.dataPanelGrid = dataPanelGrid;
 
@@ -35,15 +37,15 @@ makeViewCol(dataPanelGrid)
 makeLockCol(dataPanelGrid)
 
 % Set grid sizes
-pxHeight = 20; % px
-set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,30,30])
+pxHeight = fontHeight + spacing; % px
+set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,fontWidth*6,fontWidth*6])
 dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
 
 % Store Handles
 % pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from makeDataPanelTitles
 
 %% Nested fn
-  function makeVarCol(dataPanelGrid)
+  function makeVarCol(parentHandle)
     % Row 1
     %   titles from 'makeDataPanelTitles.m'
     
@@ -58,18 +60,18 @@ dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
         'FontSize',fontSize,...
         'String',['var' nStr],...
         'Callback',@(hObject,eventdata)gvMainWindow_export('slider1_Callback',hObject,eventdata,guidata(hObject)),...
-        'Parent',dataPanelGrid);
+        'Parent',parentHandle);
     end
   end
 
 
-  function makeValCol(dataPanelGrid)
+  function makeValCol(parentHandle)
     % Row 2:nDims+1
     for n = 1:nDims
       nStr = num2str(n);
       
       % sliderHbox
-      sliderHbox = uix.HBox('Parent',dataPanelGrid, 'Spacing',spacing);
+      sliderHbox = uix.HBox('Parent',parentHandle, 'Spacing',spacing);
 
       % slider
       uiControlsHandles.(['slider' nStr]) = uicontrol(...
@@ -99,7 +101,7 @@ dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
   end
 
 
-  function makeViewCol(dataPanelGrid)
+  function makeViewCol(parentHandle)
     pluginObj.handles.dataPanel.viewCheckboxHandles = cell(1, nDims);
     
     % Row 2:nDims+1
@@ -112,14 +114,14 @@ dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
         'Style','checkbox',...
         'Value',0,...
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
-        'Parent',dataPanelGrid);
+        'Parent',parentHandle);
       
       pluginObj.handles.dataPanel.viewCheckboxHandles{n} = uiControlsHandles.(['viewCheckbox' nStr]);
     end
   end
 
 
-  function makeLockCol(dataPanelGrid)
+  function makeLockCol(parentHandle)
     pluginObj.handles.dataPanel.lockCheckboxHandles = cell(1, nDims);
     
     % Row 2:nDims+1
@@ -132,7 +134,7 @@ dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
         'Style','checkbox',...
         'Value',0,...
         'Callback',@(hObject,eventdata)gvMainWindow_export('viewDim1_Callback',hObject,eventdata,guidata(hObject)),...
-        'Parent',dataPanelGrid);
+        'Parent',parentHandle);
       
       pluginObj.handles.dataPanel.lockCheckboxHandles{n} = uiControlsHandles.(['lockCheckbox' nStr]);
     end

@@ -4,77 +4,46 @@ function panelHandle = makePanelControls(pluginObj, parentHandle)
 % params
 spacing = 5;
 padding = 5;
-panelTitleFontSize = pluginObj.fontSize;
+fontSize = pluginObj.fontSize;
+fontHeight = pluginObj.fontHeight;
 
 uiControlsHandles = struct();
 
 % 1)
 % main vBox
-mainVbox = uix.VBoxFlex('Parent',parentHandle, 'Spacing',spacing, 'Padding', padding);
+mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding', padding);
 
 % 1.1)
-% panel grid
-panelGrid = uix.Grid('Parent',mainVbox, 'Spacing',spacing, 'Padding', padding);
-
-% 1.1.1)
 % plot panel
 plotPanel = uix.Panel(...
   'Tag','plotPanel',...
-  'Parent',panelGrid,...
+  'Parent',mainVbox,...
   'Title','Plot Window',...
   'FontUnits','points',...
-  'FontSize',panelTitleFontSize...
+  'FontSize',fontSize...
 );
 uiControlsHandles.plotPanel.handle = plotPanel;
 
-% 1.1.2)
+% 1.2)
 % plot marker panel
 plotMarkerPanel = uix.Panel(...
   'Tag','plotMarkerOutline',...
-  'Parent',panelGrid,...
+  'Parent',mainVbox,...
   'Title','Plot Marker',...
   'FontUnits','points',...
-  'FontSize',panelTitleFontSize...
+  'FontSize',fontSize...
 );
 uiControlsHandles.plotMarkerPanel.handle = plotMarkerPanel;
 
-
-% 1.2)
-% data panel
-dataPanel = uix.Panel(...
-  'Tag','dataPanelBox',...
-  'Parent', mainVbox,...
-  'Title', 'Hypercube Data',...
-  'FontUnits','points',...
-  'FontSize',panelTitleFontSize ...
-);
-
-dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
-
-% 1.2.1)
-makeDataPanelTitles(pluginObj, dataVbox); % row 1
-
-% 1.2.2)
-dataScrollingPanel = uix.ScrollingPanel(...
-  'Tag','dataScrollingPanel',...
-  'Parent', dataVbox...
-); % row 2
-uiControlsHandles.dataPanel.handle = dataPanel;
 
 %% UI Controls
 pluginObj.makePlotPanelControls(plotPanel);
 
 pluginObj.makePlotMarkerPanelControls(plotMarkerPanel);
 
-dataPanelheight = pluginObj.makeDataPanelControls(dataScrollingPanel);
-
-% pluginObj.makeHypercubePanelControls(hypercubePanel);
-
 %% Set layout sizes
-set(mainVbox, 'Heights',[100 -1])
-set(panelGrid, 'Widths',[-1 -1], 'Heights',[-1])
-set(dataVbox, 'Heights',[30,-1])
-set(dataScrollingPanel, 'Heights',dataPanelheight)
+panelHeight = fontHeight*5 + spacing + padding;
+set(mainVbox, 'Heights',[panelHeight panelHeight])
 
 %% argout
 panelHandle = mainVbox;

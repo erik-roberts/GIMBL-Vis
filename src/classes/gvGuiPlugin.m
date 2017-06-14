@@ -10,10 +10,17 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     handles
   end
   
+  %% Concrete Properties %%
   properties (SetAccess = protected) % read-only
     view
     
     userData = struct()
+  end
+  
+  properties (Dependent) % read-only
+    fontSize
+    fontWidth
+    fontHeight
   end
   
   
@@ -36,8 +43,16 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     end
     
     
-    function value = fontSize(pluginObj)
+    function value = get.fontSize(pluginObj)
       value = pluginObj.view.fontSize;
+    end
+    
+    function value = get.fontWidth(pluginObj)
+      value = pluginObj.view.fontWidth;
+    end
+    
+    function value = get.fontHeight(pluginObj)
+      value = pluginObj.view.fontHeight;
     end
     
   end

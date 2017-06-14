@@ -1,4 +1,4 @@
-%% gvImageWindow - UI Image Window Class for GIMBL-Vis
+%% gvImageWindow - Image Window Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
 %              methods for a GIMBL-Vis image window
