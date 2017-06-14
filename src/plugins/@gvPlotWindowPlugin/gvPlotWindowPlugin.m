@@ -169,14 +169,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     function plotCallback(src, evnt)
-      view = src.view;
+%       pluginObj = src.UserData.pluginObj; % window plugin
       
-      nViewDims = view.nViewDims;
-      nViewDimsLast = view.nViewDimsLast;
-
-      if nViewDims > 0 && nViewDims ~= nViewDimsLast
-        view.plot();
-      end
+      
     end
     
     

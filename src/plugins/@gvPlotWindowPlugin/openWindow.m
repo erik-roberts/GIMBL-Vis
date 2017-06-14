@@ -20,8 +20,7 @@ if mainWindowExistBool
   pluginObj.makeFig();
   
   % Add listeners
-  plotListener = addlistener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
-  pluginObj.view.newListener( plotListener );
+  addListener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
   
   % Data cursor
   pluginObj.addDataCursor();
@@ -30,7 +29,7 @@ if mainWindowExistBool
   pluginObj.makeAxes();
   
   % Plot
-  notify(pluginObj, 'plotEvent'); % TODO change this
+  pluginObj.plot();
 end
 
 end % main fn

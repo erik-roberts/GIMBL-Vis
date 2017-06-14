@@ -1,5 +1,13 @@
 function plot(pluginObj)
 
+nViewDims = pluginObj.nViewDims;
+nViewDimsLast = pluginObj.nViewDimsLast;
+
+if ~(nViewDims > 0 && nViewDims ~= nViewDimsLast)
+  pluginObj.vprintf('Skipping')
+  return
+end
+
 hFig = pluginObj.plotWindow.handles.fig;
 hAx = pluginObj.plotWindow.handles.ax;
 
