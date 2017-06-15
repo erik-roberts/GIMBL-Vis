@@ -11,63 +11,63 @@ uiMenuHandles = {};
 menuCol = 0;
 
 %% File
-menuHandleStr = 'File';
-menuLabel = menuHandleStr;
+menuLabel = 'File';
+menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
 
 % uigetdir
-handleStr = 'ChangeWD';
+handleStr = 'changeWD';
 menuLabel = 'Change Working Directory';
 makeMenuRow();
 
 % uigetfile
-handleStr = 'Load';
+handleStr = 'load';
 menuLabel = 'Load Object';
 makeMenuRow();
 
 % uigetfile
-handleStr = 'Import';
+handleStr = 'import';
 menuLabel = 'Import Data';
 makeMenuRow();
 
-% uiputfile
-% uisave
-handleStr = 'Save';
+handleStr = 'saveGV';
 menuLabel = 'Save GV Object';
+makeMenuRow();
+
+handleStr = 'saveHC';
+menuLabel = 'Save Hypercube as MDD Object';
 makeMenuRow();
 
 
 %% Model
-menuHandleStr = 'Model';
-menuLabel = menuHandleStr;
+menuLabel = 'Model';
+menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
 
-handleStr = 'MergeHypercubes';
+handleStr = 'mergeHypercubes';
 menuLabel = 'Merge Hypercubes';
 makeMenuRow();
 
-handleStr = 'MergeVarFromWS';
+handleStr = 'mergeVarFromWS';
 menuLabel = 'Merge Variable From Workspace';
 makeMenuRow();
 
-handleStr = 'DeleteHypercube';
+handleStr = 'deleteHypercube';
 menuLabel = 'Delete Hypercube';
 makeMenuRow();
 
 
 %% View
-menuHandleStr = 'View';
-menuLabel = menuHandleStr;
+menuLabel = 'View';
+menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
 
-% inputdlg
-% uisetfont
-handleStr = 'FontSize';
-menuLabel = 'Font Size';
+handleStr = 'setFontSize';
+menuLabel = 'Set Font Size';
 makeMenuRow();
 
 
-handleStr = 'Reset';
+handleStr = 'reset';
 menuLabel = 'Reset Window';
 makeMenuRow();
 
@@ -80,20 +80,25 @@ pluginObj.handles.menu = uiMenuHandles;
   function menuColHandle = makeMenuCol()
     menuCol = menuCol + 1;
     
+    thisTag = [pluginObj.pluginFieldName '_menu_' menuHandleStr];
+    
     menuColHandle = uimenu(...
       'Label',menuLabel,...
-      'Tag',[menuHandleStr 'Menu'],...
+      'Tag',thisTag,...
       'Callback',[],...
       'Parent',parentHandle...
       );
     uiMenuHandles{1,menuCol} = menuColHandle;
   end
 
+
   function makeMenuRow()
+    thisTag = [pluginObj.pluginFieldName '_menu_' menuHandleStr '_' handleStr];
+    
     uiMenuHandles{end+1,menuCol} = uimenu(...
       'Label',menuLabel,...
-      'Tag',[menuHandleStr handleStr],...
-      'Callback',eval(['@gvMainWindowPlugin.Callback_' menuHandleStr handleStr]),...
+      'Tag',thisTag,...
+      'Callback',eval(['@gvMainWindowPlugin.Callback_' thisTag]),...
       'UserData',pluginObj.userData,...
       'Parent',rowParent...
       );

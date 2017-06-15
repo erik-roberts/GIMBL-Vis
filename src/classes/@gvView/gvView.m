@@ -62,8 +62,6 @@ classdef gvView < handle
       if exist('gvObj','var') && ~isempty(gvObj)
         viewObj.app = gvObj;
       end
-      
-      addlistener(viewObj,'fontSize','PostSet',@gvView.Callback_fontSize);
     end
     
     
@@ -120,13 +118,17 @@ classdef gvView < handle
         wprintf('Window "%s" is not found', windowFieldName)
       end
     end
-
+    
     
     function setup(viewObj)
+      % MVC
       viewObj.model = viewObj.app.model;
       viewObj.controller = viewObj.app.controller;
       
+      % Fonts
       viewObj.fontSize = viewObj.app.config.baseFontSize;
+      viewObj.updateFontWidthHeight;
+      addlistener(viewObj,'fontSize','PostSet',@gvView.Callback_fontSize);
     end
     
     
@@ -147,6 +149,30 @@ classdef gvView < handle
     end
     
     
+    function resetWindows(viewObj)
+      windows = viewObj.windowPlugins;
+      
+      for win = fieldnames(windows)'
+        winExistBool = isValidFigHandle(viewObj.windowPlugins.(win{1}).handles.fig);
+        
+        if winExistBool
+          viewObj.windowPlugins.(win{1}).openWindow();
+        end
+      end
+    end
+    
+    
+    function closeWindows(viewObj)
+      windows = viewObj.windowPlugins;
+      
+      viewObj.vprintf('Closing All GIMBL-Vis Windows\n')
+      
+      for win = fieldnames(windows)'
+          viewObj.windowPlugins.(win{1}).closeWindow();
+      end
+    end
+    
+    
     function vprintf(obj, varargin)
       obj.app.vprintf(varargin{:});
     end
@@ -163,7 +189,10 @@ classdef gvView < handle
     
     function Callback_fontSize(src, evnt)
       viewObj = evnt.AffectedObject;
+      
       viewObj.updateFontWidthHeight;
+      
+      viewObj.resetWindows;
     end
     
   end

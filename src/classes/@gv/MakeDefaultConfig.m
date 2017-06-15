@@ -3,7 +3,7 @@ function MakeDefaultConfig()
 
 %% Get Vars
 defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvSelectPlugin'', ''gvPlotWindowPlugin''}';
-baseFontSize = '#!12';
+baseFontSize = '12';
 closeMainWindowSaveDialogBool = '#!true';
 verboseModeBool = '#!true';
 

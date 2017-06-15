@@ -276,6 +276,7 @@ classdef gv < handle
       end
       
       if ~exist(filePath,'file') || overwriteBool
+        gvObj.view.closeWindows();
         save(filePath, 'gvObj');
       else
         warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
@@ -330,15 +331,13 @@ classdef gv < handle
       for iRow = 1:size(gvVarCells{1}, 1)
         thisStr = gvVarCells{2}{iRow};
         
+        thisStr = shebangParse(thisStr);
+        
         if ~isnan(str2double(thisStr))
           thisStr = str2double(thisStr);
         end
         
-        if length(thisStr) > 2 && isequal(thisStr(1:2), '#!')
-          gvConfig.(gvVarCells{1}{iRow}) = eval(thisStr(3:end));
-        else
-          gvConfig.(gvVarCells{1}{iRow}) = thisStr;
-        end
+        gvConfig.(gvVarCells{1}{iRow}) = thisStr;
       end
 
       gvObj.config = gvConfig;

@@ -36,6 +36,12 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
     openWindow(pluginObj)
     
+    function closeWindow(pluginObj)
+      closeWindow@gvWindowPlugin(pluginObj)
+      
+      pluginObj.handles.ax = [];
+    end
+    
     openLegendWindow(pluginObj)
 
     plot(pluginObj)

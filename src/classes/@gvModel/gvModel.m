@@ -92,6 +92,25 @@ classdef gvModel < handle
     %% Loading
     modelObj = load(modelObj, src, fld, staticBool)
     
+    %% Saving
+    function saveActiveHypercube(modelObj, filePath, overwriteBool)
+      % saveActiveHypercube - save gvArray object to file as MDD object (default: 'gvHypercubeData.mat')
+      
+      if ~exist('filePath', 'var') || isempty(filePath)
+        filePath = 'gvHypercubeData.mat';
+      end
+      if nargin < 3
+        overwriteBool = false;
+      end
+      
+      if ~exist(filePath,'file') || overwriteBool
+        eval([modelObj.controller.activeHypercubeName ' = modelObj.controller.activeHypercube.gv2MDD']);
+        save(filePath, modelObj.controller.activeHypercubeName);
+      else
+        warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
+      end
+    end
+    
   end % public methods
   
   %% Hidden Methods %%

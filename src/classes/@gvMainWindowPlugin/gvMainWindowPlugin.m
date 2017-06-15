@@ -26,8 +26,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function pluginObj = gvMainWindowPlugin(varargin)
       pluginObj@gvWindowPlugin(varargin{:});
     end
-    
-    
+
     openWindow(pluginObj)
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
@@ -97,6 +96,46 @@ classdef gvMainWindowPlugin < gvWindowPlugin
         pluginFieldName = src.UserData.pluginFieldName;
         pluginObj.controller.disconnectPlugin(pluginFieldName);
       end
+    end
+    
+    %% Menu Callbacks
+    function Callback_main_menu_file_saveGV(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      [fileName, pathName] = uiputfile('*.mat', 'Save GIMB-Vis Object');
+      
+      filePath = fullfile(pathName, fileName);
+      
+      pluginObj.controller.app.save(filePath);
+    end
+    
+    
+    function Callback_main_menu_file_saveHC(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      [fileName, pathName] = uiputfile('*.mat', 'Save Hypercube as MDD Object');
+      
+      filePath = fullfile(pathName, fileName);
+      
+      pluginObj.controller.model.saveActiveHypercube(filePath);
+    end
+    
+    
+    function Callback_main_menu_view_setFontSize(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      newFontSize = inputdlg( {'Enter New Font Size:'},'Font Size',1,{num2str(pluginObj.fontSize)} );
+      
+      newFontSize = str2double(newFontSize);
+      
+      pluginObj.view.fontSize = newFontSize;
+    end
+    
+    
+    function Callback_main_menu_view_reset(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      pluginObj.Callback_resetWindow(src, evnt);
     end
     
   end
