@@ -38,7 +38,6 @@
 %   marker type
 % model value2ref
 % function for classifying inputs and swtich to case
-% gvModel merge, delete and in view
 % move data handling methods to model
 %
 % panel store handles
