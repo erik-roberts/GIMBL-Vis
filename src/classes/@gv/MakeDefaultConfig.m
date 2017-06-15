@@ -3,9 +3,9 @@ function MakeDefaultConfig()
 
 %% Get Vars
 defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvSelectPlugin'', ''gvPlotWindowPlugin''}';
-baseFontSize = '12';
-closeMainWindowSaveDialogBool = 'true';
-verboseModeBool = 'true';
+baseFontSize = '#!12';
+closeMainWindowSaveDialogBool = '#!true';
+verboseModeBool = '#!true';
 
 %% Write vars to disk
 vars = who; % get all vars

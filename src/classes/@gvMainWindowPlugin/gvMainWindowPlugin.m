@@ -58,6 +58,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       closeMainWindowSaveDialogBool = pluginObj.controller.app.config.closeMainWindowSaveDialogBool;
       
       if ~closeMainWindowSaveDialogBool
+        delete(pluginObj.handles.fig)
         return % if config turns off this dialog win
       end
       

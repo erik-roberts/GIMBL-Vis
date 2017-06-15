@@ -22,7 +22,7 @@ mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding)
 pluginObj.makeHypercubePanelControls(mainVbox);
 makePluginPanel(mainVbox);
 
-set(mainVbox, 'Heights',[fontHeight*4, -1])
+set(mainVbox, 'Heights',[fontHeight*3, -1])
 
 panelHandle = mainVbox;
 

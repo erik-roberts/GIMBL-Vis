@@ -51,8 +51,7 @@
 % reset just ui element that needs to change
 % inner and outer analysis + plots, outer images
 % plot overlays
-% remove hidden functions from hidden/private properties. just have read only
-%   when shouldnt be set by user.
+% select subsets from view or all data based on values, either 
 %
 % have gen data selector which adds a hypercube that only has the selected values
 % make fn that returns currently selected hypercube indicies
