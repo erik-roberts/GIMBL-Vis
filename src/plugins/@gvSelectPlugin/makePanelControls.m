@@ -4,7 +4,8 @@ function panelHandle = makePanelControls(pluginObj, parentHandle)
 % params
 spacing = 5;
 padding = 5;
-panelTitleFontSize = pluginObj.fontSize;
+fontSize = pluginObj.fontSize;
+fontHeight = pluginObj.fontHeight;
 
 uiControlsHandles = struct();
 
@@ -19,7 +20,7 @@ dataPanel = uix.Panel(...
   'Parent', mainVbox,...
   'Title', 'Hypercube Data',...
   'FontUnits','points',...
-  'FontSize',panelTitleFontSize ...
+  'FontSize',fontSize ...
 );
 
 dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
@@ -34,7 +35,7 @@ uiControlsHandles.dataPanel.handle = dataPanel;
 
 %% Set layout sizes
 set(mainVbox, 'Heights',[-1])
-set(dataVbox, 'Heights',[30,-1])
+set(dataVbox, 'Heights',[fontHeight*2,-1])
 
 %% argout
 panelHandle = mainVbox;

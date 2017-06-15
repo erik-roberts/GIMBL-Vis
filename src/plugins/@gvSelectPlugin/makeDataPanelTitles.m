@@ -6,7 +6,6 @@ function makeDataPanelTitles(pluginObj, parentHandle)
 fontSize = pluginObj.fontSize;
 titleFontWeight = 'bold';
 
-fontHeight = pluginObj.fontHeight;
 fontWidth = pluginObj.fontWidth;
 
 padding = 5; % px
