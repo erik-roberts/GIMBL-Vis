@@ -43,6 +43,11 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     end
     
     
+    function findObjects(pluginObj)
+      pluginObj.handles.all = findobj('-regexp','Tag',['^' pluginObj.pluginFieldName]);
+    end
+    
+    
     function value = get.fontSize(pluginObj)
       value = pluginObj.view.fontSize;
     end
