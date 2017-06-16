@@ -29,6 +29,7 @@ classdef gvController < handle
   %% Events %%
   events
     % model events
+    modelChanged
     
     % controller events
     pluginAdded
@@ -57,6 +58,23 @@ classdef gvController < handle
       fprintf('Controller Summary:\n')
 
       fprintf('    Loaded Plugins:\n        %s\n', strjoin(fieldnames(cntrlObj.plugins),'\n        ') )
+    end
+    
+    
+    function setup(cntrlObj)
+      cntrlObj.model = cntrlObj.app.model;
+      cntrlObj.view = cntrlObj.app.view;
+      
+      cntrlObj.loadDefaultPlugins()
+      
+      cntrlObj.addDefaultListeners()
+    end
+    
+    
+    function newListener(obj, varargin)
+      % newListener - call addlistener and add to listerners property
+      
+      obj.listeners{end+1} = addlistener(obj, varargin{:});
     end
     
     
@@ -129,24 +147,7 @@ classdef gvController < handle
       notify(cntrlObj, 'pluginRemoved',...
         gvEvent('pluginFieldName',pluginFieldName, 'pluginClassName',pluginClassName) );
     end
-    
-    
-    function setup(cntrlObj)
-      cntrlObj.model = cntrlObj.app.model;
-      cntrlObj.view = cntrlObj.app.view;
-      
-      cntrlObj.loadDefaultPlugins()
-      
-      cntrlObj.addDefaultListeners()
-    end
-    
-    
-    function newListener(obj, varargin)
-      % newListener - call addlistener and add to listerners property
-      
-      obj.listeners{end+1} = addlistener(obj, varargin{:});
-    end
-    
+
     
     function pluginsOut = guiPlugins(cntrlObj)
       pluginsOut = struct();
@@ -171,6 +172,62 @@ classdef gvController < handle
       end
     end
     
+    
+    function setActiveHypercube(cntrlObj, argin)
+      if isobject(argin)
+        cntrlObj.activeHypercube = argin;
+        cntrlObj.activeHypercubeName = argin.hypercubeName;
+        
+        notify(cntrlObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',controller.activeHypercubeName) );
+        
+        cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
+      elseif ischar(argin)
+        if strcmp(argin, '[None]')
+          wprintf('Import data before selecting a hypercube.')
+          return
+        end
+        
+        cntrlObj.activeHypercubeName = argin;
+        cntrlObj.activeHypercube = cntrlObj.model.data.(argin);
+        
+        notify(cntrlObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',cntrlObj.activeHypercubeName) );
+        
+        cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
+      else
+        error('Unknown hypercube input')
+      end
+    end
+    
+    
+    function saveActiveHypercube(cntrlObj, varargin)
+      % saveActiveHypercube - save gvArray object to file as MDD object (default: 'gvHypercubeData.mat')
+      %
+      % See also: gvModel/saveHypercube
+      
+      modelObj = cntrlObj.model;
+      
+      modelObj.saveHypercube(cntrlObj.activeHypercubeName, varargin{:})
+    end
+    
+    
+    function deleteActiveHypercube(cntrlObj)
+      % deleteActiveHypercube
+      %
+      % See also: gvModel/deleteHypercube
+      
+      modelObj = cntrlObj.model;
+      
+      activeHypercubeName = cntrlObj.activeHypercubeName;
+      
+      flds = fieldnames(modelObj.data);
+      flds(strcmp(flds, cntrlObj.activeHypercubeName)) = [];
+      if ~isempty(flds)
+        cntrlObj.setActiveHypercube(flds{1});
+      end
+      
+      modelObj.deleteHypercube(activeHypercubeName);
+    end
+    
   end
   
   
@@ -193,13 +250,14 @@ classdef gvController < handle
     
     function addDefaultListeners(cntrlObj)
       % model events
+      cntrlObj.newListener('modelChanged', @gvController.Callback_modelChanged);
       
       % controller events
-      cntrlObj.newListener('pluginAdded', @gvController.pluginChangedCallback);
-      cntrlObj.newListener('pluginRemoved', @gvController.pluginChangedCallback);
+      cntrlObj.newListener('pluginAdded', @gvController.Callback_pluginChanged);
+      cntrlObj.newListener('pluginRemoved', @gvController.Callback_pluginChanged);
       
       % view events
-      cntrlObj.newListener('activeHypercubeSet', @gvController.activeHypercubeChangedCallback);
+      cntrlObj.newListener('activeHypercubeSet', @gvController.Callback_activeHypercubeChanged);
     end
     
   end
@@ -209,7 +267,14 @@ classdef gvController < handle
   %% Callbacks
   methods (Static, Access = protected)
     
-    function pluginChangedCallback(src, evnt)
+    function Callback_modelChanged(src, evnt)
+      cntrlObj = src;
+      if cntrlObj.view.checkMainWindowExists()
+        cntrlObj.plugins.main.openWindow(); % reopen window
+      end
+    end
+    
+    function Callback_pluginChanged(src, evnt)
       pluginClassName = evnt.data.pluginClassName;
       if isa(feval(pluginClassName), 'gvGuiPlugin')
         src.plugins.main.openWindow(); % reset window
@@ -217,7 +282,7 @@ classdef gvController < handle
     end
     
     
-    function activeHypercubeChangedCallback(src, evnt)
+    function Callback_activeHypercubeChanged(src, evnt)
       cntrlObj = src;
       new_activeHypercubeName = evnt.data.activeHypercubeName;
       prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;

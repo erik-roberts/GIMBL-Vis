@@ -163,7 +163,7 @@ classdef gv < handle
           end
           gvObj.model.data.(fld) = gvArrayRef(varargin{:});
           
-          gvObj.view.setActiveHypercube(fld);
+          gvObj.controller.setActiveHypercube(fld);
         elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
           % 3) Call gvArray constructor on gvArray/MDD data
           if ~exist('fld', 'var')
@@ -198,8 +198,7 @@ classdef gv < handle
     
     
     %% Importing
-    % TODO Move to separate function or gvModel/Controller
-    function importTabularDataFromFile(gvObj, fld, varargin)
+    function importTabularDataFromFile(varargin)
       % importTabularDataFromFile (public) - Imports tabular data from a file to
       %                                      a new set of axes (ie hypercube)
       %
@@ -232,13 +231,8 @@ classdef gv < handle
       %   gv.ImportTabularDataFromFile (static method)
       %   MDD.ImportFile documentation for more information.
       
-      if isempty(fld)
-        fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
-      else
-        [gvObj.model, fld] = checkHypercubeName(gvObj.model, fld);
-      end
+      gvObj.model.importTabularDataFromFile(varargin{:}) % interface: load(modelObj, fld, varargin)
       
-      gvObj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
     end
     
     
@@ -474,7 +468,7 @@ classdef gv < handle
     obj = ImportDsData(varargin)
     
     
-    function obj = ImportTabularDataFromFile(varargin)
+    function gvObj = ImportTabularDataFromFile(varargin)
       % ImportTabularDataFromFile (static) - Imports tabular data from a file to
       %                                      a new set of axes (ie hypercube)
       %
@@ -507,11 +501,9 @@ classdef gv < handle
       %   gv/importTabularDataFromFile (public method)
       %   MDD.ImportFile documentation for more information.
       
-      obj = gv();
+      gvObj = gv();
       
-      fld = obj.model.nextModelFieldName; % get next fld for model.axes#
-      
-      obj.model.data.(fld) = gvArrayRef.ImportFile(varargin{:});
+      gvObj.importTabularDataFromFile(varargin{:});
     end
     
     %% Running

@@ -65,12 +65,17 @@ if isa(data, 'gv')
       modelObj.data.(modelFldNew) = data.model.(modelFld); % add fld to checked fld name
       modelObj.data.(modelFldNew).hypercubeName = modelFldNew;
     end
+    
+    notify(modelObj.controller, 'modelChanged');
   else
     modelObj.app.replaceApp(data);
   end
   fprintf('Loaded gv object data.\n')
 elseif isa(data, 'MDD') || isa(data, 'MDDRef') % || isa(data, 'gvArray')
-  modelObj.data.(fld) = gvArrayRef(data);
+  modelObj.data.(fld) = gvArrayRef(gvArray(data));
+  
+  notify(modelObj.controller, 'modelChanged');
+  
   fprintf('Loaded multidimensional array object data.\n')
 else
   error('Attempting to load non-gv data. Use ''obj.importTabularDataFromFile'' instead.')

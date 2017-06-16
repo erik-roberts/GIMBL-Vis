@@ -11,8 +11,8 @@ end
 hFig = pluginObj.plotWindow.handles.fig;
 hAx = pluginObj.plotWindow.handles.ax;
 
-nViewDims = pluginObj.plotWindow.nViewDims;
-viewDims = pluginObj.plotWindow.viewDims;
+nViewDims = pluginObj.nViewDims;
+viewDims = pluginObj.viewDims;
 % nAxDims = pluginObj.plotWindow.nAxDims;
 data = pluginObj.activeHypercube;
 dimNames = data.axisNames;

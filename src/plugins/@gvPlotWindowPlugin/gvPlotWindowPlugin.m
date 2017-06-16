@@ -12,7 +12,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     handles = struct()
   end
   
-  
   properties (Constant)
     pluginName = 'Plot';
     pluginFieldName = 'plot';
@@ -61,7 +60,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     function makeFig(pluginObj)
       % makeFig - make plot window figure
       
-      mainWindowPos = pluginObj.view.windowPlugins.main.handles.fig.Position;
+      mainWindowPos = pluginObj.controller.windowPlugins.main.handles.fig.Position;
     
       plotWindowHandle = figure(...
         'Name','Plot Window',...
@@ -83,7 +82,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       plotWindowHandle = pluginObj.handles.fig;
       clf(plotWindowHandle) %clear fig
       
-      nViewDims = pluginObj.view.nViewDims;
+      nViewDims = pluginObj.view.dynamic.nViewDims;
       
       gap = 0.1;
       marg_h = 0.1;

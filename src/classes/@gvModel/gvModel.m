@@ -15,18 +15,10 @@ classdef gvModel < handle
     data = struct() % of gvArrayRef
   end % public properties
   
-  properties (Hidden, SetAccess = private)
+  properties (SetAccess = private)
     app
     view
     controller
-  end
-  
-  properties (Access = protected)
-    listeners
-  end
-  
-  %% Events %%
-  events
   end
   
   %% Public Methods %%
@@ -92,8 +84,11 @@ classdef gvModel < handle
     %% Loading
     modelObj = load(modelObj, src, fld, staticBool)
     
+    %% Importing
+    modelObj = importTabularDataFromFile(modelObj, fld, varargin)
+    
     %% Saving
-    function saveActiveHypercube(modelObj, filePath, overwriteBool)
+    function saveHypercube(modelObj, hypercubeName, filePath, overwriteBool)
       % saveActiveHypercube - save gvArray object to file as MDD object (default: 'gvHypercubeData.mat')
       
       if ~exist('filePath', 'var') || isempty(filePath)
@@ -104,21 +99,24 @@ classdef gvModel < handle
       end
       
       if ~exist(filePath,'file') || overwriteBool
-        eval([modelObj.controller.activeHypercubeName ' = modelObj.controller.activeHypercube.gv2MDD']);
-        save(filePath, modelObj.controller.activeHypercubeName);
+        eval([hypercubeName ' = modelObj.data.(' hypercubeName' ').gv2MDD;']);
+        save(filePath, hypercubeName);
       else
-        warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
+        warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.');
       end
     end
     
-  end % public methods
-  
-  %% Hidden Methods %%
-  methods (Hidden)
-    
+    %% Misc
     function setup(modelObj)
       modelObj.view = modelObj.app.view;
       modelObj.controller = modelObj.app.controller;
+    end
+    
+    
+    function deleteHypercube(modelObj, hypercubeName)
+      modelObj.data = rmfield(modelObj.data, hypercubeName);
+
+      notify(modelObj.controller, 'modelChanged');
     end
         
     
@@ -131,7 +129,11 @@ classdef gvModel < handle
       if ~isempty(tokens)
         tokens = [tokens{:}]; % get ind
         inds = str2double(tokens);
-        fld = ['hypercube' num2str(max(inds)+1)];
+        
+        availInds = setxor(inds, 1:max(inds)+1);
+        selectedInd = min(availInds);
+        
+        fld = ['hypercube' num2str(selectedInd)];
       else
         fld = 'hypercube1';
       end

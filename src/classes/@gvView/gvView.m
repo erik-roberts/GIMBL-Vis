@@ -8,6 +8,10 @@
 classdef gvView < handle
   
   %% Public Properties %%
+  properties
+    dynamic = struct() % dynamic properties
+  end
+  
   properties (SetObservable)
     fontSize
   end % public properties
@@ -82,32 +86,6 @@ classdef gvView < handle
       fprintf('    Loaded GUI Plugins:\n        %s\n', strjoin(fieldnames(viewObj.guiPlugins),'\n        ') );
       
       fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') );
-    end
-    
-    
-    function setActiveHypercube(viewObj, argin)
-      if isobject(argin)
-        viewObj.controller.activeHypercube = argin;
-        viewObj.controller.activeHypercubeName = argin.hypercubeName;
-        
-        notify(viewObj.controller, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) );
-        
-        viewObj.controller.prior_activeHypercubeName = viewObj.controller.activeHypercubeName;
-      elseif ischar(argin)
-        if strcmp(argin, '[None]')
-          wprintf('Import data before selecting a hypercube.')
-          return
-        end
-        
-        viewObj.controller.activeHypercubeName = argin;
-        viewObj.controller.activeHypercube = viewObj.model.data.(argin);
-        
-        notify(viewObj.controller, 'activeHypercubeSet', gvEvent('activeHypercubeName',viewObj.activeHypercubeName) );
-        
-        viewObj.controller.prior_activeHypercubeName = viewObj.controller.activeHypercubeName;
-      else
-        error('Unknown hypercube input')
-      end
     end
     
 

@@ -20,7 +20,7 @@ if mainWindowExistBool
   pluginObj.makeFig();
   
   % Add listeners
-  addListener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
+  addlistener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
   
   % Data cursor
   pluginObj.addDataCursor();

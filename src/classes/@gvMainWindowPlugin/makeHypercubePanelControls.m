@@ -31,7 +31,7 @@ uiControlsHandles.activeHyperCubeLabel = uicontrol(...
   'Parent',hypercubeHbox);
 
 % hypercubeMenu
-menuStr = fieldnames(pluginObj.controller.model.data);
+menuStr = fieldnames(orderfields(pluginObj.controller.model.data));
 activeHypercubeName = pluginObj.controller.view.activeHypercubeName;
 menuValue = find( strcmp( menuStr, activeHypercubeName ) );
 

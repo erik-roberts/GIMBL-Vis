@@ -81,7 +81,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       newActiveHypercube = src.String{src.Value};
       
-      pluginObj.controller.view.setActiveHypercube(newActiveHypercube);
+      pluginObj.controller.setActiveHypercube(newActiveHypercube);
     end
     
     
@@ -99,6 +99,37 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     %% Menu Callbacks
+    function Callback_main_menu_file_changeWD(src, ~)
+      pluginObj = src.UserData.pluginObj;
+
+      newWD = uigetdir(pluginObj.controller.app.workingDir, 'New Working Directory');
+      
+      pluginObj.controller.app.workingDir = newWD;
+    end
+    
+    
+    function Callback_main_menu_file_load(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      [fileName, pathName] = uigetfile('*.mat', 'Load Object');
+      
+      filePath = fullfile(pathName, fileName);
+      
+      pluginObj.controller.model.load(filePath);
+    end
+    
+    
+    function Callback_main_menu_file_importTable(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      [fileName, pathName] = uigetfile('*.mat', 'Import Tabular Data');
+      
+      filePath = fullfile(pathName, fileName);
+      
+      pluginObj.controller.model.importTabularDataFromFile(filePath);
+    end
+    
+    
     function Callback_main_menu_file_saveGV(src, ~)
       pluginObj = src.UserData.pluginObj;
       
@@ -117,7 +148,14 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       filePath = fullfile(pathName, fileName);
       
-      pluginObj.controller.model.saveActiveHypercube(filePath);
+      pluginObj.controller.saveActiveHypercube(filePath);
+    end
+    
+    
+    function Callback_main_menu_model_deleteHypercube(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      pluginObj.controller.deleteActiveHypercube()
     end
     
     

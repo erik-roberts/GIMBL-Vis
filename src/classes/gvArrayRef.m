@@ -21,6 +21,10 @@ classdef gvArrayRef < MDDRef & matlab.mixin.Copyable
       obj@MDDRef(valueObjClass, varargin{:});
     end
     
+    function gvArrayCast(obj)
+      obj.valueObj = gvArray(obj.valueObj);
+    end
+    
   end
   
 end

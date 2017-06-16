@@ -15,19 +15,17 @@ menuLabel = 'File';
 menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
 
-% uigetdir
 handleStr = 'changeWD';
 menuLabel = 'Change Working Directory';
 makeMenuRow();
 
-% uigetfile
 handleStr = 'load';
 menuLabel = 'Load Object';
 makeMenuRow();
 
 % uigetfile
-handleStr = 'import';
-menuLabel = 'Import Data';
+handleStr = 'importTable';
+menuLabel = 'Import Tabular Data';
 makeMenuRow();
 
 handleStr = 'saveGV';
@@ -53,7 +51,7 @@ menuLabel = 'Merge Variable From Workspace';
 makeMenuRow();
 
 handleStr = 'deleteHypercube';
-menuLabel = 'Delete Hypercube';
+menuLabel = 'Delete Active Hypercube';
 makeMenuRow();
 
 
