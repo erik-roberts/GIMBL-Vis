@@ -43,11 +43,11 @@ menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
 
 handleStr = 'mergeHypercubes';
-menuLabel = 'Merge Hypercubes';
+menuLabel = 'Merge Hypercube with Active Hypercube';
 makeMenuRow();
 
 handleStr = 'mergeVarFromWS';
-menuLabel = 'Merge Variable From Workspace';
+menuLabel = 'Merge Variable From Workspace with Active Hypercube';
 makeMenuRow();
 
 handleStr = 'deleteHypercube';

@@ -1,4 +1,4 @@
-function dataPanelheight = makeDataPanelControls(pluginObj, parentHandle)
+function uiControlsHandles = makeDataPanelControls(pluginObj, parentHandle)
 %% makeHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
@@ -11,41 +11,68 @@ axisNames = pluginObj.controller.activeHypercube.axisNames;
 % Notes
 % - set the container to be based on amount of dims
 
-fontSize = pluginObj.fontSize;
-fontWidth = pluginObj.fontWidth;
-fontHeight = pluginObj.fontHeight;
-
 spacing = 10; % px
 padding = 5; % px
 
+fontSize = pluginObj.fontSize;
+fontWidth = pluginObj.fontWidth;
+fontHeight = pluginObj.fontHeight;
+pxHeight = fontHeight + spacing; % px
 
 uiControlsHandles = struct();
 
-% Make grid of nDims x 4
-dataPanelGrid = uix.Grid('Tag','dataPanelGrid', 'Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
-uiControlsHandles.dataPanelGrid = dataPanelGrid;
+dataPanel = uix.Panel(...
+  'Tag','dataPanelBox',...
+  'Parent', parentHandle,...
+  'Title', 'Active Hypercube Data',...
+  'FontUnits','points',...
+  'FontSize',fontSize ...
+  );
 
-% grid (:,1)
-makeVarCol(dataPanelGrid)
+dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
 
-% grid (:,2)
-makeValCol(dataPanelGrid)
+% 1) Titles
+pluginObj.makeDataPanelTitles(dataVbox); % row 1
 
-% grid (:,3)
-makeViewCol(dataPanelGrid)
+% 2) Data
+dataScrollingPanel = uix.ScrollingPanel(...
+  'Tag','dataScrollingPanel',...
+  'Parent', dataVbox...
+  );
 
-% grid (:,4)
-makeLockCol(dataPanelGrid)
+makeDataPanelGrid(dataScrollingPanel);
 
-% Set grid sizes
-pxHeight = fontHeight + spacing; % px
-set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,fontWidth*6,fontWidth*6])
-dataPanelheight = (pxHeight+spacing)*(nDims+1)+padding*2;
+%% Set layout sizes
+set(dataVbox, 'Heights',[fontHeight*2,-1]);
+dataPanelheight = (pxHeight+spacing)*nDims + padding*2;
+set(dataScrollingPanel, 'Heights',dataPanelheight);
 
 % Store Handles
-% pluginObj.handles.dataPanel.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from makeDataPanelTitles
+% pluginObj.handles.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from makeDataPanelTitles
 
 %% Nested fn
+  function makeDataPanelGrid(parentHandle)
+    % Make grid of nDims x 4
+    dataPanelGrid = uix.Grid('Tag','dataPanelGrid', 'Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
+    uiControlsHandles.dataPanelGrid = dataPanelGrid;
+    
+    % grid (:,1)
+    makeVarCol(dataPanelGrid)
+    
+    % grid (:,2)
+    makeValCol(dataPanelGrid)
+    
+    % grid (:,3)
+    makeViewCol(dataPanelGrid)
+    
+    % grid (:,4)
+    makeLockCol(dataPanelGrid)
+    
+    % Set grid sizes
+    set(dataPanelGrid, 'Heights',pxHeight*ones(1, nDims), 'Widths',[-3,-5,fontWidth*6,fontWidth*6])
+  end
+
+
   function makeVarCol(parentHandle)
     % Row 1
     %   titles from 'makeDataPanelTitles.m'

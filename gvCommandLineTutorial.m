@@ -50,10 +50,10 @@ gvObj.summary;
 %   3) Call gvArray constructor on gvArray/MDD data
 gvObj = gv(sampleGvArray);
 gvObj.summary;
-gvObj.listHypercubes;
+gvObj.printHypercubeList;
 
 gvObj = gv(hypercubeName, sampleGvArray);
-gvObj.listHypercubes;
+gvObj.printHypercubeList;
 %
 %   4) Call gvArray constructor on cell/numeric array data. Can be linear
 %         or multidimensional array data.

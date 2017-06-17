@@ -49,7 +49,13 @@ classdef gvSelectPlugin < gvGuiPlugin
   %% Callbacks %%
   methods (Static)
 
-    
+    function Callback_activeHypercubeNameEdit(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      newActiveHypercubeName = src.String;
+      
+      notify(pluginObj.controller, 'activeHypercubeNameChanged',gvEvent('activeHypercubeName', newActiveHypercubeName))
+    end
     
   end
   

@@ -36,7 +36,8 @@ classdef gvController < handle
     pluginRemoved
     
     % view events
-    activeHypercubeSet
+    activeHypercubeChanged
+    activeHypercubeNameChanged
   end
   
   
@@ -178,7 +179,7 @@ classdef gvController < handle
         cntrlObj.activeHypercube = argin;
         cntrlObj.activeHypercubeName = argin.hypercubeName;
         
-        notify(cntrlObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',controller.activeHypercubeName) );
+        notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName',controller.activeHypercubeName) );
         
         cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
       elseif ischar(argin)
@@ -190,7 +191,7 @@ classdef gvController < handle
         cntrlObj.activeHypercubeName = argin;
         cntrlObj.activeHypercube = cntrlObj.model.data.(argin);
         
-        notify(cntrlObj, 'activeHypercubeSet', gvEvent('activeHypercubeName',cntrlObj.activeHypercubeName) );
+        notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName',cntrlObj.activeHypercubeName) );
         
         cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
       else
@@ -257,7 +258,8 @@ classdef gvController < handle
       cntrlObj.newListener('pluginRemoved', @gvController.Callback_pluginChanged);
       
       % view events
-      cntrlObj.newListener('activeHypercubeSet', @gvController.Callback_activeHypercubeChanged);
+      cntrlObj.newListener('activeHypercubeChanged', @gvController.Callback_activeHypercubeChanged);
+      cntrlObj.newListener('activeHypercubeNameChanged', @gvController.Callback_activeHypercubeNameChanged);
     end
     
   end
@@ -287,7 +289,27 @@ classdef gvController < handle
       new_activeHypercubeName = evnt.data.activeHypercubeName;
       prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
       if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
-        cntrlObj.vprintf('New activeHypercube: %s\n',new_activeHypercubeName);
+        cntrlObj.vprintf('New active hypercube: %s\n',new_activeHypercubeName);
+        
+        if cntrlObj.view.checkMainWindowExists()
+          cntrlObj.plugins.main.openWindow(); % reopen window
+        end
+      end
+    end
+    
+    
+    function Callback_activeHypercubeNameChanged(src, evnt)
+      cntrlObj = src;
+      
+      new_activeHypercubeName = evnt.data.activeHypercubeName;
+      prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
+      if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
+        cntrlObj.vprintf('New active hypercube Name: %s\n',new_activeHypercubeName);
+        
+        cntrlObj.activeHypercubeName = new_activeHypercubeName;
+        cntrlObj.prior_activeHypercubeName = new_activeHypercubeName;
+        cntrlObj.model.changeHypercubeName(prior_activeHypercubeName, new_activeHypercubeName);
+        
         
         if cntrlObj.view.checkMainWindowExists()
           cntrlObj.plugins.main.openWindow(); % reopen window

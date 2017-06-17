@@ -43,10 +43,8 @@
 % panel store handles
 % dependencies
 %
-% automate callback names from tags
-% prefix tags for makePanel
+% automate callback names from tags and prefix all tags
 % have CLI property for accessing methods
-% make plot into data selector
 % reset just ui element that needs to change
 % inner and outer analysis + plots, outer images
 % plot overlays
@@ -54,6 +52,8 @@
 %
 % have gen data selector which adds a hypercube that only has the selected values
 % make fn that returns currently selected hypercube indicies
+%
+% edit names toggle on select
 
 classdef gv < handle
   
@@ -279,11 +279,11 @@ classdef gv < handle
     
     
     %% Misc
-    function varargout = listHypercubes(gvObj)
+    function varargout = printHypercubeList(gvObj)
       if nargout
-        varargout = gvObj.model.listHypercubes();
+        varargout = gvObj.model.printHypercubeList();
       else
-        gvObj.model.listHypercubes();
+        gvObj.model.printHypercubeList();
       end
     end
     

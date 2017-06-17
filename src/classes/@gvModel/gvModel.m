@@ -31,7 +31,7 @@ classdef gvModel < handle
     end
     
     
-    function varargout = listHypercubes(modelObj)
+    function varargout = printHypercubeList(modelObj)
       flds = fieldnames(modelObj.data);
       if isempty(flds)
         flds = {'[ None ]'};
@@ -110,6 +110,12 @@ classdef gvModel < handle
     function setup(modelObj)
       modelObj.view = modelObj.app.view;
       modelObj.controller = modelObj.app.controller;
+    end
+    
+    
+    function changeHypercubeName(modelObj, oldHypercubeName, newHypercubeName)
+      modelObj.data.(newHypercubeName) = modelObj.data.(oldHypercubeName);
+      modelObj.data = rmfield(modelObj.data, oldHypercubeName);
     end
     
     

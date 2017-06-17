@@ -73,7 +73,11 @@ panelHandle = mainVbox;
     makePluginNamesCol(pluginGrid)
     makeLoadCol(pluginGrid)
     
+    %% set layout sizes
     set(pluginGrid, 'Heights',pxHeight*ones(1, nPlugins), 'Widths',[-10,-1]);
+    
+    pluginPanelheight = (pxHeight+spacing)*nPlugins + padding*2;
+    set(scrollingPanel, 'Heights',pluginPanelheight);
     
     set(pluginVbox, 'Heights',[fontHeight*2, -1]);
   end
