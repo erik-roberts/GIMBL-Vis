@@ -1,5 +1,5 @@
-function makeImagePanelControls(pluginObj, parentHandle)
-%% makeImagePanelControls
+function panelHandle = makePanelControls(pluginObj, parentHandle)
+%% makePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
 
@@ -9,24 +9,27 @@ padding = 2; % px
 
 uiControlsHandles = struct();
 
-vBox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
+mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
 
 % vbox Row 1
-row1hBox = uix.HBox('Parent',vBox, 'Spacing',spacing);
+row1hBox = uix.HBox('Parent',mainVbox, 'Spacing',spacing);
 makeRow1Hbox(row1hBox);
 
 % vbox Row 2
-uix.Empty('Parent', vBox);
+uix.Empty('Parent', mainVbox);
 
 % Store Handles
-pluginObj.handles.imagePanel.controls = uiControlsHandles;
+% pluginObj.handles.imagePanel.controls = uiControlsHandles;
 
+%% argout
+panelHandle = mainVbox;
 
 %% Nested fn
   function makeRow1Hbox(hBox)
     % openImageButton
+    thisTagStr = 'openWindowButton';
     uiControlsHandles.openImageButton = uicontrol(...
-      'Tag','openImageButton',...
+      'Tag',[pluginObj.pluginFieldName '_panel_' thisTagStr],...
       'Style','pushbutton',...
       'FontUnits','points',...
       'FontSize',fontSize,...
@@ -36,8 +39,9 @@ pluginObj.handles.imagePanel.controls = uiControlsHandles;
     
     
     % imageTypeLabel
+    thisTagStr = 'imageTypeLabel';
     uiControlsHandles.imageTypeLabel = uicontrol(...
-      'Tag','imageTypeLabel',...
+      'Tag',[pluginObj.pluginFieldName '_panel_' thisTagStr],...
       'Style','text',...
       'FontUnits','points',...
       'FontSize',fontSize,...
@@ -46,8 +50,9 @@ pluginObj.handles.imagePanel.controls = uiControlsHandles;
     
     
     % imageTypeMenu
+    thisTagStr = 'imageTypeMenu';
     uiControlsHandles.imageTypeMenu = uicontrol(...
-      'Tag','imageTypeMenu',...
+      'Tag',[pluginObj.pluginFieldName '_panel_' thisTagStr],...
       'Style','popupmenu',...
       'FontUnits','points',...
       'FontSize',fontSize,...

@@ -53,7 +53,11 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       newPos = plotPanPos; % same size as plot window
       newPos(1) = newPos(1)+newPos(3)+50; % move right
       %       newPos(3:4) = newPos(3:4)*.8; %shrink
-      imageWindowHandle = figure('Name',pluginObj.windowName, 'NumberTitle','off', 'Position',newPos);
+      imageWindowHandle = figure(...
+        'Name',pluginObj.windowName,...
+        'Tag',[pluginObj.pluginFieldName '_window'],...
+        'NumberTitle','off',...
+        'Position',newPos);
       
       axes(imageWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
         'XTick',[], 'YTick',[]);
@@ -61,8 +65,6 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       % set image handle
       pluginObj.handles.fig = imageWindowHandle;
     end
-    
-    makeImagePanelControls(pluginObj, parentHandle)
 
   end
   
