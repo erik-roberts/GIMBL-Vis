@@ -9,7 +9,7 @@ pluginObj.handles.controls = uiControlsHandles;
 
 %% Nested Fn
   function makeTabs()
-    tabPanel = uitabgroup('Parent',parentHandle);
+    tabPanel = uitabgroup('Parent',parentHandle, 'Tag', [pluginObj.pluginFieldName '_window_' 'tabGroup']);
     uiControlsHandles.tabPanel = tabPanel;
     
     guiPlugins = pluginObj.controller.guiPlugins;
@@ -22,7 +22,8 @@ pluginObj.handles.controls = uiControlsHandles;
       thisPlugin = guiPlugins.(thisFld);
       
       % get handle to uitab
-      thisUItab = uitab(tabPanel, 'title', thisPlugin.pluginName);
+      thisTag = [pluginObj.pluginFieldName '_window_tab_' thisPlugin.pluginName];
+      thisUItab = uitab(tabPanel, 'title', thisPlugin.pluginName, 'Tag',thisTag);
       uiControlsHandles.tabs{k}.uitab = thisUItab;
       
       % get handle to uitab child

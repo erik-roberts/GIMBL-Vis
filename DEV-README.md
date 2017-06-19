@@ -23,3 +23,11 @@ Each `hypercube` dataset is stored as a field of the `gvModel` `data` structure 
   - general: `Callback_callbackName`
   - events: `Callback_eventName`
   - matlab objects: `Callback_tagName`
+- Tags:
+  - Main Window Tabs: `[pluginObj.pluginFieldName '_window_tab_' thisPlugin.pluginName];`
+  - Main Window Panels (i.e. Controls in Tab): `[pluginObj.pluginFieldName '_panel_' thisTagStr]`
+  - Window Figure: `[pluginObj.pluginFieldName '_window']`
+  - Window Controls: `[pluginObj.pluginFieldName '_window_' thisTagStr];`
+  - Window Menu Items:
+    - For Col: `[pluginObj.pluginFieldName '_menu_' menuHandleStr]`
+    - For Row: `[pluginObj.pluginFieldName '_menu_' menuHandleStr '_' handleStr]`
