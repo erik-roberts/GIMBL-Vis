@@ -113,6 +113,11 @@ classdef gvModel < handle
     end
     
     
+    function mergeHypercubes(modelObj, hypercube1, hypercube2)
+      
+    end
+    
+    
     function changeHypercubeName(modelObj, oldHypercubeName, newHypercubeName)
       modelObj.data.(newHypercubeName) = modelObj.data.(oldHypercubeName);
       modelObj.data = rmfield(modelObj.data, oldHypercubeName);
@@ -209,6 +214,22 @@ classdef gvModel < handle
 
     function vprintf(obj, varargin)
       obj.app.vprintf(varargin{:});
+    end
+    
+    function toHypercubeName(modelObj, src)
+      if isa(src, 'MDD') || isa(src, 'MDDRef') % or gvArray
+        if ~isempty(src.hypercubeName)
+          fldIn = src.hypercubeName;
+        elseif isfield(src.meta, 'defaultHypercubeName')
+          fldIn = src.meta.defaultHypercubeName;
+        else
+          fldIn = [];
+        end
+      elseif ischar(src)
+        fldIn = src;
+      else
+        error('Unknown input')
+      end
     end
     
   end % protected methods

@@ -33,6 +33,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj@gvWindowPlugin(varargin{:});
     end
 
+
     openWindow(pluginObj)
     
     function closeWindow(pluginObj)

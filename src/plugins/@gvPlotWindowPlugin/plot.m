@@ -1,18 +1,18 @@
 function plot(pluginObj)
 
-nViewDims = pluginObj.nViewDims;
-nViewDimsLast = pluginObj.nViewDimsLast;
+nViewDims = pluginObj.view.dynamic.nViewDims;
+nViewDimsLast = pluginObj.view.dynamic.nViewDimsLast;
 
 if ~(nViewDims > 0 && nViewDims ~= nViewDimsLast)
-  pluginObj.vprintf('Skipping')
+  pluginObj.vprintf('Skipping Plot\n')
   return
 end
 
 hFig = pluginObj.plotWindow.handles.fig;
 hAx = pluginObj.plotWindow.handles.ax;
 
-nViewDims = pluginObj.nViewDims;
-viewDims = pluginObj.viewDims;
+nViewDims = pluginObj.view.dynamic.nViewDims;
+viewDims = pluginObj.view.dynamic.viewDims;
 % nAxDims = pluginObj.plotWindow.nAxDims;
 data = pluginObj.activeHypercube;
 dimNames = data.axisNames;

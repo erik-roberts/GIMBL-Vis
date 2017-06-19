@@ -31,7 +31,17 @@ classdef gvSelectPlugin < gvGuiPlugin
     function pluginObj = gvSelectPlugin(varargin)
       pluginObj@gvGuiPlugin(varargin{:});
     end
+    
+    
+    function setup(pluginObj, cntrObj)
+      setup@gvGuiPlugin(pluginObj, cntrObj);
+      
+      pluginObj.view.dynamic.nViewDims = 0;
+      pluginObj.view.dynamic.nViewDimsLast = 0;
+      pluginObj.view.dynamic.viewDims = [];
+    end
 
+    
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
   end
@@ -44,17 +54,29 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     makeDataPanelTitles(pluginObj, parentHandle)
     
+    function updateNumViewDims(pluginObj)
+      % TODO
+      pluginObj.handles;
+    end
+    
   end
   
   %% Callbacks %%
   methods (Static)
 
-    function Callback_activeHypercubeNameEdit(src, evnt)
+    function Callback_select_activeHypercubeNameEdit(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
       newActiveHypercubeName = src.String;
       
       notify(pluginObj.controller, 'activeHypercubeNameChanged',gvEvent('activeHypercubeName', newActiveHypercubeName))
+    end
+    
+    
+    function Callback_select_viewCheckbox(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      pluginObj.updateNumViewDims();
     end
     
   end
