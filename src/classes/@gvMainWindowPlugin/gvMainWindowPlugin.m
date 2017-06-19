@@ -48,7 +48,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   end
   
   %% Callbacks %%
-  methods (Static, Access = protected)
+  methods (Static, Hidden)
     
     function Callback_closeRequestFcn(src, ~)
       % Close request function
@@ -113,6 +113,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       [fileName, pathName] = uigetfile('*.mat', 'Load Object');
       
+      if ~fileName && ~pathName
+        return
+      end
+      
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.model.load(filePath);
@@ -123,6 +127,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj;
       
       [fileName, pathName] = uigetfile('*.mat', 'Import Tabular Data');
+      
+      if ~fileName && ~pathName
+        return
+      end
       
       filePath = fullfile(pathName, fileName);
       
@@ -135,6 +143,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       [fileName, pathName] = uiputfile('*.mat', 'Save GIMB-Vis Object');
       
+      if ~fileName && ~pathName
+        return
+      end
+      
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.app.save(filePath);
@@ -145,6 +157,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj;
       
       [fileName, pathName] = uiputfile('*.mat', 'Save Hypercube as MDD Object');
+      
+      if ~fileName && ~pathName
+        return
+      end
       
       filePath = fullfile(pathName, fileName);
       

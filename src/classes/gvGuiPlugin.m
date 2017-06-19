@@ -43,6 +43,26 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     end
     
     
+    function tag = panelTag(pluginObj, str)
+      tag = [pluginObj.pluginFieldName '_panel_' str];
+    end
+    
+    
+    function tag = figTag(pluginObj)
+      tag = [pluginObj.pluginFieldName '_window'];
+    end
+    
+    
+    function tag = windowTag(pluginObj, str)
+      tag = [pluginObj.pluginFieldName '_window_' str];
+    end
+    
+    
+    function handle = callbackHandle(pluginObj, tag)
+      handle = str2func([pluginObj.pluginClassName '.Callback_' tag]);
+    end
+    
+    
     function findObjects(pluginObj)
       pluginObj.handles.all = findobj('-regexp','Tag',['^' pluginObj.pluginFieldName]);
     end

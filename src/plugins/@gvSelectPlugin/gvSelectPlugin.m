@@ -64,7 +64,7 @@ classdef gvSelectPlugin < gvGuiPlugin
   %% Callbacks %%
   methods (Static)
 
-    function Callback_select_activeHypercubeNameEdit(src, evnt)
+    function Callback_select_panel_activeHypercubeNameEdit(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
       newActiveHypercubeName = src.String;
@@ -73,7 +73,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     end
     
     
-    function Callback_select_viewCheckbox(src, evnt)
+    function Callback_select_panel_viewCheckbox(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.updateNumViewDims();

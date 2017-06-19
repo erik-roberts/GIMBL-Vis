@@ -12,7 +12,7 @@ With the MVC, GV losely follows an observer pattern. The observer objects (i.e. 
 Each `hypercube` dataset is stored as a field of the `gvModel` `data` structure property. The field name corresponds to the `hypercube` name. Each `hypercube` dataset is stored in a `gvArray`, which is a subclass of the MultiDimensional Dictionary ([`MDD`](https://github.com/davestanley/MultiDimensionalDictionary)) class. The `gvArray` class replaces the default `MDDAxis` objects from `MDD` with a `gvArrayAxis` subclass of `MDDAxis`.
 
 ## Coding Conventions
-- Class properties are either public or read-only (i.e. `SetAccess = protected`). Thus they are never private to allow for easier development. If a property is read-only, there is typically a public method for setting it. Class methods are either public or protected. Unlike properties, methods can have side-affects, so they may be protected. They should be protected instead of private to allow for subclass inheritance. Properties and methods are never hidden to aid development. The `gv` class is an exception to these guidelines to avoid unintentional user interaction. The prefered user CLI interaction is through the `gvObject.cli` object.
+- Class properties are either public or read-only (i.e. `SetAccess = protected`). Thus they are never private to allow for easier development. If a property is read-only, there is typically a public method for setting it. Class methods are either public or protected. Unlike properties, methods can have side-affects, so they may be protected. They should be protected instead of private to allow for subclass inheritance. Properties and methods are in general not hidden to aid development. Callbacks and the `gv` class are exceptions to these guidelines to avoid unintentional user interaction. The prefered user CLI interaction is through the `gvObject.cli` object.
 
 ## Naming Conventions
 - classes are prefixed with `gv` followed by UpperCamelCase
@@ -22,12 +22,12 @@ Each `hypercube` dataset is stored as a field of the `gvModel` `data` structure 
 - Callbacks use `Callback_` prefix followed by lowerCamelCase:
   - general: `Callback_callbackName`
   - events: `Callback_eventName`
-  - matlab objects: `Callback_tagName`
+  - matlab objects: `Callback_tagName` - use `callbackHandle` method
 - Tags:
   - Main Window Tabs: `[pluginObj.pluginFieldName '_window_tab_' thisPlugin.pluginName];`
-  - Main Window Panels (i.e. Controls in Tab): `[pluginObj.pluginFieldName '_panel_' thisTagStr]`
-  - Window Figure: `[pluginObj.pluginFieldName '_window']`
-  - Window Controls: `[pluginObj.pluginFieldName '_window_' thisTagStr];`
+  - Main Window Panels (i.e. Controls in Tab): `[pluginObj.pluginFieldName '_panel_' thisTagStr]` - use `panelTag` method
+  - Window Figure: `[pluginObj.pluginFieldName '_window']` - use `figTag` method
+  - Window Controls: `[pluginObj.pluginFieldName '_window_' thisTagStr];` - use `windowTag` method
   - Window Menu Items:
     - For Col: `[pluginObj.pluginFieldName '_menu_' menuHandleStr]`
     - For Row: `[pluginObj.pluginFieldName '_menu_' menuHandleStr '_' handleStr]`
