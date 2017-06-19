@@ -33,8 +33,16 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj@gvWindowPlugin(varargin{:});
     end
 
+    
+    function setup(pluginObj, cntrlObj)
+      setup@gvWindowPlugin(pluginObj, cntrlObj);
+      
+      cntrlObj.newListener('doPlot', @gvPlotWindowPlugin.Callback_doPlot);
+    end
 
+    
     openWindow(pluginObj)
+    
     
     function closeWindow(pluginObj)
       closeWindow@gvWindowPlugin(pluginObj)
@@ -42,10 +50,13 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj.handles.ax = [];
     end
     
+    
     openLegendWindow(pluginObj)
 
+    
     plot(pluginObj)
 
+    
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
   end
@@ -56,7 +67,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     makePlotMarkerPanelControls(pluginObj, parentHandle)
     
+    
     makePlotPanelControls(pluginObj, parentHandle)
+    
     
     function makeFig(pluginObj)
       % makeFig - make plot window figure
@@ -65,6 +78,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
       plotWindowHandle = figure(...
         'Name','Plot Window',...
+        'Tag', pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
         'UserData',pluginObj.userData,...
@@ -158,10 +172,12 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
-    function plotCallback(src, evnt)
-%       pluginObj = src.UserData.pluginObj; % window plugin
-      
-      
+    function Callback_doPlot(src, evnt)
+      pluginObj = src.windowPlugins.plot; % window plugin
+ 
+      if pluginObj.view.checkMainWindowExists()
+        pluginObj.plot();
+      end
     end
     
     

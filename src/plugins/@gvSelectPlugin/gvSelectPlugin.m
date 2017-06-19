@@ -54,9 +54,16 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     makeDataPanelTitles(pluginObj, parentHandle)
     
-    function updateNumViewDims(pluginObj)
-      % TODO
-      pluginObj.handles;
+    function updateViewDims(pluginObj)
+      viewCheckboxes = findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','viewCheckbox');
+      pluginObj.view.dynamic.viewDims = [viewCheckboxes.Value];
+      pluginObj.view.dynamic.nViewDims = sum([viewCheckboxes.Value]);
+      
+      if pluginObj.view.dynamic.nViewDims ~= pluginObj.view.dynamic.nViewDimsLast
+        notify(pluginObj.controller, 'doPlot')
+      end
+      
+      pluginObj.view.dynamic.nViewDimsLast = sum([viewCheckboxes.Value]);
     end
     
   end
@@ -76,7 +83,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     function Callback_select_panel_viewCheckbox(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
-      pluginObj.updateNumViewDims();
+      pluginObj.updateViewDims();
     end
     
   end

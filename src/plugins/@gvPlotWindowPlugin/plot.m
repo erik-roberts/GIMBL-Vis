@@ -8,17 +8,17 @@ if ~(nViewDims > 0 && nViewDims ~= nViewDimsLast)
   return
 end
 
-hFig = pluginObj.plotWindow.handles.fig;
-hAx = pluginObj.plotWindow.handles.ax;
+hFig = pluginObj.handles.fig;
+hAx = pluginObj.handles.ax;
 
 nViewDims = pluginObj.view.dynamic.nViewDims;
 viewDims = pluginObj.view.dynamic.viewDims;
 % nAxDims = pluginObj.plotWindow.nAxDims;
-data = pluginObj.activeHypercube;
+data = pluginObj.controller.activeHypercube;
 dimNames = data.axisNames;
 
 % Find labels for categorical data
-if isfield(pluginObj.app.data.meta.classes,'Label')
+if isfield(pluginObj.controller.model.data.meta.classes,'Label')
   colors = cat(1,pluginObj.plotWindow.Label.colors{:});
   markers = pluginObj.plotWindow.Label.markers;
   groups = pluginObj.plotWindow.Label.names;

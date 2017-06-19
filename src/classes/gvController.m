@@ -38,6 +38,7 @@ classdef gvController < handle
     % view events
     activeHypercubeChanged
     activeHypercubeNameChanged
+    doPlot
   end
   
   
@@ -291,9 +292,12 @@ classdef gvController < handle
       if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
         cntrlObj.vprintf('New active hypercube: %s\n',new_activeHypercubeName);
         
+        % TODO: more precise change
         if cntrlObj.view.checkMainWindowExists()
           cntrlObj.plugins.main.openWindow(); % reopen window
         end
+        
+        notify(cntrlObj, 'doPlot');
       end
     end
     
