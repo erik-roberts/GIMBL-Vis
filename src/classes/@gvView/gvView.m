@@ -75,6 +75,8 @@ classdef gvView < handle
     
     
     function run(viewObj)
+      viewObj.controller.setActiveHypercube();
+      
       viewObj.windowPlugins.main.openWindow();
     end
     

@@ -167,6 +167,13 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.updateDisabledDims()
     end
     
+    
+    function Callback_select_panel_slider(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      disp(src.Value)
+    end
+    
   end
   
 end

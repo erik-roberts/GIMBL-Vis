@@ -176,13 +176,15 @@ classdef gvController < handle
     
     
     function setActiveHypercube(cntrlObj, argin)
-      if isobject(argin)
+      if nargin < 2
+        flds = fieldnames(cntrlObj.model.data);
+        firstHypercubeName = flds{1};
+        
+        cntrlObj.activeHypercube = cntrlObj.model.data.(firstHypercubeName);
+        cntrlObj.activeHypercubeName = firstHypercubeName;
+      elseif isobject(argin)
         cntrlObj.activeHypercube = argin;
         cntrlObj.activeHypercubeName = argin.hypercubeName;
-        
-        notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName',controller.activeHypercubeName) );
-        
-        cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
       elseif ischar(argin)
         if strcmp(argin, '[None]')
           wprintf('Import data before selecting a hypercube.')
@@ -191,13 +193,12 @@ classdef gvController < handle
         
         cntrlObj.activeHypercubeName = argin;
         cntrlObj.activeHypercube = cntrlObj.model.data.(argin);
-        
-        notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName',cntrlObj.activeHypercubeName) );
-        
-        cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
       else
         error('Unknown hypercube input')
       end
+      
+      notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName', cntrlObj.activeHypercubeName) );
+      cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
     end
     
     

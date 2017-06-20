@@ -21,4 +21,12 @@ classdef gvArrayAxis < MDDAxis
     axType
   end
   
+  methods
+    
+    function vals = valueAsStr(axObj, ind)
+       vals = axObj.getvalue_char(ind);
+    end
+    
+  end
+  
 end

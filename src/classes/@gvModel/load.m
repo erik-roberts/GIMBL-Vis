@@ -23,13 +23,6 @@ if nargin < 4
   staticBool = false;
 end
 
-% Determine fld/hypercubeName
-if isempty(fld)
-  fld = modelObj.nextModelFieldName; % get next fld for model.axes#
-else
-  fld = modelObj.checkHypercubeName(fld);
-end
-
 % parse src
 if exist(src, 'dir')
   matFile = lscell(fullfile(src, '*.mat'));
@@ -72,6 +65,13 @@ if isa(data, 'gv')
   end
   fprintf('Loaded gv object data.\n')
 elseif isa(data, 'MDD') || isa(data, 'MDDRef') % || isa(data, 'gvArray')
+  % Determine fld/hypercubeName
+  if isempty(fld)
+    fld = modelObj.checkHypercubeName(gvArray(data));
+  else
+    fld = modelObj.checkHypercubeName(fld);
+  end
+  
   modelObj.data.(fld) = gvArrayRef(gvArray(data));
   
   notify(modelObj.controller, 'modelChanged');

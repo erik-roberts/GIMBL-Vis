@@ -216,10 +216,8 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   
   %% gvArray
-  hypercubeName = modelObj.checkHypercubeName('dsData');
-  
   dynasimData = gvArray;
-  dynasimData.meta.defaultHypercubeName = hypercubeName;
+  dynasimData.meta.defaultHypercubeName = 'dsData';
     
   % store simIDs in axis 1
   analysisResults.simID = simIDs;
@@ -268,7 +266,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   dynasimData.axis(1).axType = 'dataType';
   
   % Store data
-  modelObj.data.(hypercubeName) = gvArrayRef(dynasimData);
+  modelObj.addHypercube(gvArrayRef(dynasimData));
   
   % Save
   save(filePath, 'dynasimData') % save gvArray obj
@@ -276,6 +274,7 @@ if ~exist(filePath,'file') || options.overwriteBool
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
   modelObj.vprintf('Loading data from: %s\n', filePath)
+  
   modelObj.load(filePath);
 end
 
