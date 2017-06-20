@@ -55,6 +55,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
     
     plot(pluginObj)
+    
+    
+    iterate(pluginObj)
 
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
@@ -172,11 +175,38 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
+    function Callback_plot_panel_iterateToggle(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      if src.Value
+        src.String = sprintf('Iterate ( %s )', char(8545)); %pause char (bars)
+%         src.String = sprintf('Iterate ( %s )', char(hex2dec('23F8'))); %pause char (bars)
+
+        pluginObj.iterate();
+      else
+        src.String = sprintf('Iterate ( %s )', char(9654)); %start char (arrow)
+      end
+    end
+    
+    
     function Callback_doPlot(src, evnt)
       pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
  
       if pluginObj.view.checkMainWindowExists()
         pluginObj.plot();
+      end
+    end
+    
+    
+    function Callback_plot_panel_autoSizeToggle(src, evnt)
+      markerSizeSlider = findobj('-regexp', 'Tag','markerSizeSlider');
+      
+      if src.Value
+        src.String = sprintf('AutoSize (%s)', char(hex2dec('2714')));
+        markerSizeSlider.Enable = 'off';
+      else
+        src.String = sprintf('AutoSize (%s)', '  ');
+        markerSizeSlider.Enable = 'on';
       end
     end
     

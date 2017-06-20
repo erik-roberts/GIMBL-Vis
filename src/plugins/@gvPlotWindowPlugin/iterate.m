@@ -1,5 +1,5 @@
-function gvIterateCallback(hObject, eventdata, handles)
-disabledDims = handles.PlotWindow.disabledDims;
+function iterate(pluginObj)
+disabledDims = pluginObj.view.dynamic.disabledDims;
 
 if hObject.Value && (~isValidFigHandle('handles.PlotWindow.figHandle') || ~handles.PlotWindow.nViewDims) || all(disabledDims)
   wprintf('Cannot iterate without a visible Plot Window, at least 1 "view" variable, and at least 1 variable not disabled.')
