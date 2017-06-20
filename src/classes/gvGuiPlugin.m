@@ -23,6 +23,11 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     fontHeight
   end
   
+  %% Events %%
+  events
+    panelControlsMade
+  end
+  
   
   %% Concrete Methods %%
   methods

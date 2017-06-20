@@ -19,12 +19,6 @@ classdef gvSelectPlugin < gvGuiPlugin
   end
   
   
-  %% Events %%
-  events
-    panelControlsMade
-  end
-  
-  
   %% Public methods %%
   methods
     
@@ -123,8 +117,22 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.initializeDynamicVars();
     end
     
+    function Callback_select_panel_editModeToggle(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      
+      toggleObjs = findobj('-regexp','Tag','select_panel_.*Text.*');
+      
+      if src.Value
+        [toggleObjs.Style] = deal('edit');
+      else
+        [toggleObjs.Style] = deal('text');
+      end
+      
+    end
     
-    function Callback_select_panel_activeHypercubeNameEdit(src, evnt)
+    
+    function Callback_select_panel_activeHypercubeText(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
       newActiveHypercubeName = src.String;

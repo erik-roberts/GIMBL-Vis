@@ -9,6 +9,7 @@ function makeMenu(pluginObj, parentHandle)
 
 uiMenuHandles = {};
 menuCol = 0;
+menuRow = 0;
 
 %% File
 menuLabel = 'File';
@@ -77,6 +78,7 @@ pluginObj.handles.menu = uiMenuHandles;
 %% Nested Fn
   function menuColHandle = makeMenuCol()
     menuCol = menuCol + 1;
+    menuRow = 0;
     
     thisTag = [pluginObj.pluginFieldName '_menu_' menuHandleStr];
     
@@ -91,9 +93,11 @@ pluginObj.handles.menu = uiMenuHandles;
 
 
   function makeMenuRow()
+    menuRow = menuRow + 1;
+    
     thisTag = [pluginObj.pluginFieldName '_menu_' menuHandleStr '_' handleStr];
     
-    uiMenuHandles{end+1,menuCol} = uimenu(...
+    uiMenuHandles{menuRow,menuCol} = uimenu(...
       'Label',menuLabel,...
       'Tag',thisTag,...
       'Callback',pluginObj.callbackHandle(thisTag),...

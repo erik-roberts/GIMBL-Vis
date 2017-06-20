@@ -88,8 +88,8 @@ classdef gv < handle
 %   
 %     end
   
-  %% Private Properties %%
-  properties (Access = private)
+  %% Properties %%
+  properties
     model % = gvModel(gvObj)
     controller % = gvController(gvObj)
     view % = gvView(gvObj)
@@ -557,7 +557,7 @@ classdef gv < handle
   %% Hidden Static Methods %%
   methods (Static, Hidden)
     
-    function pluginNames = ListPlugins()
+    function pluginNames = ListPluginsFromDir()
       pluginFiles = lscell(fullfile(gv.RootPath, 'src', 'plugins'));
       pluginNames = regexp(pluginFiles, '^@?(\w+)(?:\.\w+)?$','tokens');
       pluginNames = [pluginNames{:}];

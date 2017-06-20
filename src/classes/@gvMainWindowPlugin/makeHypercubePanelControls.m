@@ -1,4 +1,4 @@
-function makeHypercubePanelControls(pluginObj, parentHandle)
+function uiControlsHandles = makeHypercubePanelControls(pluginObj, parentHandle)
 %% makeHypercubePanelControls
 %
 % Input: parentHandle - handle for uicontrol parent
@@ -55,8 +55,5 @@ uiControlsHandles.hypercubeMenu = uicontrol(...
   'Parent',hypercubeHbox);
 
 set(hypercubeHbox, 'Widths',[-1, -1])
-
-% Store Handles
-% pluginObj.handles.hypercubePanel.controls = uiControlsHandles;
 
 end

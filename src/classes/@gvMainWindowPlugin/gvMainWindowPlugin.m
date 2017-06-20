@@ -43,7 +43,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     makeMenu(pluginObj, parentHandle)
     
-    makeHypercubePanelControls(pluginObj, parentHandle)
+    uiControlsHandles = makeHypercubePanelControls(pluginObj, parentHandle)
 
   end
   

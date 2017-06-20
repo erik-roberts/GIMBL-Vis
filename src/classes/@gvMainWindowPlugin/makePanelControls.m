@@ -19,13 +19,15 @@ uiControlsHandles = struct();
 
 thisTag = pluginObj.panelTag('vbox');
 mainVbox = uix.VBox('Parent',parentHandle, 'Tag',thisTag, 'Spacing',spacing, 'Padding',padding); % make box to hold panels
+uiControlsHandles.parent = mainVbox;
 
-pluginObj.makeHypercubePanelControls(mainVbox);
+uiControlsHandles.hypercubePanel = pluginObj.makeHypercubePanelControls(mainVbox);
+
 makePluginPanel(mainVbox);
 
 set(mainVbox, 'Heights',[fontHeight*3, -1])
 
-panelHandle = mainVbox;
+panelHandle = uiControlsHandles;
 
 
 %% Nested Fn
@@ -34,7 +36,7 @@ panelHandle = mainVbox;
     loadedPlugins = rmfield(loadedPlugins, 'main');
     loadedPlugins = struct2cell(loadedPlugins);
     
-    pluginList = gv.ListPlugins;
+    pluginList = gv.ListPluginsFromDir;
     plugins = {};
     for i = 1:length(pluginList)
       thisPlugin = eval(pluginList{i});
