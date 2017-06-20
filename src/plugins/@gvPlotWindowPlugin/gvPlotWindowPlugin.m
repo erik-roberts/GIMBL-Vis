@@ -173,7 +173,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     function Callback_doPlot(src, evnt)
-      pluginObj = src.windowPlugins.plot; % window plugin
+      pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
  
       if pluginObj.view.checkMainWindowExists()
         pluginObj.plot();

@@ -35,6 +35,9 @@ set(mainVbox, 'Heights',[fontHeight*2, -1])
 %% argout
 panelHandle = mainVbox;
 
+%% listener
+notify(pluginObj, 'panelControlsMade');
+
 
 %% Nested Fn
   function makeActiveHypercubeEdit(parentHandle)

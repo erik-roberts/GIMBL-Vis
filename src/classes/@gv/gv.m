@@ -299,8 +299,12 @@ classdef gv < handle
       % Print model summary
       gvObj.model.summary;
       
+      fprintf('\n')
+      
       % Print controller summary
       gvObj.controller.summary;
+      
+      fprintf('\n')
       
       % Print view summary
       gvObj.view.summary;
