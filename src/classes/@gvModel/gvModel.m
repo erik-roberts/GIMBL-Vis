@@ -87,6 +87,8 @@ classdef gvModel < handle
     %% Importing
     modelObj = importTabularDataFromFile(modelObj, fld, varargin)
     
+    importDsData(modelObj, src, varargin);
+    
     %% Saving
     function saveHypercube(modelObj, hypercubeName, filePath, overwriteBool)
       % saveActiveHypercube - save gvArray object to file as MDD object (default: 'gvHypercubeData.mat')

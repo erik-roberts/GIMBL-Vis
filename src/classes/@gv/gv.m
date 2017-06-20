@@ -235,6 +235,17 @@ classdef gv < handle
       
     end
     
+    function importDsData(gvObj, varargin)
+      % importDsData - import dynasim data
+      %
+      % Usage:
+      %   gvObj.importDsData(src, varargin)
+      %
+      % See also: gvModel/importDsData
+      
+      gvObj.model.importDsData(varargin{:});
+    end
+    
     
     %% Running
     function run(gvObj, varargin)
@@ -469,9 +480,6 @@ classdef gv < handle
     
     
     %% Importing
-    obj = ImportDsData(varargin)
-    
-    
     function gvObj = ImportTabularDataFromFile(varargin)
       % ImportTabularDataFromFile (static) - Imports tabular data from a file to
       %                                      a new set of axes (ie hypercube)
@@ -510,6 +518,21 @@ classdef gv < handle
       gvObj.importTabularDataFromFile(varargin{:});
     end
     
+    
+    function gvObj = ImportDsData(varargin)
+      % ImportDsData (static) - import dynasim data
+      %
+      % Usage:
+      %   gv.ImportDsData(src, varargin)
+      %
+      % See also: gvModel/importDsData
+      
+      gvObj = gv();
+      
+      gvObj.importDsData(varargin{:});
+    end
+    
+    
     %% Running
     function obj = Run(loadPath, varargin)
       % Run (static) - run gv
@@ -535,6 +558,7 @@ classdef gv < handle
 
     function GenerateDocumentation()
       %GenerateDocumentation - Build GIMBL-Vis documentation
+      
       cwd = pwd; % store current working dir
       
       cd(gv.RootPath());

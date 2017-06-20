@@ -1,16 +1,12 @@
-function gvObj = ImportDsData(src, varargin)
-% ImportDsData - import dynasim data
+function importDsData(modelObj, src, varargin)
+% importDsData - import dynasim data
 %
 % src is a path to a dir or a mat file to save to.
 
 %% Setup args
-
-if ~nargin
+if nargin < 2
   src = pwd;
 end
-
-%% Instantiate object
-gvObj = gv();
 
 %% Check Options
 options = checkOptions(varargin,{...
@@ -21,17 +17,16 @@ options = checkOptions(varargin,{...
 %% Parse src
 [~,~, ext] = fileparts(src);
 if exist(src, 'dir')
-  filePath = fullfile(src, 'gvData.mat');
+  filePath = fullfile(src, 'gvArrayData.mat');
 elseif ~isempty(ext) && ~strcmp(ext, '.mat')
   error('Path input is not a mat file or dir to save ''gvData.mat'' file.')
   % else % given valid mat filename
 end
 
 %% Load or Make gvData
-
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data
-  vfprintf('Importing studyinfo...\n')
+  modelObj.vprintf('Importing studyinfo...\n')
   studyinfo = ds.checkStudyinfo(src);
   
   studyinfoParams = studyinfo.base_model.parameters;
@@ -114,7 +109,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   % convert to fn handles
   resultFns = cellfunu(@str2func, resultFns);
   
-  vfprintf('Importing varied parameter values...\n')
+  modelObj.vprintf('Importing varied parameter values...\n')
   
   % Get varied params
   variedParamNames = vertcat(modNames{:});
@@ -141,10 +136,10 @@ if ~exist(filePath,'file') || options.overwriteBool
   %     VariedData.(variedParamNames{iParam}) = variedParamValues(:,iParam);
   %   end
   
-  vfprintf('\tDone importing varied parameter values.\n')
+  modelObj.vprintf('\tDone importing varied parameter values.\n')
   
   % Import analysis results
-  vfprintf('Importing analysis results...\n')
+  modelObj.vprintf('Importing analysis results...\n')
   analysisResults = struct();
   for iFn = 1:numel(resultFns)
     thisResultFn = resultFns{iFn};
@@ -154,9 +149,9 @@ if ~exist(filePath,'file') || options.overwriteBool
       wprintf('\tDifferent lengths for number of modifications and %s results.', func2str(thisResultFn))
     end
   end
-  vfprintf('\tDone importing analysis results\n')
+  modelObj.vprintf('\tDone importing analysis results\n')
   
-  vfprintf('Preparing data to save...\n')
+  modelObj.vprintf('Preparing data to save...\n')
   
   simIDs = {studyinfo.simulations.sim_id}';
   
@@ -191,18 +186,18 @@ if ~exist(filePath,'file') || options.overwriteBool
     try % to get info from class fn call
       info = feval(thisFnHandle, 'info');
       assert(size(info, 1) >= length(uClassNames))
-      classes.(thisFnStr).names = info(:,1);
+      classes.(thisFnStr).labels = info(:,1);
       if size(info, 2) > 1 % if color col
         classes.(thisFnStr).colors = info(:,2);
       else
-        classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).names));
+        classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
       end
       
       if size(info, 2) > 2 % if marker col
         classes.(thisFnStr).markers = info(:,3);
       end
     catch
-      classes.(thisFnStr).names = uClassNames;
+      classes.(thisFnStr).labels = uClassNames;
       classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).names));
     end
   end
@@ -221,39 +216,24 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   
   %% gvArray
-  hypercubeName = 'dsData';
+  hypercubeName = modelObj.checkHypercubeName('dsData');
   
   dynasimData = gvArray;
-  dynasimData.meta.dataType = {};
   dynasimData.meta.defaultHypercubeName = hypercubeName;
-  
-  % store simID
-  simID = gvArray;
-  simID = simID.importDataTable(simIDs, axisVals, axisNames);
-  simID.meta.dataType = 'index';
-  dynasimData.meta.simID = simID;
-  
-  % store classes
-  dynasimData.meta.classes = classes;
-  
+    
+  % store simIDs in axis 1
+  analysisResults.simID = simIDs;
+
   % Make model object
-  %   dataTypeInd = 1;
   allResults = {};
   allAxisVals = cell(1, length(axisVals)+1);
+  dynasimData.axis(1).axismeta.dataType = {};
+  dynasimData.axis(1).axismeta.plotInfo = {};
   for analysisFnName = fieldnames(analysisResults)'
     analysisFnName = analysisFnName{1};
-    
-    % old way
-    %     tempArray = gvArray;
-    %     tempArray = tempArray.importDataTable(analysisResults.(analysisFnName), axisVals);
-    %     tempArray = tempArray.shiftdim(-1); % add new 1st dim
-    %     tempArray.axis(1).values = dataTypeInd;
-    %     modelFld = modelFld.merge(tempArray); % add new data
-    
+
     allResults = [allResults; analysisResults.(analysisFnName)];
-    
-    %     allAxisVals{1} = [allAxisVals{1}; dataTypeInd*ones(length(analysisResults.(analysisFnName)),1)];
-    
+
     % Add Analysis Fn Name to allAxisVals
     fnNameCell = cell(length(analysisResults.(analysisFnName)),1);
     fnNameCell(:) = deal({analysisFnName});
@@ -261,44 +241,46 @@ if ~exist(filePath,'file') || options.overwriteBool
     
     % Add rest of axes to allAxisVals
     for jCol = 1:length(axisVals)
-      allAxisVals{jCol+1} = [allAxisVals{jCol+1}; axisVals{jCol}];
+      allAxisVals{jCol+1} = [allAxisVals{jCol+1}; axisVals{jCol}]; % TODO: speed up with vector ops
     end
     
-    if iscellnum(analysisResults.(analysisFnName))
-      dynasimData.meta.dataType{end+1} = 'numeric';
+    % store data types in axismeta
+    if strcmp(analysisFnName, 'simID')
+      dynasimData.axis(1).axismeta.dataType{end+1} = 'index';
+    elseif iscellnum(analysisResults.(analysisFnName))
+      dynasimData.axis(1).axismeta.dataType{end+1} = 'numeric';
     elseif iscellstr(analysisResults.(analysisFnName))
-      dynasimData.meta.dataType{end+1} = 'categorical';
+      dynasimData.axis(1).axismeta.dataType{end+1} = 'categorical';
+      
+      % store classes
+      axValInd = length(dynasimData.axis(1).axismeta.dataType);
+      dynasimData.axis(1).axismeta.plotInfo{axValInd} = classes.(analysisFnName);
     else
-      dynasimData.meta.dataType{end+1} = 'unknown';
+      dynasimData.axis(1).axismeta.dataType{end+1} = 'unknown';
     end
     
-    %     dataTypeInd = dataTypeInd+1;
   end
   
   % Import data table
   dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
   
+  % Store axType in axis
+  dynasimData.axis(1).axType = 'dataType';
+  
   % Store data
-  gvObj.model.data.(hypercubeName) = gvArrayRef(dynasimData);
+  modelObj.data.(hypercubeName) = gvArrayRef(dynasimData);
   
   % Save
-%   save(filePath, 'obj') % save gv obj
   save(filePath, 'dynasimData') % save gvArray obj
-  vfprintf('\tSaved data.\n')
+  modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
-  vfprintf('Loading data from: %s\n', filePath)
-  gvObj = gv.Load(filePath);
+  modelObj.vprintf('Loading data from: %s\n', filePath)
+  modelObj.load(filePath);
 end
 
 
 %% Nested Fns
-  function vfprintf(varargin)
-    if options.verboseModeBool
-      fprintf(varargin{:})
-    end
-  end
-
   function mods = arrows2underscores(mods)
     % Purpose: fix arrow direction and convert to underscores
     mods(:,1:2) = cellfun( @fix_arrows, mods(:,1:2),'UniformOutput',0); % fix order of directionality to be L -> R
