@@ -30,6 +30,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     openWindow(pluginObj)
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
+    
+    function selectTab(pluginObj, tabInd)
+      pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.handles.controls.tabs{tabInd}.uitab;
+    end
 
   end
   

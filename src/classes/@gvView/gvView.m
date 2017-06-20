@@ -24,6 +24,8 @@ classdef gvView < handle
     
     guiPlugins
     windowPlugins
+    
+    main
   end
   
   methods
@@ -44,6 +46,9 @@ classdef gvView < handle
       pluginsOut = viewObj.controller.windowPlugins;
     end
     
+    function value = get.main(viewObj)
+      value = viewObj.windowPlugins.main;
+    end
     
   end
 
