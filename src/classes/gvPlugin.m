@@ -36,17 +36,17 @@ classdef (Abstract) gvPlugin < handle
   %% Concrete Methods %%
   methods
     
-    function pluginObj = gvPlugin(cntrObj)
+    function pluginObj = gvPlugin(cntrlObj)
       pluginObj.pluginClassName = class(pluginObj);
       
       if nargin
-        setup(pluginObj, cntrObj);
+        setup(pluginObj, cntrlObj);
       end
     end
     
     
-    function setup(pluginObj, cntrObj)
-      pluginObj.addController(cntrObj);
+    function setup(pluginObj, cntrlObj)
+      pluginObj.addController(cntrlObj);
     end
     
     

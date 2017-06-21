@@ -20,12 +20,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   end
   
   
-  %% Events %%
-  events
-    plotEvent
-  end
-  
-  
   %% Public methods %%
   methods
     
@@ -37,6 +31,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     function setup(pluginObj, cntrlObj)
       setup@gvWindowPlugin(pluginObj, cntrlObj);
       
+      % Event listeners
+      cntrlObj.newListener('activeHypercubeChanged', @gvPlotWindowPlugin.Callback_activeHypercubeChanged);
       cntrlObj.newListener('doPlot', @gvPlotWindowPlugin.Callback_doPlot);
     end
 
@@ -186,6 +182,12 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       else
         src.String = sprintf('Iterate ( %s )', char(9654)); %start char (arrow)
       end
+    end
+    
+    
+    function Callback_activeHypercubeChanged(src, evnt)
+      cntrlObj = src;
+      notify(cntrlObj, 'doPlot');
     end
     
     

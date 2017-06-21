@@ -39,10 +39,10 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     end
     
     
-    function setup(pluginObj, cntrObj)
+    function setup(pluginObj, cntrlObj)
       % overload setup to add view
       
-      setup@gvPlugin(pluginObj, cntrObj);
+      setup@gvPlugin(pluginObj, cntrlObj);
       
       pluginObj.view = pluginObj.controller.view;
     end
