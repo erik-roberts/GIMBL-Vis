@@ -53,7 +53,7 @@
 % have gen data selector which adds a hypercube that only has the selected values
 % make fn that returns currently selected hypercube indicies
 %
-% edit names toggle on select
+% deal with sorting of handle names when number exceeeds 9
 
 classdef gv < handle
   

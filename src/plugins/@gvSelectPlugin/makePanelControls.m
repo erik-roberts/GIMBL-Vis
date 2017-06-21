@@ -36,7 +36,10 @@ set(mainVbox, 'Heights',[fontHeight*1.5, -1])
 %% argout
 panelHandle = uiControlsHandles;
 
-%% listener
+%% add scroll callback
+pluginObj.view.main.addDynamicCallback('WindowScrollWheelFcn', @gvSelectPlugin.Callback_WindowScrollWheelFcn);
+
+%% notify listener
 notify(pluginObj, 'panelControlsMade');
 
 

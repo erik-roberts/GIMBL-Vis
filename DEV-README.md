@@ -31,3 +31,10 @@ Each `hypercube` dataset is stored as a field of the `gvModel` `data` structure 
   - Window Menu Items:
     - For Col: `[pluginObj.pluginFieldName '_menu_' menuHandleStr]`
     - For Row: `[pluginObj.pluginFieldName '_menu_' menuHandleStr '_' handleStr]`
+
+## Adding Figure Callbacks to the Main Window
+The `dynamicCallbacks` property in the `gvMainWindowPlugin` has fields for each event callback that has a corresponding method implemented that permits dynamic registration of child callbacks. Adding function handles as cells in a given field will register those functions to be executed for the given event.
+
+For example, one may have a panel for a plugin that has sliders, like `gvSelectPlugin`. In order to implement a `WindowScrollWheelFcn` callback for the main window, one would create a callback, and add the function handle to `gvObj.view.main.dynamicCallbacks.WindowScrollWheelFcn` using the `gvObj.view.main.addDynamicCallback('WindowScrollWheelFcn', @pluginName.Callback_handle)` method with the listed arguments. Then, whenver one scrolls the mouse over the main window, the `gvMainWindowPlugin.Callback_WindowScrollWheelFcn` will call all the function handles stored as cells in `gvObj.view.main.dynamicCallbacks.WindowScrollWheelFcn`.
+
+Since there may be other callbacks corresponding to other tabs, make sure to check that your new callback only activates on the proper tab.

@@ -18,7 +18,9 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     windowName = 'GIMBL-Vis Toolbox';
   end
 
-  
+  properties (SetAccess = 'protected')
+    dynamicCallbacks = struct(); % allow for dynamic addition of callbacks
+  end
   
   %% Public methods %%
   methods
@@ -26,13 +28,38 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function pluginObj = gvMainWindowPlugin(varargin)
       pluginObj@gvWindowPlugin(varargin{:});
     end
-
+    
+    
+    function setup(pluginObj, varargin)
+      setup@gvWindowPlugin(pluginObj, varargin{:});
+      
+      pluginObj.addDynamicCallbackFields();
+    end
+    
+    
+    function addDynamicCallbackFields(pluginObj)
+      flds = {'WindowScrollWheelFcn'};
+      
+      for fld = flds(:)'
+        pluginObj.dynamicCallbacks.(fld{1}) = {};
+      end
+    end
+    
+    
     openWindow(pluginObj)
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
     function selectTab(pluginObj, tabInd)
       pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.handles.controls.tabs{tabInd}.uitab;
+    end
+    
+    function addDynamicCallback(pluginObj, callbackEventName, callbackHandle)
+      if isfield(pluginObj.dynamicCallbacks, callbackEventName)
+        pluginObj.dynamicCallbacks.(callbackEventName){end+1} = callbackHandle;
+      else
+        error(sprinft('dynamicCallbacks field ''%s'' not found.', callbackEventName));
+      end
     end
 
   end
@@ -54,7 +81,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Hidden)
     
-    function Callback_closeRequestFcn(src, ~)
+    function Callback_CloseRequestFcn(src, ~)
       % Close request function
  
       pluginObj = src.UserData.pluginObj;
@@ -194,6 +221,18 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.Callback_resetWindow(src, evnt);
+    end
+    
+    function Callback_WindowScrollWheelFcn(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      callbackHandleCells = pluginObj.dynamicCallbacks.WindowScrollWheelFcn;
+      
+      if ~isempty(callbackHandleCells) % check if any callbacks registered
+        for fnHandle = callbackHandleCells
+          feval(fnHandle{1}, src, evnt); % evaluate each callback
+        end
+      end
     end
     
   end

@@ -37,6 +37,32 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
+    
+    function sliderPos = getSliderAbsolutePosition(pluginObj)
+      nSliders = length(pluginObj.view.dynamic.sliderVals);
+      sliderPos = nan(nSliders, 4);
+      for sliderInd = 1:nSliders
+        thisPosCell = cellfunu(@getPos, pluginObj.view.dynamic.selectSliderAncestry{sliderInd});
+        thisPos = vertcat(thisPosCell{:});
+        thisPos = sum(thisPos);
+        
+        sliderPos(sliderInd,:) = [thisPos, pluginObj.view.dynamic.selectSliderAncestry{sliderInd}{1}.Position(3:4)];
+      end
+      
+      function out = getPos(x)
+        thisUnits = x.Units;
+        if ~strcmp(thisUnits, 'pixels')
+          x.Units = 'pixels';
+          out = x.Position;
+          x.Units = thisUnits; 
+        else
+          out = x.Position;
+        end
+        
+        out = out(1:2);
+      end
+    end
+    
   end
   
   
@@ -161,6 +187,31 @@ classdef gvSelectPlugin < gvGuiPlugin
       [sliderVals.Enable] = deal(statusCellStr{:});
     end
     
+    
+    function makeSliderAncestryMetadata(pluginObj)
+      sliderHandles = sort(findobjReTag('select_panel_slider\d+'));
+      
+      pluginObj.view.dynamic.selectSliderAncestry = {};
+      
+      for sliderInd = 1:length(sliderHandles)
+        h = sliderHandles(sliderInd);
+        
+        pluginObj.view.dynamic.selectSliderAncestry{sliderInd} = {};
+        
+        notFigParent = true;
+        while notFigParent
+          if isequal(h, pluginObj.view.main.handles.fig)
+            notFigParent = false;
+            continue
+          end
+          
+          pluginObj.view.dynamic.selectSliderAncestry{sliderInd}{end+1} = h;
+          
+          h = h.Parent;
+        end
+      end
+    end
+
   end
   
   %% Callbacks %%
@@ -170,6 +221,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj = src; % window plugin
       
       pluginObj.initializeControlsDynamicVars();
+      
+      pluginObj.makeSliderAncestryMetadata();
     end
     
     
@@ -216,7 +269,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     end
     
     
-    function Callback_select_panel_viewCheckbox(src, evnt)
+    function Callback_select_panel_viewCheckbox(src, ~)
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.updateViewDims();
@@ -224,7 +277,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     end
     
     
-    function Callback_select_panel_lockCheckbox(src, evnt)
+    function Callback_select_panel_lockCheckbox(src, ~)
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.updateLockDims();
@@ -232,7 +285,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     end
     
     
-    function Callback_select_panel_slider(src, evnt)
+    function Callback_select_panel_slider(src, ~)
       sliderObj = src;
       
       pluginObj = sliderObj.UserData.pluginObj;
@@ -248,7 +301,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     end
     
     
-    function Callback_select_panel_sliderVal(src, evnt)
+    function Callback_select_panel_sliderVal(src, ~)
       editObj = src;
       pluginObj = editObj.UserData.pluginObj;
       
@@ -275,6 +328,9 @@ classdef gvSelectPlugin < gvGuiPlugin
       % update sibling slider value
       pluginObj.updateSliderFromEdit(editObj, sliderVal);
     end
+    
+    
+    Callback_WindowScrollWheelFcn(src, evnt);
     
   end
   
