@@ -79,7 +79,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       mainWindowPos = pluginObj.controller.windowPlugins.main.handles.fig.Position;
     
       plotWindowHandle = figure(...
-        'Name','Plot Window',...
+        'Name',['GIMBL-VIS: ' pluginObj.windowName],...
         'Tag', pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
@@ -116,48 +116,43 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
           % 1 1d pane
           %         axes(hFig)
           %       hspg = subplot_grid(1,'no_zoom', 'parent',hFig);
-          hAxNum = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
         case 2
           % 1 2d pane
           %         axes(hFig)
           %       hspg = subplot_grid(1,'no_zoom', 'parent',hFig);
-          hAxNum = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
         case 3
           % 3 2d panes + 1 3d pane = 4 subplots
           %       hspg = subplot_grid(2,2, 'parent',hFig);
-          hAxNum = tight_subplot2(2, 2, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(2, 2, gap, marg_h, marg_w, plotWindowHandle);
         case 4
           % 6 2d panes + 4 3d pane = 10 subplots
           %       hspg = subplot_grid(2,5, 'parent',hFig);
-          hAxNum = tight_subplot2(2, 5, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(2, 5, gap, marg_h, marg_w, plotWindowHandle);
         case 5
           % 10 2d panes + 10 3d pane = 20 subplots
           %       hspg = subplot_grid(3,7, 'parent',hFig); % 1 empty
-          hAxNum = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
         case 6
           % 15 2d panes = 15 subplots
           %       hspg = subplot_grid(3,5, 'parent',hFig);
-          hAxNum = tight_subplot2(3, 5, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(3, 5, gap, marg_h, marg_w, plotWindowHandle);
         case 7
           % 21 2d panes = 21 subplots
           %       hspg = subplot_grid(3,7, 'parent',hFig);
-          hAxNum = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
         case 8
           % 28 2d panes = 28 subplots
           %       hspg = subplot_grid(4,7, 'parent',hFig);
-          hAxNum = tight_subplot2(4, 7, gap, marg_h, marg_w, plotWindowHandle);
+          tight_subplot2(4, 7, gap, marg_h, marg_w, plotWindowHandle);
         otherwise
           wprintf('Select 1-8 dimensions to plot.')
       end
-      
-      % convert double handle to object handle
-%       for axInd = 1:length(hAxNum)
-%         axNum = hAxNum(axInd);
-%         hAx(axInd) = get(axNum);
-%       end
+
+      hAx = plotWindowHandle.Children;
       
       if nViewDims > 0
-        hAx = hAxNum; % TODO convert to object handle
         pluginObj.handles.ax = hAx;
       else
         pluginObj.handles.ax = [];
@@ -175,14 +170,14 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static)
 
-    function Callback_openWindow(src, evnt)
+    function Callback_plot_panel_openPlotButton(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       pluginObj.openWindow();
     end
     
     
-    function openLegendWindowCallback(src, evnt)
+    function Callback_plot_panel_openLegendButton(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       pluginObj.openLegendWindow();
@@ -260,6 +255,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     function Callback_plot_panel_autoSizeToggle(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      cntrlObj = pluginObj.controller;
+      
       markerSizeSlider = findobj('-regexp', 'Tag','markerSizeSlider');
       
       if src.Value
@@ -269,6 +267,15 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         src.String = sprintf('AutoSize (%s)', '  ');
         markerSizeSlider.Enable = 'on';
       end
+      
+      notify(cntrlObj, 'doPlot');
+    end
+    
+    function Callback_plot_panel_markerSizeSlider(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      cntrlObj = pluginObj.controller;
+      
+      notify(cntrlObj, 'doPlot');
     end
     
     

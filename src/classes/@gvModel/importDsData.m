@@ -191,7 +191,10 @@ if ~exist(filePath,'file') || options.overwriteBool
       assert(size(info, 1) >= length(uClassNames))
       classes.(thisFnStr).labels = info(:,1);
       if size(info, 2) > 1 % if color col
-        classes.(thisFnStr).colors = info(:,2);
+        tempColors = info(:,2); % as cells
+        tempColors = vertcat(tempColors{:}); % convert cell 2 mat
+        classes.(thisFnStr).colors = tempColors; % store mat
+        clear tempColors
       else
         classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
       end

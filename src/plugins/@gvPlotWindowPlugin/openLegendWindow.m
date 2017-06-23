@@ -14,47 +14,50 @@
     
     function openLegendWindow(pluginObj)
       
-      mainWindowExistBool = pluginObj.checkMainWindowExists;
+      mainWindowExistBool = pluginObj.view.checkMainWindowExists;
       
-      if mainWindowExistBool && ~pluginObj.checkWindowExists()
-        makeLegendWindow(pluginObj);
+      if mainWindowExistBool && pluginObj.checkWindowExists()
+        hcLegendData = pluginObj.controller.activeHypercube.meta.legend;
         
-        hcData = pluginObj.activeHypercube;
-        
-        colors = cat(1,handles.PlotWindow.Label.colors{:});
-        markers = handles.PlotWindow.Label.markers;
-        groups = handles.PlotWindow.Label.names;
+        colors = hcLegendData.colors;
+        markers = hcLegendData.markers;
+        groups = hcLegendData.groups;
         nGroups = length(groups);
         
-        itemSize = 16;
+        fontSize = pluginObj.fontSize;
+        fontHeight = pluginObj.fontHeight;
+        markerSize = fontHeight*2;
+        
+        makeCategoricalLegendWindow(pluginObj);
         
         %Make Legend
         hold on
         h = zeros(nGroups, 1);
         for iG = 1:nGroups
           %     h(iG) = plot(nan,nan,'Color',colors(iG,:),'Marker',markers{iG});
-          h(iG) = scatter(nan,nan,itemSize,colors(iG,:),markers{iG});
+          h(iG) = scatter(nan,nan,markerSize,colors(iG,:),markers{iG});
         end
         
-        [leg,labelhandles] = legend(h, groups, 'Position',[0 0 1 1], 'Box','off', 'FontSize',20, 'Location','West');
+        [leg,labelhandles] = legend(h, groups, 'Position',[0 0 1 1], 'Box','off', 'FontSize',fontSize, 'Location','West');
         objs = findobj(labelhandles,'type','Patch');
-        [objs.MarkerSize] = deal(itemSize);
+        [objs.MarkerSize] = deal(markerSize);
         objs = findobj(labelhandles,'type','Text');
-        [objs.FontSize] = deal(itemSize);
+        [objs.FontSize] = deal(fontSize);
       end
       
       %% Nested Functions
-      function makeLegendWindow(pluginObj)
-        mainWindowPos = pluginObj.mainWindow.handle.Position;
-        ht = 30 * length(handles.PlotWindow.Label.names);
-        legendWindowHandle = figure('Name','Legend Window','NumberTitle','off','menubar','none',...
-          'Position',[mainWindowPos(1),max(mainWindowPos(2)-ht-50, 0),250,ht]);
+      function makeCategoricalLegendWindow(pluginObj)
+        mainWindowPos = pluginObj.view.main.handles.fig.Position;
+        ht = fontHeight*1.1 * nGroups;
+        wd = fontHeight*max(cellfun(@length,groups))/2*1.1 + markerSize; % TODO improve auto width
+        legendWindowHandle = figure('Name','GIMBL-Vis: Legend Window','NumberTitle','off','menubar','none',...
+          'Position',[mainWindowPos(1),max(mainWindowPos(2)-ht-50, 0),wd,ht]);
         
         axes(legendWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
           'XTick',[], 'YTick',[]);
         
         % set legend handle
-        pluginObj.legendWindow.handle = legendWindowHandle;
+        pluginObj.handles.legendWindow = legendWindowHandle;
       end
       
     end

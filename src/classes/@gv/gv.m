@@ -57,9 +57,12 @@
 %
 % add cwd listener
 %
-% bug with colors cells vs mat when no info file.
-% issue with 3d plot
-% issue with axes lims on plot
+% get scrolling on autosize slider. make sure scrolling checks on which is
+%   active tab
+%
+% 3d marker update
+%
+% fontsize on plot window
 %
 % pop up for run loading from mat
 

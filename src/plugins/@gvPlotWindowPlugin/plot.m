@@ -2,6 +2,7 @@ function plot(pluginObj)
 
 hFig = pluginObj.handles.fig;
 hAx = pluginObj.handles.ax;
+figure(hFig); % make hFig gcf
 
 nViewDims = pluginObj.view.dynamic.nViewDims;
 viewDims = pluginObj.view.dynamic.viewDims;
@@ -54,14 +55,12 @@ if ~isempty(dataTypeAxInd)
       nGroups = length(groups);
       
       if plotInfoBool && isfield(thisSlicePlotInfo,'colors')
-        colors = cat(1,thisSlicePlotInfo.colors{:});
+        colors = thisSlicePlotInfo.colors;
       else
-        colors = num2cell(distinguishable_colors(nGroups),2);
+        colors = distinguishable_colors(nGroups);
         
         % store for future plots
         hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.colors = colors;
-        
-        colors = cat(1,thisSlicePlotInfo.colors{:});
       end
       
       if plotInfoBool && isfield(thisSlicePlotInfo,'markers')
@@ -73,6 +72,11 @@ if ~isempty(dataTypeAxInd)
         % store for future plots
         hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.markers = markers;
       end
+      
+      % Store legend data
+      hypercubeData.meta.legend.groups = groups;
+      hypercubeData.meta.legend.colors = colors;
+      hypercubeData.meta.legend.markers = markers;
     end
     
   end
@@ -144,14 +148,19 @@ end
     % y dim is plotDims(2)
     % z dim is plotDims(2)
     
-    axes(hAx)
+    set(hFig,'CurrentAxes', hAx);
 
     sliceInds = sliderVals;
     sliceInds = num2cell(sliceInds);
     [sliceInds{plotDims}] = deal(':');
     
+    % ax vals
+    xVals = hypercubeData.axisValues{plotDims(1)};
+    yVals = hypercubeData.axisValues{plotDims(2)};
+    zVals = hypercubeData.axisValues{plotDims(3)};
+    
     % Get grid
-    [y,x,z] = meshgrid(hypercubeData.axisValues{plotDims(2)}, hypercubeData.axisValues{plotDims(1)}, hypercubeData.axisValues{plotDims(3)});
+    [y,x,z] = meshgrid(yVals, xVals, zVals);
       %  meshgrid works differently than the linearization
     g = plotLabels(sliceInds{:});
     
@@ -192,13 +201,16 @@ end
     % Marker Size
     autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
     if autoSizeMarkerCheckboxHandle.Value %auto size marker
-      set(gca,'unit', 'pixels');
-      pos = get(gca,'position');
+      axUnit = get(hAx,'unit');
+      set(hAx,'unit', 'pixels');
+      pos = get(hAx,'position');
       axSize = pos(3:4);
-      markerSize = min(axSize) / max([length(plotData.x), length(plotData.y), length(plotData.z)]);
+      markerSize = min(axSize) / max([length(xVals), length(yVals), length(zVals)]);
       plotData.siz = markerSize;
+      set(hAx,'unit', axUnit);
     else %manual size marker
-      markerSize = handles.markerSizeSlider.Value;
+      markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
+      markerSize = markerSizeSlider.Value;
       plotData.siz = markerSize;
     end
     
@@ -207,32 +219,71 @@ end
 %       pluginObj.plotWindow.sliderH.Value = markerSize;
 %       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
 %     end
+
+  % Marker Size
+    markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
+    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
+    if autoSizeMarkerCheckboxHandle.Value %auto size marker
+      axUnit = get(hAx,'unit');
+      set(hAx,'unit', 'pixels');
+      pos = get(hAx,'position');
+      axSize = pos(3:4);
+      markerSize = min(axSize) / max([length(xVals), length(yVals), length(zVals)]);
+      plotData.siz = markerSize;
+      set(hAx,'unit', axUnit);
+    else %manual size marker
+      markerSize = markerSizeSlider.Value;
+      plotData.siz = markerSize;
+    end
     
     scatter3dPlot(plotData);
     
-    axObj = get(gcf,'CurrentAxes');
+    % lims
+    xlim([min(xVals), max(xVals)]);
+    ylim([min(yVals), max(yVals)]);
+    zlim([min(zVals), max(zVals)]);
+    
+    % Rescale xlim
+    try
+      xlims = get(hAx,'xlim');
+      set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
+    end
+    
+    % Rescale ylim
+    try
+      ylims = get(hAx,'ylim');
+      set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
+    end
+    
+    % Rescale zlim
+    try
+      zlims = get(hAx,'zlim');
+      set(hAx, 'zlim', [zlims(1)- 0.05*range(zlims) zlims(2)+0.05*range(zlims)]);
+    end
+    
+    axObj = get(hFig,'CurrentAxes');
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
     axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
-    
-%     % Rescale ylim
-%     ylims = get(hAx,'ylim');
-%     set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
   end
   
   function make2dPlot(hAx, plotDims)
     % x dim is plotDims(1)
     % y dim is plotDims(2)
     
-    axes(hAx)
+    set(hFig,'CurrentAxes', hAx);
     
     sliceInds = sliderVals;
     sliceInds = num2cell(sliceInds);
     [sliceInds{plotDims}] = deal(':');
     
+    % ax vals
+    xVals = hypercubeData.axisValues{plotDims(1)};
+    yVals = hypercubeData.axisValues{plotDims(2)};
+    
     % Get grid
-    [y,x] = meshgrid(hypercubeData.axisValues{plotDims(2)}, hypercubeData.axisValues{plotDims(1)});
+    [y,x] = meshgrid(yVals, xVals);
       %  meshgrid works opposite the linearization
     g = plotLabels(sliceInds{:});
     
@@ -266,25 +317,35 @@ end
     end
     
     % Marker Size
+    markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
     autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
     if autoSizeMarkerCheckboxHandle.Value %auto size marker
-      set(gca,'unit', 'pixels');
-      pos = get(gca,'position');
+      axUnit = get(hAx,'unit');
+      set(hAx,'unit', 'pixels');
+      pos = get(hAx,'position');
       axSize = pos(3:4);
-      markerSize = min(axSize) / max(length(plotData.x), length(plotData.y));
+      markerSize = min(axSize) / max(length(xVals), length(yVals));
       plotData.siz = markerSize;
+      set(hAx,'unit', axUnit);
     else %manual size marker
-      markerSize = handles.markerSizeSlider.Value;
+      markerSize = markerSizeSlider.Value;
       plotData.siz = markerSize;
     end
     
     % Set MarkerSize Slider Val
-%     if isfield(pluginObj.plotWindow, 'sliderH')
-%       pluginObj.plotWindow.sliderH.Value = markerSize;
-%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
-%     end
+    markerSizeSlider.Value = markerSize;
     
     scatter2dPlot(plotData);
+    
+    % lims
+    xlim([min(xVals), max(xVals)]);
+    ylim([min(yVals), max(yVals)]);
+    
+    % Rescale xlim
+    try
+      xlims = get(hAx,'xlim');
+      set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
+    end
     
     % Rescale ylim
     try
@@ -292,7 +353,7 @@ end
       set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
     end
     
-    axObj = get(gcf,'CurrentAxes');
+    axObj = get(hFig,'CurrentAxes');
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
@@ -304,7 +365,7 @@ end
     % x dim is plotDims(1)
     % y dim is plotDims(2)
     
-    axes(hAx)
+    set(hFig,'CurrentAxes', hAx);
     
     sliceInd = pluginObj.plotWindow.axInd;
     sliceInd = num2cell(sliceInd);
@@ -357,7 +418,7 @@ end
     xlabel(dimNames{plotDims(1)})
     ylabel(dimNames{plotDims(2)})
     
-    axObj = get(gcf,'CurrentAxes');
+    axObj = get(hFig,'CurrentAxes');
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
@@ -366,13 +427,16 @@ end
   end
 
   function make1dPlot(hAx)
-    axes(hAx)
+    set(hFig,'CurrentAxes', hAx);
     plotDim = find(viewDims);
     
     % make cell array of slice indicies
     sliceInds = sliderVals;
     sliceInds = num2cell(sliceInds);
     sliceInds{plotDim} = ':';
+    
+    % ax vals
+    xVals = hypercubeData.axisValues{plotDim};
     
     plotData.xlabel = dimNames{plotDim};
     plotData.x = hypercubeData.axisValues{plotDim};
@@ -398,29 +462,38 @@ end
     end
     
     % Marker Size
+    markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
     autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
     if autoSizeMarkerCheckboxHandle.Value %auto size marker
-      set(gca,'unit', 'pixels');
-      pos = get(gca,'position');
+      axUnit = get(hAx,'unit');
+      set(hAx,'unit', 'pixels');
+      pos = get(hAx,'position');
       axSize = pos(3:4);
-      markerSize = min(axSize) / length(plotData.x);
+      markerSize = min(axSize) / length(xVals);
       plotData.siz = markerSize;
+      set(hAx,'unit', axUnit);
     else %manual size marker
-      markerSize = handles.markerSizeSlider.Value;
+      markerSize = markerSizeSlider.Value;
       plotData.siz = markerSize;
     end
     
-%     % Set MarkerSize Slider Val
-%     if isfield(pluginObj.plotWindow, 'sliderH')
-%       pluginObj.plotWindow.sliderH.Value = markerSize;
-%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
-%     end
+    % Set MarkerSize Slider Val
+    markerSizeSlider.Value = markerSize;
     
     scatter2dPlot(plotData);
-
-    set(gca,'YTick', []);
     
-    axObj = get(gcf,'CurrentAxes');
+    % lims
+    xlim([min(hypercubeData.axisValues{plotDim}), max(hypercubeData.axisValues{plotDim})]);
+    
+    % Rescale xlim
+    try
+      xlims = get(hAx,'xlim');
+      set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
+    end
+
+    set(hAx,'YTick', []);
+    
+    axObj = get(hFig,'CurrentAxes');
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDim;
     axObj.UserData.axLabels = dimNames(plotDim);
@@ -467,8 +540,8 @@ end
 % 
 %         [icons(length(uG)+2:2:end).MarkerSize] = deal(lMarkerSize);
 %         
-% %         legend(gca,'boxoff')
-% %         legend(gca,'Location','SouthEast')
+% %         legend(hFig,'boxoff')
+% %         legend(hFig,'Location','SouthEast')
 %       end
     end
   end
