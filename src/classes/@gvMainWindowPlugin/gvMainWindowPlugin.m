@@ -240,7 +240,8 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       [selection,ok] = listdlg('ListString', varList,...
         'Name','Load/Import Data from Workspace',...
-        'PromptString','Select at least 1 variable from the Workspace:');
+        'PromptString','Select at least 1 variable from the Workspace:',...
+        'ListSize', [350 300]);
       
       if ~ok
         return
@@ -253,6 +254,58 @@ classdef gvMainWindowPlugin < gvWindowPlugin
         pluginObj.controller.model.importDataFromWorkspace(varName{1}, hypercubeName);
       end
     end
+    
+    
+    function Callback_main_menu_model_mergeHypercubes(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      modelObj = pluginObj.controller.model;
+      
+      hypercubeList = fieldnames(modelObj.data);
+      
+      % Remove active hypercube from list
+      hypercubeList(strcmp(pluginObj.controller.activeHypercubeName, hypercubeList)) = [];
+      
+      if isempty(hypercubeList)
+        warning('No hypercubes to merge');
+        return
+      end
+      
+      [selection,ok] = listdlg('ListString', hypercubeList,...
+        'Name','Merge Hypercube into Active Hypercube',...
+        'PromptString','Select a hypercube to merge into the active hypercube:',...
+        'SelectionMode','single',...
+        'ListSize', [450 300]);
+      
+      if ~ok
+        return
+      end
+
+      hypercube2merge = hypercubeList{selection};
+      
+      modelObj.mergeHypercubes(pluginObj.controller.activeHypercubeName, hypercube2merge);
+    end
+    
+    
+    function Callback_main_menu_model_mergeFromWS(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      modelObj = pluginObj.controller.model;
+      
+      hypercubeList = fieldnames(modelObj.data);
+      
+      [selection,ok] = listdlg('ListString', hypercubeList,...
+        'Name','Merge Object from Workspace into Active Hypercube',...
+        'PromptString','Select a workspace object to merge into the active hypercube:',...
+        'ListSize', [450 300]);
+      
+      if ~ok
+        return
+      end
+
+      hypercube2merge = hypercubeList{selection};
+      
+      modelObj.mergeHypercubes(pluginObj.controller.activeHypercubeName, hypercube2merge);
+    end
+    
     
     
     function Callback_main_menu_model_deleteHypercube(src, ~)

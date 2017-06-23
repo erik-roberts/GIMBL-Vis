@@ -136,15 +136,17 @@ classdef gvModel < handle
     end
     
     
-    function mergeHypercubes(modelObj, hypercube1, hypercube2)
-      % TODO
+    function mergeHypercubes(modelObj, hypercube, hypercube2merge)
+      modelObj.data.(hypercube).merge(modelObj.data.(hypercube2merge));
+      
+      modelObj.deleteHypercube(hypercube2merge);
     end
     
     
     function changeHypercubeName(modelObj, oldHypercubeName, newHypercubeName)
       if isfield(modelObj.data, newHypercubeName)
         error('New hypercube name already exists. Use a different name.');
-        return
+        return %#ok<UNRCH>
       end
       
       modelObj.data.(newHypercubeName) = modelObj.data.(oldHypercubeName);

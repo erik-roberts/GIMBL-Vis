@@ -54,8 +54,8 @@ handleStr = 'mergeHypercubes';
 menuLabel = 'Merge Hypercube with Active Hypercube';
 makeMenuRow();
 
-handleStr = 'mergeVarFromWS';
-menuLabel = 'Merge Variable From Workspace with Active Hypercube';
+handleStr = 'mergeFromWS';
+menuLabel = 'Merge Object From Workspace with Active Hypercube';
 makeMenuRow();
 
 handleStr = 'deleteHypercube';
