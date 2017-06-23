@@ -56,6 +56,12 @@
 % deal with sorting of handle names when number exceeeds 9
 %
 % add cwd listener
+%
+% bug with colors cells vs mat when no info file.
+% issue with 3d plot
+% issue with axes lims on plot
+%
+% pop up for run loading from mat
 
 classdef gv < handle
   
