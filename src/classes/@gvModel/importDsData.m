@@ -265,8 +265,8 @@ if ~exist(filePath,'file') || options.overwriteBool
   % Import data table
   dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
   
-  % Store axType in axis
-  dynasimData.axis(1).axType = 'dataType';
+  % Store axisType in axis
+  dynasimData.axis(1).axismeta.axisType = 'dataType';
   
   % Store data
   modelObj.addHypercube(gvArrayRef(dynasimData));

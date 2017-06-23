@@ -11,7 +11,7 @@
 %   summary - alias for MDD's printAxisInfo
 %
 % Methods (static):
-%   MDD2gv - convert MDD superclass object to gvArray subclass
+%   mdd2gv - convert MDD superclass object to gvArray subclass
 %
 % Author: Erik Roberts
 %
@@ -54,7 +54,7 @@ classdef gvArray < MDD
       
       % constructor conversion to gvArray from MDD step 2
       if exist('mdobj', 'var')
-        obj = gvArray.MDD2gv(mdobj);
+        obj = gvArray.mdd2gv(mdobj);
       end
     end
     
@@ -89,14 +89,16 @@ classdef gvArray < MDD
 %     end
     
     
-    function mddobj = gv2MDD(obj)
+    function mddobj = gv2mdd(gvObj)
       % Convert gvArray subclass object to MDD superclass
       
-      data = obj.data;
-      ax_vals = obj.exportAxisVals;
-      ax_names = obj.exportAxisNames;
+      data = gvObj.data;
+      ax_vals = gvObj.exportAxisVals;
+      ax_names = gvObj.exportAxisNames;
       
       mddobj = MDD(data, ax_vals, ax_names);
+      
+      mddobj = gvArray.addMeta(gvObj, mddobj);
     end
     
     %% Overloaded built-ins
@@ -173,8 +175,8 @@ classdef gvArray < MDD
     % ** end Import Methods **
     
     
-    function gvobj = MDD2gv(mddobj)
-      % MDD2gv - Convert MDD superclass object to gvArray subclass
+    function gvobj = mdd2gv(mddobj)
+      % mdd2gv - Convert MDD superclass object to gvArray subclass
       
       % input already a gvArray
       if isa(mddobj, 'gvArray')
@@ -187,6 +189,20 @@ classdef gvArray < MDD
       ax_names = mddobj.exportAxisNames;
       
       gvobj = gvArray(data, ax_vals, ax_names);
+      
+      gvobj = gvArray.addMeta(mddobj, gvobj);
+    end
+    
+    
+    function targetObj = addMeta(sourceObj, targetObj)
+      % add meta
+      targetObj.meta = sourceObj.meta;
+      
+      % add axis meta
+      nAx = length(sourceObj.axis);
+      for axInd = 1:nAx
+        targetObj.axis(axInd).axismeta = sourceObj.axis(axInd).axismeta;
+      end
     end
     
   end % methods (Static)

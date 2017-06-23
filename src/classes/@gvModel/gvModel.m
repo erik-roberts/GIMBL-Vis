@@ -122,7 +122,7 @@ classdef gvModel < handle
       end
       
       if ~exist(filePath,'file') || overwriteBool
-        eval([hypercubeName ' = modelObj.data.(''' hypercubeName ''').gv2MDD;']);
+        eval([hypercubeName ' = modelObj.data.(''' hypercubeName ''').gv2mdd;']);
         save(filePath, hypercubeName);
       else
         warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.');

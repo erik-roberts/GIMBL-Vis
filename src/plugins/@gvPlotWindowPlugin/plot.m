@@ -14,8 +14,9 @@ nAxDims = length(sliderVals);
 
 dataAxes = hypercubeData.axis;
 
-dataTypeAxInd = find(strcmp({dataAxes.axType}, 'dataType'));
+dataTypeAxInd = find(strcmp({dataAxes.axismeta.axisType}, 'dataType'));
 
+% check if axes dataType specified
 if ~isempty(dataTypeAxInd)
   dataAxisInd = sliderVals(dataTypeAxInd);
   thisSliceDataType = hypercubeData.axis(dataTypeAxInd).axismeta.dataType{dataAxisInd};
