@@ -57,7 +57,7 @@ if ~isempty(windowFig.Children)
     
     % show image
     pluginObj.ImageWindow.simID = simID;
-    if isValidFigHandle(pluginObj.ImageWindow.handle)
+    if pluginObj.checkWindowExists())
       gvShowImage(pluginObj);
     end
     

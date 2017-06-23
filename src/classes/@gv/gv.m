@@ -546,7 +546,7 @@ classdef gv < handle
       % See also: gv/run (public method)
       
       % if load path not defined
-      if ~exist('loadPath', 'var') || ~isempty(loadPath)
+      if ~exist('loadPath', 'var') || isempty(loadPath)
         loadPath = pwd;
       end
       

@@ -1,10 +1,12 @@
 function plot(pluginObj)
 
 hFig = pluginObj.handles.fig;
-hAx = axes(hFig);
+hAx = pluginObj.handles.ax;
 
 nViewDims = pluginObj.view.dynamic.nViewDims;
 viewDims = pluginObj.view.dynamic.viewDims;
+
+fontSize = pluginObj.view.fontSize;
 
 hypercubeData = pluginObj.controller.activeHypercube;
 plotLabels = hypercubeData.data; % TODO generalize
@@ -12,9 +14,9 @@ dimNames = hypercubeData.axisNames;
 sliderVals = pluginObj.view.dynamic.sliderVals;
 nAxDims = length(sliderVals);
 
-dataAxes = hypercubeData.axis;
+dataAxesType = gvGetAxisType(hypercubeData);
 
-dataTypeAxInd = find(strcmp({dataAxes.axismeta.axisType}, 'dataType'));
+dataTypeAxInd = find(strcmp(dataAxesType, 'dataType'));
 
 % check if axes dataType specified
 if ~isempty(dataTypeAxInd)
@@ -85,16 +87,17 @@ switch nViewDims
   case 2
     % 1 2d pane
     plotDims = find(viewDims);
-    if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+%     if strcmp(pluginObj.plotWindow.markerType, 'scatter')
         make2dPlot(hAx, plotDims);
-    elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
-      make2dPcolorPlot(hAx, plotDims);
+%     elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+%       make2dPcolorPlot(hAx, plotDims);
+
       % FIXME to use pcolor, need to add extra row,col that arent used for
       % color. the x,y,z are the edge points.  uses the first point in C for the
       % interval from 1st point to second point in x,y,z. need to change axis to
       % shift by 50%, then move ticks and tick lables to center of dots, instead
       % of edges of dots
-    end
+%     end
     
   case 3
     % 3 2d panes + 1 3d pane = 4 subplots
@@ -104,11 +107,11 @@ switch nViewDims
     plotDims2d = combnk(plotDims,2);
     for iAx = 1:3
       ax2d = hAx(iAx);
-      if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+%       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
         make2dPlot(ax2d, plotDims2d(iAx,:));
-      elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
-        make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
-      end
+%       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+%         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
+%       end
     end
     
     % 3d plot
@@ -143,14 +146,14 @@ end
     
     axes(hAx)
 
-    sliceInd = pluginObj.plotWindow.axInd;
-    sliceInd = num2cell(sliceInd);
-    [sliceInd{plotDims}] = deal(':');
+    sliceInds = sliderVals;
+    sliceInds = num2cell(sliceInds);
+    [sliceInds{plotDims}] = deal(':');
     
     % Get grid
-    [y,x,z] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)}, hypercubeData.dimVals{plotDims(3)});
+    [y,x,z] = meshgrid(hypercubeData.axisValues{plotDims(2)}, hypercubeData.axisValues{plotDims(1)}, hypercubeData.axisValues{plotDims(3)});
       %  meshgrid works differently than the linearization
-    g = plotLabels(sliceInd{:});
+    g = plotLabels(sliceInds{:});
     
     % Linearize grid
     x = x(:)';
@@ -200,17 +203,17 @@ end
     end
     
     % Set MarkerSize Slider Val
-    if isfield(pluginObj.plotWindow, 'sliderH')
-      pluginObj.plotWindow.sliderH.Value = markerSize;
-      gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
-    end
+%     if isfield(pluginObj.plotWindow, 'sliderH')
+%       pluginObj.plotWindow.sliderH.Value = markerSize;
+%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
+%     end
     
     scatter3dPlot(plotData);
     
     axObj = get(gcf,'CurrentAxes');
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
-    axObj.FontSize = 14;
+    axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
     
 %     % Rescale ylim
@@ -224,14 +227,14 @@ end
     
     axes(hAx)
     
-    sliceInd = pluginObj.plotWindow.axInd;
-    sliceInd = num2cell(sliceInd);
-    [sliceInd{plotDims}] = deal(':');
+    sliceInds = sliderVals;
+    sliceInds = num2cell(sliceInds);
+    [sliceInds{plotDims}] = deal(':');
     
     % Get grid
-    [y,x] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)});
+    [y,x] = meshgrid(hypercubeData.axisValues{plotDims(2)}, hypercubeData.axisValues{plotDims(1)});
       %  meshgrid works opposite the linearization
-    g = plotLabels(sliceInd{:});
+    g = plotLabels(sliceInds{:});
     
     % Linearize grid
     x = x(:)';
@@ -276,10 +279,10 @@ end
     end
     
     % Set MarkerSize Slider Val
-    if isfield(pluginObj.plotWindow, 'sliderH')
-      pluginObj.plotWindow.sliderH.Value = markerSize;
-      gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
-    end
+%     if isfield(pluginObj.plotWindow, 'sliderH')
+%       pluginObj.plotWindow.sliderH.Value = markerSize;
+%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
+%     end
     
     scatter2dPlot(plotData);
     
@@ -293,7 +296,7 @@ end
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
-    axObj.FontSize = 14;
+    axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
   end
 
@@ -358,7 +361,7 @@ end
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDims;
     axObj.UserData.axLabels = dimNames(plotDims);
-    axObj.FontSize = 14;
+    axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
   end
 
@@ -421,7 +424,7 @@ end
     axObj.UserData = [];
     axObj.UserData.plotDims = plotDim;
     axObj.UserData.axLabels = dimNames(plotDim);
-    axObj.FontSize = 14;
+    axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
   end
 

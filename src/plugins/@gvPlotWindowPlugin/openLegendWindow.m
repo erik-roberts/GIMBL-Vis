@@ -16,7 +16,7 @@
       
       mainWindowExistBool = pluginObj.checkMainWindowExists;
       
-      if mainWindowExistBool && ~isValidFigHandle(pluginObj.legendWindow.handle)
+      if mainWindowExistBool && ~pluginObj.checkWindowExists()
         makeLegendWindow(pluginObj);
         
         hcData = pluginObj.activeHypercube;

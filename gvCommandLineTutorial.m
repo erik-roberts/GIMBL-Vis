@@ -47,7 +47,7 @@ hypercubeName = 'sampleDataset';
 sampleGvArray = gvArray(sampleData, axis_vals, axis_names);
 sampleGvArray.meta.defaultHypercubeName = hypercubeName;
 
-gvFile = 'gvSampleFile.mat';
+gvFilePath = 'gvSampleFile.mat';
 
 % 4 ways to use the gv constructor method (ie the class name as a function):
 
@@ -59,11 +59,11 @@ clear gvObj
 
 %   2) Call load method on file/dir. If dir, must have only 1 mat file. File can
 %   store a gv, gvArray, or MDD object.
-% gvObj = gv(gvFile);
-% gvObj.summary;
-% 
-% gvObj = gv(gvFile, hypercubeName);
-% gvObj.summary;
+gvObj = gv(gvFilePath);
+gvObj.summary;
+
+gvObj = gv(gvFilePath, hypercubeName);
+gvObj.summary;
 
 
 %   3) Call gvArray constructor on gvArray/MDD data
@@ -98,6 +98,12 @@ gvObj.summary;
 gvObj.run();
 gvObj.view.gui.selectTab(2);
 gvObj.view.gui.selectTab('Main');
+
+%% Run from file
+gv(gvFilePath).run;
+
+gv.Run(gvFilePath);
+
 
 %% Advanced %%
 

@@ -94,7 +94,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.view.dynamic.nViewDims = sum([viewCheckboxes.Value]);
       
       if (pluginObj.view.dynamic.nViewDims ~= pluginObj.view.dynamic.nViewDimsLast) && pluginObj.view.dynamic.nViewDims > 0
-        notify(pluginObj.controller, 'doPlot')
+        notify(pluginObj.controller, 'nViewDimsChanged')
       end
       
       pluginObj.view.dynamic.nViewDimsLast = sum([viewCheckboxes.Value]);
@@ -299,7 +299,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       % update sibling edit box str
       pluginObj.updateEditFromSlider(sliderObj);
       
-      notify(pluginObj.controller, 'doPlot')
+      notify(pluginObj.controller, 'activeHypercubeSliceChanged')
     end
     
     
@@ -330,7 +330,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       % update sibling slider value
       pluginObj.updateSliderFromEdit(editObj, sliderVal);
       
-      notify(pluginObj.controller, 'doPlot')
+      notify(pluginObj.controller, 'activeHypercubeSliceChanged')
     end
     
     

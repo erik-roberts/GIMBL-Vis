@@ -36,13 +36,20 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     function closeWindow(pluginObj)
       figH = pluginObj.handles.fig;
       
-      windowExistBool = isValidFigHandle(figH);
+      windowExistBool = pluginObj.checkWindowExists();
       
       if windowExistBool
         delete(figH);
         
         pluginObj.handles.fig = [];
       end
+    end
+    
+    
+    function windowExistBool = checkWindowExists(pluginObj)
+      figH = pluginObj.handles.fig;
+      
+      windowExistBool = isValidFigHandle(figH);
     end
     
   end

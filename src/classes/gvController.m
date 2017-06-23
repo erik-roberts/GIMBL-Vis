@@ -38,6 +38,9 @@ classdef gvController < handle
     % view events
     activeHypercubeChanged
     activeHypercubeNameChanged
+    activeHypercubeSliceChanged
+    nViewDimsChanged
+    makeAxes
     doPlot
   end
   
@@ -315,7 +318,7 @@ classdef gvController < handle
           cntrlObj.plugins.main.openWindow(); % reopen window
         end
         
-        notify(cntrlObj, 'doPlot');
+        notify(cntrlObj, 'doPlot'); % TODO remove this calback
 %       end
     end
     

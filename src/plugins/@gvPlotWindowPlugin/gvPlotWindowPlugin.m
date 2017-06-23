@@ -33,6 +33,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       
       % Event listeners
       cntrlObj.newListener('activeHypercubeChanged', @gvPlotWindowPlugin.Callback_activeHypercubeChanged);
+      cntrlObj.newListener('activeHypercubeSliceChanged', @gvPlotWindowPlugin.Callback_activeHypercubeSliceChanged);
+      cntrlObj.newListener('nViewDimsChanged', @gvPlotWindowPlugin.Callback_nViewDimsChanged);
+      cntrlObj.newListener('makeAxes', @gvPlotWindowPlugin.Callback_makeAxes);
       cntrlObj.newListener('doPlot', @gvPlotWindowPlugin.Callback_doPlot);
     end
 
@@ -94,6 +97,12 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       % makeAxes - make plot window figure axes grid based on number of viewDims
       
       plotWindowHandle = pluginObj.handles.fig;
+      
+      if ~pluginObj.checkWindowExists()
+        pluginObj.vprintf('Skipping axis creation since window not open.\n')
+        return
+      end
+      
       clf(plotWindowHandle) %clear fig
       
       nViewDims = pluginObj.view.dynamic.nViewDims;
@@ -107,42 +116,51 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
           % 1 1d pane
           %         axes(hFig)
           %       hspg = subplot_grid(1,'no_zoom', 'parent',hFig);
-          hAx = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
         case 2
           % 1 2d pane
           %         axes(hFig)
           %       hspg = subplot_grid(1,'no_zoom', 'parent',hFig);
-          hAx = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(1, 1, gap, marg_h, marg_w, plotWindowHandle);
         case 3
           % 3 2d panes + 1 3d pane = 4 subplots
           %       hspg = subplot_grid(2,2, 'parent',hFig);
-          hAx = tight_subplot2(2, 2, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(2, 2, gap, marg_h, marg_w, plotWindowHandle);
         case 4
           % 6 2d panes + 4 3d pane = 10 subplots
           %       hspg = subplot_grid(2,5, 'parent',hFig);
-          hAx = tight_subplot2(2, 5, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(2, 5, gap, marg_h, marg_w, plotWindowHandle);
         case 5
           % 10 2d panes + 10 3d pane = 20 subplots
           %       hspg = subplot_grid(3,7, 'parent',hFig); % 1 empty
-          hAx = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
         case 6
           % 15 2d panes = 15 subplots
           %       hspg = subplot_grid(3,5, 'parent',hFig);
-          hAx = tight_subplot2(3, 5, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(3, 5, gap, marg_h, marg_w, plotWindowHandle);
         case 7
           % 21 2d panes = 21 subplots
           %       hspg = subplot_grid(3,7, 'parent',hFig);
-          hAx = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(3, 7, gap, marg_h, marg_w, plotWindowHandle);
         case 8
           % 28 2d panes = 28 subplots
           %       hspg = subplot_grid(4,7, 'parent',hFig);
-          hAx = tight_subplot2(4, 7, gap, marg_h, marg_w, plotWindowHandle);
+          hAxNum = tight_subplot2(4, 7, gap, marg_h, marg_w, plotWindowHandle);
         otherwise
-          wprintf('Select at least 1 ViewDim to plot.')
+          wprintf('Select 1-8 dimensions to plot.')
       end
       
+      % convert double handle to object handle
+%       for axInd = 1:length(hAxNum)
+%         axNum = hAxNum(axInd);
+%         hAx(axInd) = get(axNum);
+%       end
+      
       if nViewDims > 0
-        pluginObj.handles.ax = hAx; %TODO check handle type
+        hAx = hAxNum; % TODO convert to object handle
+        pluginObj.handles.ax = hAx;
+      else
+        pluginObj.handles.ax = [];
       end
     end
     
@@ -187,7 +205,35 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     function Callback_activeHypercubeChanged(src, evnt)
       cntrlObj = src;
+      
       notify(cntrlObj, 'doPlot');
+    end
+    
+    
+    function Callback_activeHypercubeSliceChanged(src, evnt)
+      cntrlObj = src;
+      
+      notify(cntrlObj, 'doPlot');
+    end
+    
+    
+    function Callback_nViewDimsChanged(src, evnt)
+      cntrlObj = src;
+%       pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
+      
+      notify(cntrlObj, 'makeAxes');
+    end
+    
+    
+    function Callback_makeAxes(src, evnt)
+      cntrlObj = src;
+      pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
+ 
+      if pluginObj.view.checkMainWindowExists() && pluginObj.checkWindowExists()
+        pluginObj.makeAxes();
+        
+        notify(cntrlObj, 'doPlot');
+      end
     end
     
     
@@ -204,7 +250,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
           return
         end
 
-        if ~isValidFigHandle(pluginObj.handles.fig)
+        if ~pluginObj.checkWindowExists()
           pluginObj.openWindow();
         end
         

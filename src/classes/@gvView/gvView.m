@@ -132,7 +132,7 @@ classdef gvView < handle
         warnBool = false;
       end
       
-      existBool = isValidFigHandle(viewObj.windowPlugins.main.handles.fig);
+      existBool = viewObj.windowPlugins.main.checkWindowExists();
       if ~existBool && warnBool
         wprintf('Main window is not open\n')
       end
@@ -143,7 +143,7 @@ classdef gvView < handle
       windows = viewObj.windowPlugins;
       
       for win = fieldnames(windows)'
-        winExistBool = isValidFigHandle(viewObj.windowPlugins.(win{1}).handles.fig);
+        winExistBool = viewObj.windowPlugins.(win{1}).checkWindowExists();
         
         if winExistBool
           viewObj.windowPlugins.(win{1}).openWindow();

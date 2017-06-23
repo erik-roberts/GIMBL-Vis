@@ -6,7 +6,7 @@ mainWindowExistBool = pluginObj.view.checkMainWindowExists(warnBool);
 
 if mainWindowExistBool
   % check for plot window
-  plotWindowExistBool = isValidFigHandle(pluginObj.handles.fig);
+  plotWindowExistBool = pluginObj.checkWindowExists();
   
   if plotWindowExistBool
     pluginObj.vprintf('Reopening plot window\n')
