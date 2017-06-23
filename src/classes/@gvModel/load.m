@@ -27,8 +27,8 @@ end
 if exist(src, 'dir')
   matFile = lscell(fullfile(src, '*.mat'));
   if ~isempty(matFile)
-    if any(strcmp(matFile, 'gvData.mat'))
-      src = fullfile(src, 'gvData.mat');
+    if any(strcmp(matFile, 'gvArrayData.mat'))
+      src = fullfile(src, 'gvArrayData.mat');
     else
       if length(matFile) > 1
         error('Found multiple mat files in dir. Please specify path to which mat file to load.')

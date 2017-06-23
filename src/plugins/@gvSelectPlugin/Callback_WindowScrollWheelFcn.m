@@ -24,7 +24,7 @@ nVarSliders = length(pluginObj.view.dynamic.sliderVals);
 % markerSliderPos(3:4) = markerSliderPosRel2Box(3:4) .* boxPos(3:4);
 
 % combined sliders pos
-sliderHandles = sort(findobjReTag('select_panel_slider\d+'));
+sliderHandles = sortByTag(findobjReTag('select_panel_slider\d+'));
 % sliderPos = cat(1,sliderHandles.Position);
 sliderPos = selectObj.getSliderAbsolutePosition();
 

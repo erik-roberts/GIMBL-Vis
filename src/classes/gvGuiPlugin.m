@@ -69,7 +69,7 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
     
     
     function findObjects(pluginObj)
-      pluginObj.handles.all = sort(findobj('-regexp','Tag',['^' pluginObj.pluginFieldName]));
+      pluginObj.handles.all = sortByTag(findobj('-regexp','Tag',['^' pluginObj.pluginFieldName]));
     end
     
     

@@ -1,29 +1,78 @@
 function plot(pluginObj)
 
-nViewDims = pluginObj.view.dynamic.nViewDims;
-nViewDimsLast = pluginObj.view.dynamic.nViewDimsLast;
-
-if ~(nViewDims > 0 && nViewDims ~= nViewDimsLast)
-  pluginObj.vprintf('Skipping Plot\n')
-  return
-end
-
 hFig = pluginObj.handles.fig;
-hAx = pluginObj.handles.ax;
+hAx = axes(hFig);
 
 nViewDims = pluginObj.view.dynamic.nViewDims;
 viewDims = pluginObj.view.dynamic.viewDims;
-% nAxDims = pluginObj.plotWindow.nAxDims;
-data = pluginObj.controller.activeHypercube;
-dimNames = data.axisNames;
 
-% Find labels for categorical data
-if isfield(pluginObj.controller.model.data.meta.classes,'Label')
-  colors = cat(1,pluginObj.plotWindow.Label.colors{:});
-  markers = pluginObj.plotWindow.Label.markers;
-  groups = pluginObj.plotWindow.Label.names;
-  plotVarNum = pluginObj.plotWindow.Label.varNum;
-  plotLabels = data.data{plotVarNum};
+hypercubeData = pluginObj.controller.activeHypercube;
+plotLabels = hypercubeData.data; % TODO generalize
+dimNames = hypercubeData.axisNames;
+sliderVals = pluginObj.view.dynamic.sliderVals;
+nAxDims = length(sliderVals);
+
+dataAxes = hypercubeData.axis;
+
+dataTypeAxInd = find(strcmp({dataAxes.axType}, 'dataType'));
+
+if ~isempty(dataTypeAxInd)
+  dataAxisInd = sliderVals(dataTypeAxInd);
+  thisSliceDataType = hypercubeData.axis(dataTypeAxInd).axismeta.dataType{dataAxisInd};
+  
+  if strcmp(thisSliceDataType, 'categorical')
+    
+    if isfield(hypercubeData.axis(dataTypeAxInd).axismeta, 'plotInfo')
+      
+      plotInfoBool = length(hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo) >= dataAxisInd;
+      
+      if plotInfoBool
+        thisSlicePlotInfo = hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd};
+      end
+      
+      if plotInfoBool && isfield(thisSlicePlotInfo,'labels')
+        groups = thisSlicePlotInfo.labels;
+      else
+        thisDataTypeSliceInds = sliderVals;
+        thisDataTypeSliceInds = num2cell(thisDataTypeSliceInds);
+        [thisDataTypeSliceInds{setxor(dataAxisInd, 1:nAxDims)}] = deal(':');
+    
+        thisDataTypeSlice = plotLabels(thisDataTypeSliceInds{:});
+        clear thisDataTypeSliceInds
+        
+        thisDataTypeSlice(cellfun(@isempty, thisDataTypeSlice)) = {''};
+        groups = unique(thisDataTypeSlice);
+        groups(cellfun(@isempty,groups)) = [];
+        clear thisDataTypeSlice
+        
+        % store for future plots
+        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.groups = groups;
+      end
+      nGroups = length(groups);
+      
+      if plotInfoBool && isfield(thisSlicePlotInfo,'colors')
+        colors = cat(1,thisSlicePlotInfo.colors{:});
+      else
+        colors = num2cell(distinguishable_colors(nGroups),2);
+        
+        % store for future plots
+        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.colors = colors;
+        
+        colors = cat(1,thisSlicePlotInfo.colors{:});
+      end
+      
+      if plotInfoBool && isfield(thisSlicePlotInfo,'markers')
+        markers = thisSlicePlotInfo.markers;
+      else
+        markers = cell(nGroups,1);
+        [markers{:}] = deal('.');
+        
+        % store for future plots
+        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.markers = markers;
+      end
+    end
+    
+  end
 end
 
 %% TODO: check axis order correct **********************************************
@@ -98,7 +147,7 @@ end
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [y,x,z] = meshgrid(data.dimVals{plotDims(2)}, data.dimVals{plotDims(1)}, data.dimVals{plotDims(3)});
+    [y,x,z] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)}, hypercubeData.dimVals{plotDims(3)});
       %  meshgrid works differently than the linearization
     g = plotLabels(sliceInd{:});
     
@@ -135,14 +184,14 @@ end
       plotData.clr(end+1,:) = thisClr;
       plotData.sym = [plotData.sym thisSym];
     end
-    
+
     % Marker Size
-    if handles.autoSizeMarkerCheckbox.Value %auto size marker
+    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
+    if autoSizeMarkerCheckboxHandle.Value %auto size marker
       set(gca,'unit', 'pixels');
       pos = get(gca,'position');
       axSize = pos(3:4);
       markerSize = min(axSize) / max([length(plotData.x), length(plotData.y), length(plotData.z)]);
-      set(gca,'unit', 'normalized');
       plotData.siz = markerSize;
     else %manual size marker
       markerSize = handles.markerSizeSlider.Value;
@@ -179,7 +228,7 @@ end
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [y,x] = meshgrid(data.dimVals{plotDims(2)}, data.dimVals{plotDims(1)});
+    [y,x] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)});
       %  meshgrid works opposite the linearization
     g = plotLabels(sliceInd{:});
     
@@ -213,12 +262,12 @@ end
     end
     
     % Marker Size
-    if handles.autoSizeMarkerCheckbox.Value %auto size marker
+    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
+    if autoSizeMarkerCheckboxHandle.Value %auto size marker
       set(gca,'unit', 'pixels');
       pos = get(gca,'position');
       axSize = pos(3:4);
       markerSize = min(axSize) / max(length(plotData.x), length(plotData.y));
-      set(gca,'unit', 'normalized');
       plotData.siz = markerSize;
     else %manual size marker
       markerSize = handles.markerSizeSlider.Value;
@@ -258,7 +307,7 @@ end
     [sliceInd{plotDims}] = deal(':');
     
     % Get grid
-    [y,x] = meshgrid(data.dimVals{plotDims(2)}, data.dimVals{plotDims(1)});
+    [y,x] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)});
       %  meshgrid works opposite the linearization
     g = plotLabels(sliceInd{:});
     
@@ -315,15 +364,17 @@ end
   function make1dPlot(hAx)
     axes(hAx)
     plotDim = find(viewDims);
-    sliceInd = pluginObj.plotWindow.axInd;
-    sliceInd = num2cell(sliceInd);
-    sliceInd{plotDim} = ':';
+    
+    % make cell array of slice indicies
+    sliceInds = sliderVals;
+    sliceInds = num2cell(sliceInds);
+    sliceInds{plotDim} = ':';
     
     plotData.xlabel = dimNames{plotDim};
-    plotData.x = data.dimVals{plotDim};
+    plotData.x = hypercubeData.axisValues{plotDim};
     plotData.y = zeros(length(plotData.x),1);
     plotData.ylabel = '';
-    plotData.g = plotLabels(sliceInd{:});
+    plotData.g = plotLabels(sliceInds{:});
     plotData.g = plotData.g(:)';
     
     % Remove empty points
@@ -343,12 +394,12 @@ end
     end
     
     % Marker Size
-    if handles.autoSizeMarkerCheckbox.Value %auto size marker
+    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
+    if autoSizeMarkerCheckboxHandle.Value %auto size marker
       set(gca,'unit', 'pixels');
       pos = get(gca,'position');
       axSize = pos(3:4);
       markerSize = min(axSize) / length(plotData.x);
-      set(gca,'unit', 'normalized');
       plotData.siz = markerSize;
     else %manual size marker
       markerSize = handles.markerSizeSlider.Value;

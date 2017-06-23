@@ -89,11 +89,11 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     
     function updateViewDims(pluginObj)
-      viewCheckboxes = sort(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','viewCheckbox'));
+      viewCheckboxes = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','viewCheckbox'), true);
       pluginObj.view.dynamic.viewDims = [viewCheckboxes.Value];
       pluginObj.view.dynamic.nViewDims = sum([viewCheckboxes.Value]);
       
-      if pluginObj.view.dynamic.nViewDims ~= pluginObj.view.dynamic.nViewDimsLast
+      if (pluginObj.view.dynamic.nViewDims ~= pluginObj.view.dynamic.nViewDimsLast) && pluginObj.view.dynamic.nViewDims > 0
         notify(pluginObj.controller, 'doPlot')
       end
       
@@ -105,7 +105,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       % Don't need to update plot since value is already set, locking just
       % prevents any change
       
-      lockCheckboxes = sort(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','lockCheckbox'));
+      lockCheckboxes = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','lockCheckbox'), true);
       pluginObj.view.dynamic.lockDims = [lockCheckboxes.Value];
       pluginObj.view.dynamic.nLockDims = sum([lockCheckboxes.Value]);
     end
@@ -180,8 +180,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       statusCellStr(disabledDims) = {'off'};
       statusCellStr(~disabledDims) = {'on'};
       
-      sliders = sort(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','slider\d+'));
-      sliderVals = sort(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','sliderVal\d+'));
+      sliders = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','slider\d+'), true);
+      sliderVals = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','sliderVal\d+'), true);
       
       [sliders.Enable] = deal(statusCellStr{:});
       [sliderVals.Enable] = deal(statusCellStr{:});
@@ -189,7 +189,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     
     function makeSliderAncestryMetadata(pluginObj)
-      sliderHandles = sort(findobjReTag('select_panel_slider\d+'));
+      sliderHandles = sortByTag(findobjReTag('select_panel_slider\d+'), true);
       
       pluginObj.view.dynamic.selectSliderAncestry = {};
       
@@ -298,6 +298,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       
       % update sibling edit box str
       pluginObj.updateEditFromSlider(sliderObj);
+      
+      notify(pluginObj.controller, 'doPlot')
     end
     
     
@@ -327,6 +329,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       
       % update sibling slider value
       pluginObj.updateSliderFromEdit(editObj, sliderVal);
+      
+      notify(pluginObj.controller, 'doPlot')
     end
     
     

@@ -80,13 +80,13 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         'Tag', pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
-        'UserData',pluginObj.userData,...
-        'WindowButtonMotionFcn',@gvPlotWindowPlugin.mouseMoveCallback...
+        'UserData',pluginObj.userData...
         );
+      %         'WindowButtonMotionFcn',@gvPlotWindowPlugin.mouseMoveCallback...
 
       % set plot handle
       pluginObj.handles.fig = plotWindowHandle;
-      pluginObj.handles.ax = axes(plotWindowHandle);
+%       pluginObj.handles.ax = axes(plotWindowHandle);
     end
     
     
@@ -97,7 +97,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       clf(plotWindowHandle) %clear fig
       
       nViewDims = pluginObj.view.dynamic.nViewDims;
-      
+
       gap = 0.1;
       marg_h = 0.1;
       marg_w = 0.1;
@@ -157,7 +157,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static)
 
-    function openWindowCallback(src, evnt)
+    function Callback_openWindow(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       pluginObj.openWindow();
@@ -195,6 +195,19 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
  
       if pluginObj.view.checkMainWindowExists()
+        
+        nViewDims = pluginObj.view.dynamic.nViewDims;
+        nViewDimsLast = pluginObj.view.dynamic.nViewDimsLast;
+
+        if ~(nViewDims > 0)
+          pluginObj.vprintf('Skipping Plot\n')
+          return
+        end
+
+        if ~isValidFigHandle(pluginObj.handles.fig)
+          pluginObj.openWindow();
+        end
+        
         pluginObj.plot();
       end
     end

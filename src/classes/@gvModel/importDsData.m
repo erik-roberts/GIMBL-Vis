@@ -15,9 +15,12 @@ options = checkOptions(varargin,{...
   },false);
 
 %% Parse src
-[~,~, ext] = fileparts(src);
+[parentDir,filename, ext] = fileparts(src);
 if exist(src, 'dir')
   filePath = fullfile(src, 'gvArrayData.mat');
+elseif exist(src, 'file') && strcmp(filename, 'studyinfo') % src = studyinfo.mat
+  src = parentDir;
+  filePath = fullfile(parentDir, 'gvArrayData.mat');
 elseif ~isempty(ext) && ~strcmp(ext, '.mat')
   error('Path input is not a mat file or dir to save ''gvData.mat'' file.')
   % else % given valid mat filename

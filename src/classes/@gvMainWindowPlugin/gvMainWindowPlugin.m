@@ -257,6 +257,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     
     function Callback_main_menu_model_mergeHypercubes(src, ~)
+      % TODO fix issue with ref
       pluginObj = src.UserData.pluginObj;
       modelObj = pluginObj.controller.model;
       
@@ -287,6 +288,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     
     function Callback_main_menu_model_mergeFromWS(src, ~)
+      % TODO fix issue with ref
       pluginObj = src.UserData.pluginObj;
       modelObj = pluginObj.controller.model;
       
