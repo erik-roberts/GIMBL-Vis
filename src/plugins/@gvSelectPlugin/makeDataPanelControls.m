@@ -8,6 +8,11 @@ function uiControlsHandles = makeDataPanelControls(pluginObj, parentHandle)
 nDims = pluginObj.controller.activeHypercube.ndims;
 axisNames = pluginObj.controller.activeHypercube.axisNames;
 
+% TODO figure out way to remove this
+if nDims ~= length(pluginObj.view.dynamic.sliderVals)
+  pluginObj.initializeSliderVals();
+end
+
 % Notes
 % - set the container to be based on amount of dims
 

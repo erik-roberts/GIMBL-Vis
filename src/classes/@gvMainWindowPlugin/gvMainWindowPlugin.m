@@ -81,6 +81,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
   %% Callbacks %%
   methods (Static, Hidden)
     
+    %% Event Callbacks
     function Callback_CloseRequestFcn(src, ~)
       % Close request function
  
@@ -130,6 +131,8 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     %% Menu Callbacks
+    
+    %% File
     function Callback_main_menu_file_changeWD(src, ~)
       pluginObj = src.UserData.pluginObj;
 
@@ -142,9 +145,24 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function Callback_main_menu_file_load(src, ~)
       pluginObj = src.UserData.pluginObj;
       
-      [fileName, pathName] = uigetfile('*.mat', 'Load Object');
+      [fileName, pathName] = uigetfile('*.mat', 'Load gv, gvArray, or MDD Object from File');
       
-      if ~fileName && ~pathName
+      if isequal(fileName,0)
+        return
+      end
+      
+      filePath = fullfile(pathName, fileName);
+      
+      pluginObj.controller.model.load(filePath);
+    end
+    
+    
+    function Callback_main_menu_file_importMdData(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      [fileName, pathName] = uigetfile('*.mat', 'Import Numeric or Cell Array from File');
+      
+      if isequal(fileName,0)
         return
       end
       
@@ -157,9 +175,9 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function Callback_main_menu_file_importTable(src, ~)
       pluginObj = src.UserData.pluginObj;
       
-      [fileName, pathName] = uigetfile('*.mat', 'Import Tabular Data');
+      [fileName, pathName] = uigetfile('*.mat', 'Import Tabular Data from File');
       
-      if ~fileName && ~pathName
+      if isequal(fileName,0)
         return
       end
       
@@ -172,9 +190,9 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function Callback_main_menu_file_saveGV(src, ~)
       pluginObj = src.UserData.pluginObj;
       
-      [fileName, pathName] = uiputfile('*.mat', 'Save GIMB-Vis Object');
+      [fileName, pathName] = uiputfile('*.mat', 'Save GIMBL-Vis Object');
       
-      if ~fileName && ~pathName
+      if isequal(fileName,0)
         return
       end
       
@@ -189,13 +207,37 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       [fileName, pathName] = uiputfile('*.mat', 'Save Hypercube as MDD Object');
       
-      if ~fileName && ~pathName
+      if isequal(fileName,0)
         return
       end
       
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.saveActiveHypercube(filePath);
+    end
+    
+    
+    %% Model
+    function Callback_main_menu_model_loadFromWS(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      varList = evalin('base','whos');
+      varList = {varList.name};
+      
+      [selection,ok] = listdlg('ListString', varList,...
+        'Name','Load/Import Data from Workspace',...
+        'PromptString','Select at least 1 variable from the Workspace:');
+      
+      if ~ok
+        return
+      end
+
+      varList = varList(selection);
+      
+      for varName = varList(:)'
+        hypercubeName = varName{1};
+        pluginObj.controller.model.importDataFromWorkspace(varName{1}, hypercubeName);
+      end
     end
     
     
@@ -206,6 +248,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
+    %% View
     function Callback_main_menu_view_setFontSize(src, ~)
       pluginObj = src.UserData.pluginObj;
       

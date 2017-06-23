@@ -178,10 +178,16 @@ classdef gvController < handle
     function setActiveHypercube(cntrlObj, argin)
       if nargin < 2
         flds = fieldnames(cntrlObj.model.data);
-        firstHypercubeName = flds{1};
         
-        cntrlObj.activeHypercube = cntrlObj.model.data.(firstHypercubeName);
-        cntrlObj.activeHypercubeName = firstHypercubeName;
+        if ~isempty(flds)
+          firstHypercubeName = flds{1};
+
+          cntrlObj.activeHypercube = cntrlObj.model.data.(firstHypercubeName);
+          cntrlObj.activeHypercubeName = firstHypercubeName;
+        else
+          cntrlObj.activeHypercube = gvArray();
+          cntrlObj.activeHypercubeName = '[None]';
+        end
       elseif isobject(argin)
         cntrlObj.activeHypercube = argin;
         cntrlObj.activeHypercubeName = argin.hypercubeName;
@@ -197,8 +203,10 @@ classdef gvController < handle
         error('Unknown hypercube input')
       end
       
-      notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName', cntrlObj.activeHypercubeName) );
-      cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
+      if ~strcmp(cntrlObj.activeHypercubeName, cntrlObj.prior_activeHypercubeName)
+        notify(cntrlObj, 'activeHypercubeChanged', gvEvent('activeHypercubeName', cntrlObj.activeHypercubeName) );
+        cntrlObj.prior_activeHypercubeName = cntrlObj.activeHypercubeName;
+      end
     end
     
     
@@ -273,10 +281,19 @@ classdef gvController < handle
     
     function Callback_modelChanged(src, evnt)
       cntrlObj = src;
+      
+      if strcmp(cntrlObj.activeHypercubeName, '[None]')
+        hypercubeNames = fieldnames(cntrlObj.model.data);
+        if ~isempty(hypercubeNames)
+          cntrlObj.setActiveHypercube(hypercubeNames{1});
+        end
+      end
+      
       if cntrlObj.view.checkMainWindowExists()
         cntrlObj.plugins.main.openWindow(); % reopen window
       end
     end
+    
     
     function Callback_pluginChanged(src, evnt)
       pluginClassName = evnt.data.pluginClassName;
@@ -289,8 +306,8 @@ classdef gvController < handle
     function Callback_activeHypercubeChanged(src, evnt)
       cntrlObj = src;
       new_activeHypercubeName = evnt.data.activeHypercubeName;
-      prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
-      if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
+%       prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
+%       if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
         cntrlObj.vprintf('New active hypercube: %s\n',new_activeHypercubeName);
         
         % TODO: more precise change
@@ -299,7 +316,7 @@ classdef gvController < handle
         end
         
         notify(cntrlObj, 'doPlot');
-      end
+%       end
     end
     
     

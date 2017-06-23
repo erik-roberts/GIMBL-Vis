@@ -20,6 +20,11 @@ mainVbox = uix.VBox(...
 );
 uiControlsHandles.parent = mainVbox;
 
+if isempty(pluginObj.controller.activeHypercube.data)
+  panelHandle = uiControlsHandles;
+  return
+end
+
 % 1.1)
 % edit mode toggle
 makeEditToggle(mainVbox);

@@ -24,7 +24,10 @@ handleStr = 'load';
 menuLabel = 'Load Object';
 makeMenuRow();
 
-% uigetfile
+handleStr = 'importMdData';
+menuLabel = 'Import Multidimensional Data';
+makeMenuRow();
+
 handleStr = 'importTable';
 menuLabel = 'Import Tabular Data';
 makeMenuRow();
@@ -42,6 +45,10 @@ makeMenuRow();
 menuLabel = 'Model';
 menuHandleStr = lower(menuLabel);
 rowParent = makeMenuCol();
+
+handleStr = 'loadFromWS';
+menuLabel = 'Load/Import Data from Workspace';
+makeMenuRow();
 
 handleStr = 'mergeHypercubes';
 menuLabel = 'Merge Hypercube with Active Hypercube';

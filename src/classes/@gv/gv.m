@@ -54,6 +54,8 @@
 % make fn that returns currently selected hypercube indicies
 %
 % deal with sorting of handle names when number exceeeds 9
+%
+% add cwd listener
 
 classdef gv < handle
   
@@ -453,7 +455,7 @@ classdef gv < handle
     
     %% Loading
     function gvObj = Load(src, hypercubeName)
-      % Load - load gv or gvArray object data
+      % Load - load gv, gvArray, or multidimensional object data
       %
       % Usage: obj = gv.Load()
       %        obj = gv.Load(src)

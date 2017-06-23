@@ -40,6 +40,8 @@ menuValue = find( strcmp( menuStr, activeHypercubeName ) );
 if isempty(menuStr)
   menuStr = {'[None]'};
   menuValue = 1;
+elseif isempty(menuValue)
+  menuValue = 1;
 end
 
 thisTag = pluginObj.panelTag('hypercubeMenu');

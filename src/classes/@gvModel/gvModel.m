@@ -11,14 +11,33 @@
 
 classdef gvModel < handle
   
-  properties %(SetObservable, AbortSet) % allows listener callback, aborts if set to current value
+  %% Public Properties %%
+  properties
     data = struct() % of gvArrayRef
-  end % public properties
+  end
   
   properties (SetAccess = private)
     app
     view
     controller
+  end
+  
+  %% Dependent Properties %%
+  properties (Dependent)
+    activeHypercube
+    activeHypercubeName
+  end
+  
+  methods
+    
+    function value = get.activeHypercube(viewObj)
+      value = viewObj.controller.activeHypercube;
+    end
+    
+    function value = get.activeHypercubeName(viewObj)
+      value = viewObj.controller.activeHypercubeName;
+    end
+    
   end
   
   %% Public Methods %%
@@ -85,6 +104,8 @@ classdef gvModel < handle
     modelObj = load(modelObj, src, fld, staticBool)
     
     %% Importing
+    modelObj = importDataFromWorkspace(modelObj, fld, varargin)
+    
     modelObj = importTabularDataFromFile(modelObj, fld, varargin)
     
     importDsData(modelObj, src, varargin);
@@ -101,7 +122,7 @@ classdef gvModel < handle
       end
       
       if ~exist(filePath,'file') || overwriteBool
-        eval([hypercubeName ' = modelObj.data.(' hypercubeName' ').gv2MDD;']);
+        eval([hypercubeName ' = modelObj.data.(''' hypercubeName ''').gv2MDD;']);
         save(filePath, hypercubeName);
       else
         warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.');
