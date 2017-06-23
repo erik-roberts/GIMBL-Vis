@@ -201,7 +201,7 @@ if ~exist(filePath,'file') || options.overwriteBool
       end
     catch
       classes.(thisFnStr).labels = uClassNames;
-      classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).names));
+      classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
     end
   end
   
