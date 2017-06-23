@@ -30,7 +30,7 @@ end
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data
   modelObj.vprintf('Importing studyinfo...\n')
-  studyinfo = ds.checkStudyinfo(src);
+  studyinfo = dsCheckStudyinfo(src);
   
   studyinfoParams = studyinfo.base_model.parameters;
   studyinfoParamNames = fieldnames(studyinfoParams);
@@ -146,7 +146,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   analysisResults = struct();
   for iFn = 1:numel(resultFns)
     thisResultFn = resultFns{iFn};
-    analysisResults.(func2str(thisResultFn)) = ds.importResults(src, thisResultFn);
+    analysisResults.(func2str(thisResultFn)) = dsImportResults(src, thisResultFn);
     
     if length(analysisResults.(func2str(thisResultFn))) ~= size(variedParamValues,1)
       wprintf('\tDifferent lengths for number of modifications and %s results.', func2str(thisResultFn))
