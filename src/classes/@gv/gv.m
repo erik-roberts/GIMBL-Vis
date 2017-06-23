@@ -250,7 +250,7 @@ classdef gv < handle
     
     
     %% Running
-    function run(gvObj, varargin)
+    function varargout = run(gvObj, varargin)
       % run (public) - run gv GUI
       %
       % See also: gv.Run (static method)
@@ -268,6 +268,10 @@ classdef gv < handle
       end
       
       gvObj.view.run();
+      
+      if nargout
+        varargout{1} = gvObj;
+      end
     end
     
     
@@ -536,8 +540,10 @@ classdef gv < handle
     
     
     %% Running
-    function gvObj = Run(loadPath, varargin)
+    function varargout = Run(loadPath, varargin)
       % Run (static) - run gv
+      %
+      % See also: gv/run (public method)
       
       % if load path not defined
       if ~exist('loadPath', 'var') || ~isempty(loadPath)
@@ -548,7 +554,9 @@ classdef gv < handle
       
       gvObj.run(varargin{:});
       
-      % See also: gv/run (public method)
+      if nargout
+        varargout{1} = gvObj;
+      end
     end
     
     %% Misc

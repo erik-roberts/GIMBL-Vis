@@ -26,6 +26,7 @@ classdef gvView < handle
     windowPlugins
     
     main
+    gui
   end
   
   methods
@@ -47,6 +48,10 @@ classdef gvView < handle
     end
     
     function value = get.main(viewObj)
+      value = viewObj.windowPlugins.main;
+    end
+    
+    function value = get.gui(viewObj)
       value = viewObj.windowPlugins.main;
     end
     

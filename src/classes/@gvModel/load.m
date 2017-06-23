@@ -38,11 +38,16 @@ if exist(src, 'dir')
     
     % in case specify dynasim data dir
     if strcmp(matFile{1}, 'studyinfo.mat')
-      modelObj = gv.ImportDsData(src); % ignore src
+      modelObj.importDsData(src); % ignore src
       return
     end
   else
-    error('No mat files found in dir for loading.')
+    if ~staticBool
+      error('No mat files found in dir for loading.')
+    else % called gv.Run() in directory without mat files
+      modelObj.vprintf('No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
+      return
+    end
   end
 elseif ~exist(src, 'file')
   error('Load source not found. Use ''obj.importTabularDataFromFile'' instead for non-mat files.')

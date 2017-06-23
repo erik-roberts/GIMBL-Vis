@@ -50,7 +50,21 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
-    function selectTab(pluginObj, tabInd)
+    function selectTab(pluginObj, tab)
+      % selectTab - using tab name or number
+      
+      if isscalar(tab)
+        tabInd = tab;
+      elseif ischar(tab)
+        tabs = [pluginObj.handles.controls.tabs{:}];
+        tabs = [tabs.uitab];
+        tabs = {tabs.Title};
+        
+        tabInd = find(strcmp(tabs, tab));
+      else
+        error('Unknown tab input.')
+      end
+      
       pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.handles.controls.tabs{tabInd}.uitab;
     end
     

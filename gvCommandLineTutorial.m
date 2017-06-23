@@ -21,8 +21,24 @@ if ~exist('gv','class')
   addpath(genpath(pwd));
 end
 
-%% Basics
-sampleData = cat(3, magic(20), magic(20));
+
+%% Basics %%
+
+%% Open GV GUI with empty model
+% 3 ways:
+
+% 1) Using constructor followed by method call
+gvObj = gv;
+gvObj.run();
+
+% 2) Using static/class method
+gv.Run; % or `gvObj = gv.Run;`
+
+% 3) using constructor with simulataneous method call
+gv().run % or `gvObj = gv().run;`
+
+%% Object Construction
+sampleData = rand(20,20,2);
 axis_vals = {1:20, 1:20,{'type1','type2'}};
 axis_names = {'x','y','dataType'};
 
@@ -34,9 +50,12 @@ sampleGvArray.meta.defaultHypercubeName = hypercubeName;
 gvFile = 'gvSampleFile.mat';
 
 % 4 ways to use the gv constructor method (ie the class name as a function):
+
 %   1) Create empty gv object
 gvObj = gv();
 gvObj.summary;
+clear gvObj
+
 
 %   2) Call load method on file/dir. If dir, must have only 1 mat file. File can
 %   store a gv, gvArray, or MDD object.
@@ -51,25 +70,36 @@ gvObj.summary;
 gvObj = gv(sampleGvArray);
 gvObj.summary;
 gvObj.printHypercubeList;
+clear gvObj
 
 gvObj = gv(hypercubeName, sampleGvArray);
 gvObj.printHypercubeList;
-%
+clear gvObj
+
 %   4) Call gvArray constructor on cell/numeric array data. Can be linear
 %         or multidimensional array data.
 gvObj = gv(sampleData);
 gvObj.summary;
+clear gvObj
 
 gvObj = gv(hypercubeName, sampleData);
 gvObj.summary;
+clear gvObj
 
 gvObj = gv(sampleData, axis_vals, axis_names);
 gvObj.summary;
+clear gvObj
 
 gvObj = gv(hypercubeName, sampleData, axis_vals, axis_names);
 gvObj.summary;
 
-%% Advanced
+
+% Switch tabs
+gvObj.run();
+gvObj.view.gui.selectTab(2);
+gvObj.view.gui.selectTab('Main');
+
+%% Advanced %%
 
 
-%% Dynasim Integration
+%% Dynasim Integration %%
