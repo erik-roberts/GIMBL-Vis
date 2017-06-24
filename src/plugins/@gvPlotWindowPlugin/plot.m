@@ -132,12 +132,23 @@ switch nViewDims
       end
     end
 
-  case 6
-    % 15 2d panes = 15 subplots
-  case 7
-    % 21 2d panes = 21 subplots
-  case 8
-    % 28 2d panes = 28 subplots
+  case {6, 7, 8}
+    % 6D: 15 2d panes = 15 subplots
+    % 7D: 21 2d panes = 21 subplots
+    % 8D: 28 2d panes = 28 subplots
+    
+    plotDims = find(viewDims);
+    
+    % 2d plots
+    plotDims2d = sort(combnk(plotDims,2));
+    for iAx2d = 1:size(plotDims2d, 1)
+      ax2d = hAx(iAx2d);
+%       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+        make2dPlot(ax2d, plotDims2d(iAx2d,:));
+%       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+%         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
+%       end
+    end
 end
 
 hideEmptyAxes(hFig);
