@@ -266,6 +266,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       assert(~isnan(axind), 'Variable axis index not found');
       
       pluginObj.controller.activeHypercube.axis(axind).name = src.String;
+      
+      notify(pluginObj.controller, 'activeHypercubeAxisLabelChanged');
     end
     
     

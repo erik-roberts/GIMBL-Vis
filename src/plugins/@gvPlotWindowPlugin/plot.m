@@ -12,6 +12,7 @@ fontSize = pluginObj.view.fontSize;
 hypercubeData = pluginObj.controller.activeHypercube;
 plotLabels = hypercubeData.data; % TODO generalize
 dimNames = hypercubeData.axisNames;
+dimNames = strrep(dimNames, '_', ' '); % replace '_' with ' ' to avoid subscript
 sliderVals = pluginObj.view.dynamic.sliderVals;
 nAxDims = length(sliderVals);
 
@@ -103,31 +104,34 @@ switch nViewDims
       % of edges of dots
 %     end
     
-  case 3
-    % 3 2d panes + 1 3d pane = 4 subplots
+  case {3,4,5}
+    % 3D: 3 2d panes + 1 3d pane = 4 subplots
+    % 4D: 6 2d panes + 4 3d pane = 10 subplots
+    % 5D: 10 2d panes + 10 3d pane = 20 subplots
+    
     plotDims = find(viewDims);
     
     % 2d plots
-    plotDims2d = combnk(plotDims,2);
-    for iAx = 1:3
-      ax2d = hAx(iAx);
+    plotDims2d = sort(combnk(plotDims,2));
+    for iAx2d = 1:size(plotDims2d, 1)
+      ax2d = hAx(iAx2d);
 %       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
-        make2dPlot(ax2d, plotDims2d(iAx,:));
+        make2dPlot(ax2d, plotDims2d(iAx2d,:));
 %       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
 %         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
 %       end
     end
     
     % 3d plot
-    ax3d = hAx(iAx+1);
-    if isgraphics(ax3d) && isempty(get(ax3d,'Children'))
-      make3dPlot(ax3d, plotDims)
-    end
+    plotDims3d = sort(combnk(plotDims,3));
     
-  case 4
-    % 6 2d panes + 4 3d pane = 10 subplots
-  case 5
-    % 10 2d panes + 10 3d pane = 20 subplots
+    for iAx3d = iAx2d:iAx2d+size(plotDims3d, 1)
+      ax3d = hAx(iAx3d);
+      if isgraphics(ax3d) && isempty(get(ax3d,'Children'))
+        make3dPlot(ax3d, plotDims3d(iAx3d-iAx2d,:))
+      end
+    end
+
   case 6
     % 15 2d panes = 15 subplots
   case 7
@@ -136,7 +140,7 @@ switch nViewDims
     % 28 2d panes = 28 subplots
 end
 
-% hFig.hide_empty_axes;
+hideEmptyAxes(hFig);
 
 if nargout > 0
   varargout{1} = handles;
@@ -518,7 +522,7 @@ end
       
 %       plotData.sym
 
-      scatter3(plotData.x, plotData.y, plotData.z, plotData.siz, plotData.clr(groupInd4color,:), '*');
+      scatter3(plotData.x, plotData.y, plotData.z, plotData.siz, plotData.clr(groupInd4color,:), '.');
       
       xlabel(plotData.xlabel)
       ylabel(plotData.ylabel)

@@ -33,7 +33,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       
       % Event listeners
       cntrlObj.newListener('activeHypercubeChanged', @gvPlotWindowPlugin.Callback_activeHypercubeChanged);
+      cntrlObj.newListener('activeHypercubeAxisLabelChanged', @gvPlotWindowPlugin.Callback_activeHypercubeAxisLabelChanged);
       cntrlObj.newListener('activeHypercubeSliceChanged', @gvPlotWindowPlugin.Callback_activeHypercubeSliceChanged);
+      
       cntrlObj.newListener('nViewDimsChanged', @gvPlotWindowPlugin.Callback_nViewDimsChanged);
       cntrlObj.newListener('makeAxes', @gvPlotWindowPlugin.Callback_makeAxes);
       cntrlObj.newListener('doPlot', @gvPlotWindowPlugin.Callback_doPlot);
@@ -151,6 +153,14 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       end
 
       hAx = plotWindowHandle.Children;
+      hAxBool = false(length(hAx),1);
+      
+      for hInd = 1:length(hAx)
+        hAxBool(hInd) = strcmp(hAx(hInd).Type, 'axes');
+      end   
+      hAx = hAx(hAxBool);
+      
+      hAx = flip(hAx); % since given backwards
       
       if nViewDims > 0
         pluginObj.handles.ax = hAx;
@@ -199,6 +209,13 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     function Callback_activeHypercubeChanged(src, evnt)
+      cntrlObj = src;
+      
+      notify(cntrlObj, 'doPlot');
+    end
+ 
+    
+    function Callback_activeHypercubeAxisLabelChanged(src, evnt)
       cntrlObj = src;
       
       notify(cntrlObj, 'doPlot');

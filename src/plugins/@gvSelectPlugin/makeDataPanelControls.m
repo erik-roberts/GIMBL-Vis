@@ -190,12 +190,18 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
     for n = 1:nDims
       nStr = num2str(n);
       
+      if isfield(pluginObj.view.dynamic, 'viewDims')
+        thisVal = pluginObj.view.dynamic.viewDims(n);
+      else
+        thisVal = 0;
+      end
+      
       % viewCheckbox
       thisTag = pluginObj.panelTag(['viewCheckbox' nStr]);
       uiControlsHandles.(['viewCheckbox' nStr]) = uicontrol(...
         'Tag',thisTag,...
         'Style','checkbox',...
-        'Value',0,...
+        'Value',thisVal,...
         'UserData',pluginObj.userData,...
         'Callback',pluginObj.callbackHandle(pluginObj.panelTag('viewCheckbox')),... % use same callback for each
         'Parent',parentHandle);
@@ -212,12 +218,18 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
     for n = 1:nDims
       nStr = num2str(n);
       
+      if isfield(pluginObj.view.dynamic, 'lockDims')
+        thisVal = pluginObj.view.dynamic.lockDims(n);
+      else
+        thisVal = 0;
+      end
+      
       % viewCheckbox
       thisTag = pluginObj.panelTag(['lockCheckbox' nStr]);
       uiControlsHandles.(['lockCheckbox' nStr]) = uicontrol(...
         'Tag',thisTag,...
         'Style','checkbox',...
-        'Value',0,...
+        'Value',thisVal,...
         'UserData',pluginObj.userData,...
         'Callback',pluginObj.callbackHandle(pluginObj.panelTag('lockCheckbox')),...% use same callback for each
         'Parent',parentHandle);

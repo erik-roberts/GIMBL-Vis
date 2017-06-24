@@ -38,6 +38,7 @@ classdef gvController < handle
     % view events
     activeHypercubeChanged
     activeHypercubeNameChanged
+    activeHypercubeAxisLabelChanged
     activeHypercubeSliceChanged
     nViewDimsChanged
     makeAxes
