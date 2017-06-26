@@ -47,9 +47,10 @@ elseif isa(data, 'MDD') || isa(data, 'MDDRef') || isnumeric(data) || iscell(data
     fld = modelObj.checkHypercubeName(fld);
   end
   
-  modelObj.data.(fld) = gvArrayRef(gvArray(data));
-  
-  notify(modelObj.controller, 'modelChanged');
+  % Add hypercube
+  hypercubeObj = gvArrayRef(gvArray(data));
+  hypercubeName = fld;
+  modelObj.addHypercube(hypercubeObj, hypercubeName);
   
   modelObj.vprintf('Loaded multidimensional array object data.\n')
 else

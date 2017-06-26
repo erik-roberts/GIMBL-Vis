@@ -272,14 +272,17 @@ if ~exist(filePath,'file') || options.overwriteBool
   dynasimData.axis(1).axismeta.axisType = 'dataType';
   
   % Store data
-  modelObj.addHypercube(gvArrayRef(dynasimData));
+  hypercubeObj = gvArrayRef(dynasimData);
+  modelObj.addHypercube(hypercubeObj);
+  
+  modelObj.vprintf('Imported multidimensional array object from Dynasim data from: %s\n', filePath)
   
   % Save
   save(filePath, 'dynasimData') % save gvArray obj
   modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
-  modelObj.vprintf('Loading data from: %s\n', filePath)
+  modelObj.vprintf('Loading dynasim data from: %s\n', filePath)
   
   modelObj.load(filePath);
 end

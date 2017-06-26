@@ -158,7 +158,7 @@ classdef gvModel < handle
       if nargin < 3 || isempty(hypercubeName)
         hypercubeName = modelObj.checkHypercubeName(hypercubeObj);
       else
-        hypercubeName = modelObj.checkHypercubeName(fld);
+        hypercubeName = modelObj.checkHypercubeName(hypercubeName);
       end
       
       modelObj.data.(hypercubeName) = hypercubeObj;

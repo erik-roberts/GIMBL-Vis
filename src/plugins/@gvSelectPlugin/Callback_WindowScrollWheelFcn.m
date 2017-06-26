@@ -1,8 +1,12 @@
 function Callback_WindowScrollWheelFcn(src, evnt)
 % Permits scrolling of select panel sliders in main window
 
-pluginObj = src.UserData.pluginObj;
-selectObj = pluginObj.controller.guiPlugins.select;
+mainPluginObj = src.UserData.pluginObj;
+guiPluginObj = mainPluginObj.controller.guiPlugins.select;
+
+if ~strcmp(mainPluginObj.whichTabActive.Title, guiPluginObj.pluginName)
+  return % since wrong tab selected
+end
 
 figH = src;
 scrollData = evnt;
@@ -11,7 +15,7 @@ figPosPx = figH.Position;
 mousePosPx = get(figH, 'CurrentPoint'); %pixels
 % mousePos = mousePosPx ./ figH.Position(3:4); %relative
 
-nVarSliders = length(pluginObj.view.dynamic.sliderVals);
+nVarSliders = length(mainPluginObj.view.dynamic.sliderVals);
 
 % % Get marker slider imbeded in box pos
 % figPosPx = figH.Position;
@@ -26,7 +30,7 @@ nVarSliders = length(pluginObj.view.dynamic.sliderVals);
 % combined sliders pos
 sliderHandles = sortByTag(findobjReTag('select_panel_slider\d+'));
 % sliderPos = cat(1,sliderHandles.Position);
-sliderPos = selectObj.getSliderAbsolutePosition();
+sliderPos = guiPluginObj.getSliderAbsolutePosition();
 
 % Find Positions of LL and UR corners for each slider
 sliderLLx  = sliderPos(:,1);
@@ -50,7 +54,7 @@ if sliderInd %if in any slider
     newValue = max(min(sliderObj.Value+sliderChange, sliderObj.Max), sliderObj.Min);
     if startValue ~= newValue
       sliderObj.Value = newValue;
-      selectObj.Callback_select_panel_slider(sliderObj);
+      guiPluginObj.Callback_select_panel_slider(sliderObj);
     end
   end
 end

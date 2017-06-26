@@ -232,15 +232,13 @@ classdef gvController < handle
       
       modelObj = cntrlObj.model;
       
-      activeHypercubeName = cntrlObj.activeHypercubeName;
-      
       flds = fieldnames(modelObj.data);
       flds(strcmp(flds, cntrlObj.activeHypercubeName)) = [];
       if ~isempty(flds)
         cntrlObj.setActiveHypercube(flds{1});
       end
       
-      modelObj.deleteHypercube(activeHypercubeName);
+      modelObj.deleteHypercube(cntrlObj.activeHypercubeName);
     end
     
   end

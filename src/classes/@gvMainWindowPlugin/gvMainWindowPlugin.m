@@ -48,7 +48,14 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     
     openWindow(pluginObj)
     
+    
     panelHandle = makePanelControls(pluginObj, parentHandle)
+    
+    
+    function tab = whichTabActive(pluginObj)
+      tab = pluginObj.handles.controls.tabPanel.SelectedTab;
+    end
+    
     
     function selectTab(pluginObj, tab)
       % selectTab - using tab name or number
@@ -67,6 +74,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.handles.controls.tabs{tabInd}.uitab;
     end
+    
     
     function addDynamicCallback(pluginObj, callbackEventName, callbackHandle)
       if isfield(pluginObj.dynamicCallbacks, callbackEventName)

@@ -65,8 +65,6 @@
 % fontsize on plot window
 %
 % pop up for run loading from mat
-%
-% put in listener into gvPlot that checks all hypercubes for categorical data
 
 classdef gv < handle
   
@@ -174,7 +172,11 @@ classdef gv < handle
           if ~exist('fld', 'var')
             fld = gvObj.model.nextModelFieldName; % get next fld for model.axes#
           end
-          gvObj.model.data.(fld) = gvArrayRef(varargin{:});
+                    
+          % Add hypercube
+          hypercubeObj = gvArrayRef(varargin{:});
+          hypercubeName = fld;
+          gvObj.model.addHypercube(hypercubeObj, hypercubeName);
           
           gvObj.controller.setActiveHypercube(fld);
         elseif isa(varargin{1}, 'MDD') || isa(varargin{1}, 'MDDRef') % || isa(varargin{1}, 'gvArray')
@@ -182,7 +184,11 @@ classdef gv < handle
           if ~exist('fld', 'var')
             fld = gvObj.model.checkHypercubeName(varargin{1});
           end
-          gvObj.model.data.(fld) = gvArrayRef(varargin{:});
+          
+          % Add hypercube
+          hypercubeObj = gvArrayRef(varargin{:});
+          hypercubeName = fld;
+          gvObj.model.addHypercube(hypercubeObj, hypercubeName);
         end
       else
         % 1) Make empty gv object

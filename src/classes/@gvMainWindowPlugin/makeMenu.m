@@ -50,13 +50,14 @@ handleStr = 'loadFromWS';
 menuLabel = 'Load/Import Data from Workspace';
 makeMenuRow();
 
-handleStr = 'mergeHypercubes';
-menuLabel = 'Merge Hypercube with Active Hypercube';
-makeMenuRow();
+% TODO fix MDDRef to allow merge
+% handleStr = 'mergeHypercubes';
+% menuLabel = 'Merge Hypercube with Active Hypercube';
+% makeMenuRow();
 
-handleStr = 'mergeFromWS';
-menuLabel = 'Merge Object From Workspace with Active Hypercube';
-makeMenuRow();
+% handleStr = 'mergeFromWS';
+% menuLabel = 'Merge Object From Workspace with Active Hypercube';
+% makeMenuRow();
 
 handleStr = 'deleteHypercube';
 menuLabel = 'Delete Active Hypercube';

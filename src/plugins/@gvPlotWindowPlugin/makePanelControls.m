@@ -50,4 +50,10 @@ set(mainVbox, 'Heights',[panelHeight panelHeight])
 %% argout
 panelHandle = mainVbox;
 
+%% add scroll callback
+pluginObj.view.main.addDynamicCallback('WindowScrollWheelFcn', @gvPlotWindowPlugin.Callback_WindowScrollWheelFcn);
+
+%% notify listener
+notify(pluginObj, 'panelControlsMade');
+
 end

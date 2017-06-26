@@ -1,7 +1,7 @@
 %% gvSelect - Select GUI Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
-%              methods for a GIMBL-Vis plot window
+%              methods for a GIMBL-Vis select window
 
 classdef gvSelectPlugin < gvGuiPlugin
 
