@@ -65,6 +65,8 @@
 % fontsize on plot window
 %
 % pop up for run loading from mat
+%
+% put in listener into gvPlot that checks all hypercubes for categorical data
 
 classdef gv < handle
   
