@@ -62,9 +62,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
     
     plot(pluginObj)
-    
-    
-    iterate(pluginObj)
 
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
@@ -186,21 +183,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       
       pluginObj.openLegendWindow();
     end
-    
-    
-    function Callback_plot_panel_iterateToggle(src, evnt)
-      pluginObj = src.UserData.pluginObj; % window plugin
-      
-      if src.Value
-        src.String = sprintf('Iterate ( %s )', char(8545)); %pause char (bars)
-%         src.String = sprintf('Iterate ( %s )', char(hex2dec('23F8'))); %pause char (bars)
 
-        pluginObj.iterate();
-      else
-        src.String = sprintf('Iterate ( %s )', char(9654)); %start char (arrow)
-      end
-    end
-    
     
     function Callback_activeHypercubeChanged(src, evnt)
       cntrlObj = src;

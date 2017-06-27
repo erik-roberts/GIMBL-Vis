@@ -63,6 +63,8 @@ classdef gvSelectPlugin < gvGuiPlugin
       end
     end
     
+    iterate(pluginObj)
+    
   end
   
   
@@ -85,7 +87,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     
     function initializeSliderVals(pluginObj)
-      pluginObj.view.dynamic.sliderVals = ones(pluginObj.controller.activeHypercube.ndims, 1);
+      pluginObj.view.dynamic.sliderVals = ones(1, pluginObj.controller.activeHypercube.ndims);
     end
     
     
@@ -181,7 +183,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       statusCellStr(disabledDims) = {'off'};
       statusCellStr(~disabledDims) = {'on'};
       
-      sliders = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','slider\d+'), true);
+      sliders = pluginObj.sliderHandles;
       sliderVals = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','sliderVal\d+'), true);
       
       [sliders.Enable] = deal(statusCellStr{:});
@@ -211,6 +213,10 @@ classdef gvSelectPlugin < gvGuiPlugin
           h = h.Parent;
         end
       end
+    end
+    
+    function sliders = sliderHandles(pluginObj)
+      sliders = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','slider\d+'), true);
     end
 
   end
@@ -334,6 +340,20 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.updateSliderFromEdit(editObj, sliderVal);
       
       notify(pluginObj.controller, 'activeHypercubeSliceChanged')
+    end
+    
+    
+    function Callback_select_panel_iterateToggle(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      if src.Value
+        src.String = sprintf('Iterate ( %s )', char(8545)); %pause char (bars)
+%         src.String = sprintf('Iterate ( %s )', char(hex2dec('23F8'))); %pause char (bars)
+
+        pluginObj.iterate();
+      else
+        src.String = sprintf('Iterate ( %s )', char(9654)); %start char (arrow)
+      end
     end
     
     

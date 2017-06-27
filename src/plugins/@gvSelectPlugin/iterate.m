@@ -1,29 +1,22 @@
 function iterate(pluginObj)
-disabledDims = pluginObj.view.dynamic.disabledDims;
-
-if hObject.Value && (~pluginObj.checkWindowExists() || ~handles.PlotWindow.nViewDims) || all(disabledDims)
-  wprintf('Cannot iterate without a visible Plot Window, at least 1 "view" variable, and at least 1 variable not disabled.')
-  hObject.Value = 0;
-  return
-elseif hObject.Value% turned on
-  hObject.String = sprintf('( %s ) Iterate', char(8545)); %pause char (bars)
-else % turned off
-  hObject.String = sprintf('( %s ) Iterate', char(9654)); %start char (arrow)
-end
-
-% Vars
-nDimVals = handles.mdData.nDimVals;
-
-viewDims = handles.PlotWindow.viewDims;
-if sum(viewDims) > 2
-  viewDims(:) = 0;
-end
-incrDims = ~viewDims;
+% const var
+hObject = findobjReTag('select_panel_iterateToggle');
+nDimVals = cellfun(@length, pluginObj.controller.activeHypercube.axisValues);
+sliderHandles = pluginObj.sliderHandles;
 
 % Loop
 iterBool = hObject.Value;
 while iterBool
   tic
+  
+  % Changing Vars
+  disabledDims = pluginObj.view.dynamic.disabledDims;
+  viewDims = pluginObj.view.dynamic.viewDims;
+
+  if sum(viewDims) > 2
+    viewDims(:) = 0;
+  end
+  incrDims = ~viewDims;
   
   incrementSliders();
   
@@ -31,19 +24,23 @@ while iterBool
   iterBool = hObject.Value;
   
   % Check for delay time
-  delayTime = handles.delayBox.Value;
-  iterTime = toc;
-  delayTimeFinal = max( (delayTime - iterTime), 0);
-  pause(delayTimeFinal)
+  delayBoxObj = findobjReTag('select_panel_delayValueBox');
+  try
+    delayTime = str2double(delayBoxObj.String);
+  catch
+    if ~exist(delayTime,'var')
+      delayTime = .1;
+    end
+  end
+    iterTime = toc;
+    delayTimeFinal = max( (delayTime - iterTime), 0);
+    pause(delayTimeFinal)
 end
 
 %% Sub functions
   function incrementSliders()
-    handles = getappdata(handles.output, 'UsedByGUIData_m');
-    
-    axInd = handles.PlotWindow.axInd;
+    axInd = pluginObj.view.dynamic.sliderVals;
     axInd(disabledDims) = nDimVals(disabledDims); % set disabled dims to max
-    
     
     %% New slider position
     if any(axInd < nDimVals) % Increment
@@ -55,9 +52,11 @@ end
       incrAxLogical = logical(incrAxLogical);
       
       % change slider that icnrements
-      sliderObject = handles.MainWindow.Handles.sH(incrAxLogical);
+      sliderObject = sliderHandles(incrAxLogical);
       sliderObject.Value = sliderObject.Value + sliderObject.SliderStep(1)*(sliderObject.Max-sliderObject.Min);
-      handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
+      
+      % Callback slider
+      pluginObj.Callback_select_panel_slider(sliderObject, []);
     else
       resetAx = incrDims;
       resetAx(disabledDims) = 0;
@@ -67,25 +66,16 @@ end
     % loop over slider handles and set value to min
     if any(resetAx)
       for iSlider = find(resetAx) %logical to indices
-        sliderObject = handles.MainWindow.Handles.sH(iSlider);
-        sliderObject.Value = -inf;
+        sliderObject = sliderHandles(iSlider);
+        sliderObject.Value = 1;
         
-        handles = gvSliderChangeCallback(sliderObject, eventdata, handles);
-        
-        % Update handles structure
-        guidata(hObject, handles);
+        pluginObj.Callback_select_panel_slider(sliderObject, []);
       end
     end
     
     %% Update plot and image
     % replot
-    handles = gvPlot(hObject, eventdata, handles);
-    
-    % reshow image
-    gvPlotWindowMouseMoveCallback(handles.PlotWindow.figHandle, []);
-    
-    % Update handles structure
-    guidata(hObject, handles);
+    notify(pluginObj.controller, 'doPlot');
     
   end %incrementSliders
 

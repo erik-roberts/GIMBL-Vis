@@ -59,7 +59,7 @@
 %
 % plot colorscale based on slice or total hypercube using meta.numericLimits
 %
-% data marker
+% data markers
 %
 % only replot what changed
 %
@@ -72,6 +72,8 @@
 % same camera position in 3d after replot
 %
 % move iterate to select
+%
+% allow non string, non numeric data
 
 classdef gv < handle
   
