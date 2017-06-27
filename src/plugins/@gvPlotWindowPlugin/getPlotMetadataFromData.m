@@ -43,16 +43,19 @@ else
   
   if isnumeric(hypercubeObj.data)
     hypercubeObj.meta.onlyNumericDataBool = true;
-  elseif iscellnum(hypercubeObj.data)
+  elseif iscellscalar(hypercubeObj.data)
     hypercubeObj.meta.onlyNumericDataBool = true;
     
     hypercubeObj.data = cell2mat(hypercubeObj.data);
   else
     hypercubeObj.meta.onlyNumericDataBool = false;
     
-    numLogical = cellfun(@isnumeric, hypercubeObj.data);
+    numLogical = cellfun(@isscalar, hypercubeObj.data);
     
-    processCategoricalData(hypercubeObj, hypercubeObj.data(~numLogical));
+    strLogical = cellfun(@ischar, hypercubeObj.data);
+    if any(strLogical(:))
+      processCategoricalData(hypercubeObj, hypercubeObj.data(strLogical));
+    end
   end
   
 end

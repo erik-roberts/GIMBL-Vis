@@ -133,7 +133,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     function addDataCursor(pluginObj)
       % TODO
       %       dcm = datacursormode(pluginObj.handles.fig);
-%       dcm.UpdateFcn = @gvPlotWindowPlugin.dataCursorCallback;
+%       dcm.UpdateFcn = @gvPlotWindowPlugin.Callback_dataCursor;
     end
     
     
@@ -312,7 +312,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
     mouseMoveCallback(src, evnt)
     
-    dataCursorCallback(src, evnt)
+    Callback_dataCursor(src, evnt)
     
   end
   

@@ -102,16 +102,11 @@ makeAllSubplots();
     [sliceInds{plotDims}] = deal(':');
     plotSlice = squeeze(hypercubeObj.data(sliceInds{:}));
     
-    % fill empty cell with nan
-    if iscell(plotSlice)
-      plotSlice(cellfun(@isempty,plotSlice)) = deal({nan});
-    end
-    
     if hypercubeObj.meta.onlyNumericDataBool
       anyNumBool = true;
     else
       % check if any numeric in slice
-      numInds = cellfun(@isnumeric, plotSlice);
+      numInds = cellfun(@isscalar, plotSlice);
       
       if any(numInds(:))
         anyNumBool = true;
@@ -136,7 +131,11 @@ makeAllSubplots();
           legendInfo = hypercubeObj.meta.legend(1);
         end
       end
-      
+    end
+    
+    % fill empty cell with nan
+    if iscell(plotSlice)
+      plotSlice(cellfun(@isempty,plotSlice)) = deal({nan});
     end
     
     % make plot
@@ -176,16 +175,6 @@ makeAllSubplots();
         end
         axValsVector([1,2]) = axValsVector([2,1]);
         
-        % remove empty inds
-        emptySliceLogical = isempty(plotSlice);
-        for iAx = 1:length(axInds)
-          thisAxInds = cell(1, length(axInds));
-          thisAxInds{iAx} = all(emptySliceLogical, iAx);
-          [thisAxInds{setxor(iAx, 1:length(axInds))}] = deal(':');
-          
-          axInds(thisAxInds{:}) = [];
-        end
-        
         % linearize ax vals and data
         axValsVector = cellfunu(@linearize, axValsVector);
         plotSlice = plotSlice(:);
@@ -205,6 +194,22 @@ makeAllSubplots();
       otherwise
         wprintf('Unknown Marker Type')
         return
+    end
+    
+    % remove empty cells
+    if iscell(plotSlice)
+      nanCells = cellfun(@isnan2,plotSlice);
+      if all(nanCells)
+        cla
+        return
+      end
+      if any(nanCells)
+        axValsVector = cellfun(@removeNan, axValsVector);
+        if isnumeric(axValsVector)
+          axValsVector = num2cell(axValsVector);
+        end
+        plotSlice(nanCells) = [];
+      end
     end
     
     axisLabels = dimNames(plotDims);
@@ -228,7 +233,7 @@ makeAllSubplots();
       groups = legendInfo.groups;
       colors = legendInfo.colors;
       markers = legendInfo.markers;
-      
+
       [~, gInd] = ismember(plotSlice, groups);
       clear plotSlice
       plotSlice = colors(gInd,:);
@@ -280,27 +285,27 @@ makeAllSubplots();
     end
     
     % lims
-    xlim([min(axValsVector{1}), max(axValsVector{1})]);
-    % Rescale xlim
+    xlim([axInds{1}(1), axInds{1}(end)]);
     try
+      % Rescale xlim
       xlims = get(hAx,'xlim');
       set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
     end
     xlabel(axisLabels{1})
     
     if length(axInds) > 1
-      ylim([min(axValsVector{2}), max(axValsVector{2})]);
-      % Rescale ylim
+      ylim([axInds{2}(1), axInds{2}(end)]);
       try
+        % Rescale ylim
         ylims = get(hAx,'ylim');
         set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
       end
       ylabel(axisLabels{2})
       
       if length(axInds) > 2
-        zlim([min(axValsVector{3}), max(axValsVector{3})]);
-        % Rescale zlim
-        try
+        zlim([axInds{3}(1), axInds{3}(end)]);
+        try    
+          % Rescale zlim
           zlims = get(hAx,'zlim');
           set(hAx, 'zlim', [zlims(1)- 0.05*range(zlims) zlims(2)+0.05*range(zlims)]);
         end
@@ -327,6 +332,10 @@ makeAllSubplots();
     
     function x = removeEmpty(x)
       x(emptyCells) = [];
+    end
+    
+    function x = removeNan(x)
+      x(nanCells) = [];
     end
   end
 

@@ -1,4 +1,4 @@
-function output_txt = dataCursorCallback(src, evnt)
+function output_txt = Callback_dataCursor(src, evnt)
 % Display the position of the data cursor
 % obj          Currently not used (empty)
 % event_obj    Handle to event object

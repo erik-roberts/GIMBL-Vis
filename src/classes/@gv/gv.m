@@ -70,6 +70,8 @@
 % add more try statements
 %
 % same camera position in 3d after replot
+%
+% move iterate to select
 
 classdef gv < handle
   
