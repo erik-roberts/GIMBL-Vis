@@ -17,11 +17,22 @@
       mainWindowExistBool = pluginObj.view.checkMainWindowExists;
       
       if mainWindowExistBool && pluginObj.checkWindowExists()
-        hcLegendData = pluginObj.controller.activeHypercube.meta.legend;
         
-        colors = hcLegendData.colors;
-        markers = hcLegendData.markers;
-        groups = hcLegendData.groups;
+        hypercubeObj = pluginObj.controller.activeHypercube;
+        
+        if length(hypercubeObj.meta.legend) > 1
+          axesType = gvGetAxisType(hypercubeObj);
+          dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+          
+          sliderVals = pluginObj.view.dynamic.sliderVals;
+          legendInfo = hypercubeObj.meta.legend(sliderVals(dataTypeAxInd));
+        else
+          legendInfo = hypercubeObj.meta.legend(1);
+        end
+        
+        colors = legendInfo.colors;
+        markers = legendInfo.markers;
+        groups = legendInfo.groups;
         nGroups = length(groups);
         
         fontSize = pluginObj.fontSize;

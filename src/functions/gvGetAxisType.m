@@ -6,6 +6,10 @@ dataAxes = mddObj.axis;
 dataAxesMeta = {dataAxes.axismeta};
 
 dataAxesType = cellfunu(@getAxisType, dataAxesMeta);
+
+if all(cellfun(@isempty, dataAxesType))
+  dataAxesType = [];
+end
   
   function axisType = getAxisType(s)
     if isfield(s, 'axisType')

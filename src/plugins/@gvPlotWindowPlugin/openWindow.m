@@ -12,8 +12,8 @@ if mainWindowExistBool
     pluginObj.vprintf('Reopening plot window\n')
 
     % delete plot window handles
-    pluginObj.handles.fig.delete()
-    pluginObj.handles.ax.delete()
+    delete(pluginObj.handles.fig)
+    delete(pluginObj.handles.ax)
   end
   
   % Make New Panel

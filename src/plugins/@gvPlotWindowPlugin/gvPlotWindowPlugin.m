@@ -128,9 +128,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
-    function checkDataType(pluginObj)
-%       keyboard
-    end
+    getPlotMetadataFromData(pluginObj, hypercubeObj)
     
     
     function makeSliderAncestryMetadata(pluginObj)
@@ -198,7 +196,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj = src.windowPlugins.(gvPlotWindowPlugin.pluginFieldName); % window plugin
       
       % check data type
-      pluginObj.checkDataType();
+      pluginObj.getPlotMetadataFromData(pluginObj.controller.activeHypercube);
 
       notify(cntrlObj, 'doPlot');
     end

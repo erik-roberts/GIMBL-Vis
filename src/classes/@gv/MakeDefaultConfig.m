@@ -6,6 +6,7 @@ defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvSelectPlugin'', ''gvPlotWindowP
 baseFontSize = '12';
 closeMainWindowSaveDialogBool = '#!true';
 verboseModeBool = '#!true';
+plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
 
 %% Write vars to disk
 vars = who; % get all vars

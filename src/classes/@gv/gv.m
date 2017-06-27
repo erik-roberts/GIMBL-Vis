@@ -26,14 +26,7 @@
 
 % TODO:
 % fill nans in gvarray and have index
-% load new axes vs load merge axes
-% add propListeners
 % add callbacks
-%   hypercube
-%   axis name
-%   slider/val
-%   view
-%   lock
 %   plot marker
 %   marker type
 % model value2ref
@@ -65,6 +58,12 @@
 % fontsize on plot window
 %
 % pop up for run loading from mat
+%
+% plot colorscale based on slice or total hypercube using meta.numericLimits
+%
+% data marker
+%
+% only replot what changed
 
 classdef gv < handle
   
@@ -602,6 +601,16 @@ classdef gv < handle
     end
     
     MakeDefaultConfig()
+    
+    function EditConfig()
+      configPath = fullfile(gv.RootPath, 'gvConfig.txt');
+      if exist(configPath, 'file')
+        edit(configPath);
+      else
+        gv.MakeDefaultConfig();
+        edit(configPath);
+      end
+    end
     
   end % static methods
   

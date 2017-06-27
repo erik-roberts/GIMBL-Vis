@@ -44,3 +44,5 @@ if isfield(handles.ImageWindow, 'simID')
   simID = handles.ImageWindow.simID;
   output_txt{end+1} = ['simID: ', num2str(simID)];
 end
+
+end

@@ -1,5 +1,16 @@
 function plot(pluginObj)
 
+% TODO
+% - fn on celsl
+% - hypercube scale colormap
+
+% Dev notes:
+%  Data Type Strategy:
+%   - check if all data is numeric
+%   - check if slice or hypercube numeric scale
+%   - if mixed, set non-numeric to nans
+%   - if only non-numeric, get legend info
+
 hFig = pluginObj.handles.fig;
 hAx = pluginObj.handles.ax;
 figure(hFig); % make hFig gcf
@@ -9,175 +20,278 @@ viewDims = pluginObj.view.dynamic.viewDims;
 
 fontSize = pluginObj.view.fontSize;
 
-hypercubeData = pluginObj.controller.activeHypercube;
-plotLabels = hypercubeData.data; % TODO generalize
-dimNames = hypercubeData.axisNames;
+hypercubeObj = pluginObj.controller.activeHypercube;
+dimNames = hypercubeObj.axisNames;
 dimNames = strrep(dimNames, '_', ' '); % replace '_' with ' ' to avoid subscript
 sliderVals = pluginObj.view.dynamic.sliderVals;
-nAxDims = length(sliderVals);
 
-dataAxesType = gvGetAxisType(hypercubeData);
+makeAllSubplots();
 
-dataTypeAxInd = find(strcmp(dataAxesType, 'dataType'));
 
-% check if axes dataType specified
-if ~isempty(dataTypeAxInd)
-  dataAxisInd = sliderVals(dataTypeAxInd);
-  thisSliceDataType = hypercubeData.axis(dataTypeAxInd).axismeta.dataType{dataAxisInd};
-  
-  if strcmp(thisSliceDataType, 'categorical')
-    
-    if isfield(hypercubeData.axis(dataTypeAxInd).axismeta, 'plotInfo')
-      
-      plotInfoBool = length(hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo) >= dataAxisInd;
-      
-      if plotInfoBool
-        thisSlicePlotInfo = hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd};
-      end
-      
-      if plotInfoBool && isfield(thisSlicePlotInfo,'labels')
-        groups = thisSlicePlotInfo.labels;
-      else
-        thisDataTypeSliceInds = sliderVals;
-        thisDataTypeSliceInds = num2cell(thisDataTypeSliceInds);
-        [thisDataTypeSliceInds{setxor(dataAxisInd, 1:nAxDims)}] = deal(':');
-    
-        thisDataTypeSlice = plotLabels(thisDataTypeSliceInds{:});
-        clear thisDataTypeSliceInds
+%% Nested functions
+  function makeAllSubplots()
+    switch nViewDims
+      case 1
+        % 1 1d pane
+        plotDim = find(viewDims);
+%         make1dPlot(hAx)
+        makeSubplot(@make1dPlot, hAx, plotDim);
         
-        thisDataTypeSlice(cellfun(@isempty, thisDataTypeSlice)) = {''};
-        groups = unique(thisDataTypeSlice);
-        groups(cellfun(@isempty,groups)) = [];
-        clear thisDataTypeSlice
+      case 2
+        % 1 2d pane
+        plotDims = find(viewDims);
+        %     if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+        makeSubplot(@make2dPlot, hAx, plotDims);
+        %     elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+        %       make2dPcolorPlot(hAx, plotDims);
         
-        % store for future plots
-        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.groups = groups;
-      end
-      nGroups = length(groups);
-      
-      if plotInfoBool && isfield(thisSlicePlotInfo,'colors')
-        colors = thisSlicePlotInfo.colors;
-      else
-        colors = distinguishable_colors(nGroups);
+        % TODO to use pcolor, need to add extra row,col that arent used for
+        % color. the x,y,z are the edge points.  uses the first point in C for the
+        % interval from 1st point to second point in x,y,z. need to change axis to
+        % shift by 50%, then move ticks and tick lables to center of dots, instead
+        % of edges of dots
+        %     end
         
-        % store for future plots
-        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.colors = colors;
-      end
-      
-      if plotInfoBool && isfield(thisSlicePlotInfo,'markers')
-        markers = thisSlicePlotInfo.markers;
-      else
-        markers = cell(nGroups,1);
-        [markers{:}] = deal('.');
+      case {3,4,5}
+        % 3D: 3 2d panes + 1 3d pane = 4 subplots
+        % 4D: 6 2d panes + 4 3d pane = 10 subplots
+        % 5D: 10 2d panes + 10 3d pane = 20 subplots
         
-        % store for future plots
-        hypercubeData.axis(dataTypeAxInd).axismeta.plotInfo{dataAxisInd}.markers = markers;
-      end
-      
-      % Store legend data
-      hypercubeData.meta.legend.groups = groups;
-      hypercubeData.meta.legend.colors = colors;
-      hypercubeData.meta.legend.markers = markers;
+        plotDims = find(viewDims);
+        
+        % 2d plots
+        plotDims2d = sort(combnk(plotDims,2));
+        for iAx2d = 1:size(plotDims2d, 1)
+          ax2d = hAx(iAx2d);
+          %       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+          makeSubplot(@make2dPlot, ax2d, plotDims2d(iAx2d,:));
+          %       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+          %         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
+          %       end
+        end
+        
+        % 3d plot
+        plotDims3d = sort(combnk(plotDims,3));
+        
+        for iAx3d = iAx2d+1:iAx2d+size(plotDims3d, 1)
+          ax3d = hAx(iAx3d);
+%           if isgraphics(ax3d) && isempty(get(ax3d,'Children'))
+            makeSubplot(@make3dPlot, ax3d, plotDims3d(iAx3d-iAx2d,:))
+%           end
+        end
+        
+      case {6, 7, 8}
+        % 6D: 15 2d panes = 15 subplots
+        % 7D: 21 2d panes = 21 subplots
+        % 8D: 28 2d panes = 28 subplots
+        
+        plotDims = find(viewDims);
+        
+        % 2d plots
+        plotDims2d = sort(combnk(plotDims,2));
+        for iAx2d = 1:size(plotDims2d, 1)
+          ax2d = hAx(iAx2d);
+          %       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
+          makeSubplot(@make2dPlot, ax2d, plotDims2d(iAx2d,:));
+          %       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
+          %         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
+          %       end
+        end
     end
+    
+    hideEmptyAxes(hFig);
     
   end
-end
 
-%% TODO: check axis order correct **********************************************
-switch nViewDims
-  case 1
-    % 1 1d pane
-    make1dPlot(hAx)
-    
-  case 2
-    % 1 2d pane
-    plotDims = find(viewDims);
-%     if strcmp(pluginObj.plotWindow.markerType, 'scatter')
-        make2dPlot(hAx, plotDims);
-%     elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
-%       make2dPcolorPlot(hAx, plotDims);
 
-      % FIXME to use pcolor, need to add extra row,col that arent used for
-      % color. the x,y,z are the edge points.  uses the first point in C for the
-      % interval from 1st point to second point in x,y,z. need to change axis to
-      % shift by 50%, then move ticks and tick lables to center of dots, instead
-      % of edges of dots
-%     end
-    
-  case {3,4,5}
-    % 3D: 3 2d panes + 1 3d pane = 4 subplots
-    % 4D: 6 2d panes + 4 3d pane = 10 subplots
-    % 5D: 10 2d panes + 10 3d pane = 20 subplots
-    
-    plotDims = find(viewDims);
-    
-    % 2d plots
-    plotDims2d = sort(combnk(plotDims,2));
-    for iAx2d = 1:size(plotDims2d, 1)
-      ax2d = hAx(iAx2d);
-%       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
-        make2dPlot(ax2d, plotDims2d(iAx2d,:));
-%       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
-%         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
-%       end
-    end
-    
-    % 3d plot
-    plotDims3d = sort(combnk(plotDims,3));
-    
-    for iAx3d = iAx2d:iAx2d+size(plotDims3d, 1)
-      ax3d = hAx(iAx3d);
-      if isgraphics(ax3d) && isempty(get(ax3d,'Children'))
-        make3dPlot(ax3d, plotDims3d(iAx3d-iAx2d,:))
-      end
-    end
-
-  case {6, 7, 8}
-    % 6D: 15 2d panes = 15 subplots
-    % 7D: 21 2d panes = 21 subplots
-    % 8D: 28 2d panes = 28 subplots
-    
-    plotDims = find(viewDims);
-    
-    % 2d plots
-    plotDims2d = sort(combnk(plotDims,2));
-    for iAx2d = 1:size(plotDims2d, 1)
-      ax2d = hAx(iAx2d);
-%       if strcmp(pluginObj.plotWindow.markerType, 'scatter')
-        make2dPlot(ax2d, plotDims2d(iAx2d,:));
-%       elseif strcmp(pluginObj.plotWindow.markerType, 'pcolor')
-%         make2dPcolorPlot(ax2d, plotDims2d(iAx,:));
-%       end
-    end
-end
-
-hideEmptyAxes(hFig);
-
-if nargout > 0
-  varargout{1} = handles;
-end
-
-%% Sub functions
-  function make3dPlot(hAx, plotDims)
-    % x dim is plotDims(1)
-    % y dim is plotDims(2)
-    % z dim is plotDims(2)
-    
+  function makeSubplot(plotFn, hAx, plotDims)
     set(hFig,'CurrentAxes', hAx);
-
+    
     sliceInds = sliderVals;
     sliceInds = num2cell(sliceInds);
     [sliceInds{plotDims}] = deal(':');
+    plotSlice = squeeze(hypercubeObj.data(sliceInds{:}));
     
+    if hypercubeObj.meta.onlyNumericDataBool
+      anyNumBool = true;
+    else
+      % check if any numeric in slice
+      numInds = cellfun(@isnumeric, plotSlice);
+      
+      if any(numInds(:))
+        anyNumBool = true;
+        
+        % convert non-numeric to nan
+        if ~all(numInds(:))
+          plotSlice(~numInds) = deal({nan});
+        end
+        
+        % convert slice to mat
+        plotSlice = cell2mat(plotSlice);
+        clear plotSliceTemp
+      else % all non-num
+        anyNumBool = false;
+        
+        if length(hypercubeObj.meta.legend) > 1
+          axesType = gvGetAxisType(hypercubeObj);
+          dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+          
+          legendInfo = hypercubeObj.meta.legend(sliderVals(dataTypeAxInd));
+        else
+          legendInfo = hypercubeObj.meta.legend(1);
+        end
+      end
+      
+    end
+    
+    % make plot
+    if anyNumBool
+%       feval(plotFn, hAx, plotDims, plotSlice);
+      makePlot(hAx, plotDims, plotSlice);
+    else
+%       feval(plotFn, hAx, plotDims, plotSlice, legendInfo);
+      makePlot(hAx, plotDims, plotSlice, legendInfo);
+    end
+  end
+
+
+  function makePlot(hAx, plotDims, plotSlice, legendInfo)
+    if nargin<4
+      legendInfo = [];
+    end
+
+    axVals = arrayfun(@getValsForAxis, plotDims,'Uni',0);
+    
+    if length(axVals) == 3
+      axValsVector = cell(1, length(axVals));
+      [axValsVector{:}] = meshgrid(axVals{2}, axVals{1}, axVals{3});
+    elseif length(axVals) == 2
+      axValsVector = cell(1, length(axVals));
+      [axValsVector{:}] = meshgrid(axVals{2}, axVals{1});
+    else % turn 1D into 2D
+      axValsVector{1} = axVals{1};
+      axValsVector{2} = axValsVector{1}*0;
+    end
+    
+    axValsVector = cellfunu(@linearize, axValsVector);
+    plotSlice = plotSlice(:);
+    
+    % remove empty cells
+    if iscell(plotSlice)
+      emptyCells = cellfun(@isempty,plotSlice);
+      if any(emptyCells)
+        axValsVector = cellfun(@removeEmpty, axValsVector);
+        plotSlice(emptyCells) = [];
+      end
+    end
+    
+    axisLabels = dimNames(plotDims);
+
+    % Marker Size
+    markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
+    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
+    if autoSizeMarkerCheckboxHandle.Value %auto size marker
+      axUnit = get(hAx,'unit');
+      set(hAx,'unit', 'pixels');
+      pos = get(hAx,'position');
+      axSize = pos(3:4);
+      markerSize = min(axSize) / max(cellfun(@length, axVals));
+      set(hAx,'unit', axUnit);
+    else %manual size marker
+      markerSize = markerSizeSlider.Value;
+    end
+    
+    % scatter plot
+    if isempty(legendInfo) % numerical mat
+      if 1% strcmp(pluginObj.controller.app.config.plotColormapScope, 'slice') TODO
+        if length(axVals) < 3
+          scatter(axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+          colorbar;
+        else
+          scatter3(axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+          colorbar
+        end
+      end
+    else % categorical cells
+      groups = legendInfo.groups;
+      colors = legendInfo.colors;
+      markers = legendInfo.markers;
+      
+      [~, gInd] = ismember(plotSlice, groups);
+
+      if length(axVals) < 3
+        scatter(axValsVector{:}, markerSize, colors(gInd,:), 'filled'); % slice specific colormap
+      else
+        scatter3(axValsVector{:}, markerSize, colors(gInd,:), 'filled'); % slice specific colormap
+      end
+    end
+    
+    % Remove 1D y axis
+    if length(axVals) == 1
+      set(hAx,'YTick', []);
+    end
+    
+    % lims
+    xlim([min(axValsVector{1}), max(axValsVector{1})]);
+    % Rescale xlim
+    try
+      xlims = get(hAx,'xlim');
+      set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
+    end
+    xlabel(axisLabels{1})
+    
+    if length(axVals) > 1
+      ylim([min(axValsVector{2}), max(axValsVector{2})]);
+      % Rescale ylim
+      try
+        ylims = get(hAx,'ylim');
+        set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
+      end
+      ylabel(axisLabels{2})
+      
+      if length(axVals) > 2
+        zlim([min(axValsVector{3}), max(axValsVector{3})]);
+        % Rescale zlim
+        try
+          zlims = get(hAx,'zlim');
+          set(hAx, 'zlim', [zlims(1)- 0.05*range(zlims) zlims(2)+0.05*range(zlims)]);
+        end
+        zlabel(axisLabels{3})
+      end
+    end
+    
+    hAx.FontSize = fontSize;
+    
+    
+    %% Nested fn
+    function vals = getValsForAxis(x)
+      vals = hypercubeObj.axisValues{x};
+    end
+    
+    function x = linearize(x)
+      x = x(:);
+    end
+    
+    function x = removeEmpty(x)
+      x(emptyCells) = [];
+    end
+  end
+
+
+  function make3dPlot(hAx, plotDims, plotSlice)
+    % x dim is plotDims(1)
+    % y dim is plotDims(2)
+    % z dim is plotDims(2)
+
     % ax vals
-    xVals = hypercubeData.axisValues{plotDims(1)};
-    yVals = hypercubeData.axisValues{plotDims(2)};
-    zVals = hypercubeData.axisValues{plotDims(3)};
+    xVals = hypercubeObj.axisValues{plotDims(1)};
+    yVals = hypercubeObj.axisValues{plotDims(2)};
+    zVals = hypercubeObj.axisValues{plotDims(3)};
     
     % Get grid
     [y,x,z] = meshgrid(yVals, xVals, zVals);
       %  meshgrid works differently than the linearization
-    g = plotLabels(sliceInds{:});
+    g = plotSlice;
     
     % Linearize grid
     x = x(:)';
@@ -212,28 +326,6 @@ end
       plotData.clr(end+1,:) = thisClr;
       plotData.sym = [plotData.sym thisSym];
     end
-
-    % Marker Size
-    autoSizeMarkerCheckboxHandle = findobjReTag('plot_panel_autoSizeToggle');
-    if autoSizeMarkerCheckboxHandle.Value %auto size marker
-      axUnit = get(hAx,'unit');
-      set(hAx,'unit', 'pixels');
-      pos = get(hAx,'position');
-      axSize = pos(3:4);
-      markerSize = min(axSize) / max([length(xVals), length(yVals), length(zVals)]);
-      plotData.siz = markerSize;
-      set(hAx,'unit', axUnit);
-    else %manual size marker
-      markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
-      markerSize = markerSizeSlider.Value;
-      plotData.siz = markerSize;
-    end
-    
-    % Set MarkerSize Slider Val
-%     if isfield(pluginObj.plotWindow, 'sliderH')
-%       pluginObj.plotWindow.sliderH.Value = markerSize;
-%       gvMarkerSizeSliderCallback(pluginObj.plotWindow.sliderH,[])
-%     end
 
   % Marker Size
     markerSizeSlider = findobjReTag('plot_panel_markerSizeSlider');
@@ -282,25 +374,20 @@ end
     axObj.FontSize = fontSize;
     axObj.FontWeight = 'Bold';
   end
+
   
-  function make2dPlot(hAx, plotDims)
+  function make2dPlot(hAx, plotDims, plotSlice)
     % x dim is plotDims(1)
     % y dim is plotDims(2)
-    
-    set(hFig,'CurrentAxes', hAx);
-    
-    sliceInds = sliderVals;
-    sliceInds = num2cell(sliceInds);
-    [sliceInds{plotDims}] = deal(':');
-    
+
     % ax vals
-    xVals = hypercubeData.axisValues{plotDims(1)};
-    yVals = hypercubeData.axisValues{plotDims(2)};
+    xVals = hypercubeObj.axisValues{plotDims(1)};
+    yVals = hypercubeObj.axisValues{plotDims(2)};
     
     % Get grid
     [y,x] = meshgrid(yVals, xVals);
       %  meshgrid works opposite the linearization
-    g = plotLabels(sliceInds{:});
+    g = plotSlice;
     
     % Linearize grid
     x = x(:)';
@@ -376,20 +463,15 @@ end
     axObj.FontWeight = 'Bold';
   end
 
-  function make2dPcolorPlot(hAx, plotDims)
+
+  function make2dPcolorPlot(hAx, plotDims, plotSlice)
     % x dim is plotDims(1)
     % y dim is plotDims(2)
-    
-    set(hFig,'CurrentAxes', hAx);
-    
-    sliceInd = pluginObj.plotWindow.axInd;
-    sliceInd = num2cell(sliceInd);
-    [sliceInd{plotDims}] = deal(':');
-    
+
     % Get grid
-    [y,x] = meshgrid(hypercubeData.dimVals{plotDims(2)}, hypercubeData.dimVals{plotDims(1)});
+    [y,x] = meshgrid(hypercubeObj.dimVals{plotDims(2)}, hypercubeObj.dimVals{plotDims(1)});
       %  meshgrid works opposite the linearization
-    g = plotLabels(sliceInd{:});
+    g = plotSlice;
     
 %     % Linearize grid
 %     x = x(:)';
@@ -441,23 +523,16 @@ end
     axObj.FontWeight = 'Bold';
   end
 
-  function make1dPlot(hAx)
-    set(hFig,'CurrentAxes', hAx);
-    plotDim = find(viewDims);
-    
-    % make cell array of slice indicies
-    sliceInds = sliderVals;
-    sliceInds = num2cell(sliceInds);
-    sliceInds{plotDim} = ':';
-    
+
+  function make1dPlot(hAx, plotDim, plotSlice)
     % ax vals
-    xVals = hypercubeData.axisValues{plotDim};
+    xVals = hypercubeObj.axisValues{plotDim};
     
     plotData.xlabel = dimNames{plotDim};
-    plotData.x = hypercubeData.axisValues{plotDim};
+    plotData.x = hypercubeObj.axisValues{plotDim};
     plotData.y = zeros(length(plotData.x),1);
     plotData.ylabel = '';
-    plotData.g = plotLabels(sliceInds{:});
+    plotData.g = plotSlice;
     plotData.g = plotData.g(:)';
     
     % Remove empty points
@@ -498,7 +573,7 @@ end
     scatter2dPlot(plotData);
     
     % lims
-    xlim([min(hypercubeData.axisValues{plotDim}), max(hypercubeData.axisValues{plotDim})]);
+    xlim([min(hypercubeObj.axisValues{plotDim}), max(hypercubeObj.axisValues{plotDim})]);
     
     % Rescale xlim
     try
@@ -516,11 +591,13 @@ end
     axObj.FontWeight = 'Bold';
   end
 
+
   function scatter2dPlot(plotData)
     try
       gscatter(plotData.x,plotData.y,categorical(plotData.g),plotData.clr,plotData.sym,plotData.siz,'off',plotData.xlabel,plotData.ylabel)
     end
   end
+
 
   function scatter3dPlot(plotData)
     %     [uniqueGroups, uga, ugc] = unique(group);
@@ -560,6 +637,7 @@ end
 %       end
     end
   end
+
 
   function shrinkText2Fit(txtH)
     for iTxt=1:length(txtH)
