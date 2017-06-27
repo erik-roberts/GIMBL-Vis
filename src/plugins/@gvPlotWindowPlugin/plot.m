@@ -102,6 +102,11 @@ makeAllSubplots();
     [sliceInds{plotDims}] = deal(':');
     plotSlice = squeeze(hypercubeObj.data(sliceInds{:}));
     
+    % fill empty cell with nan
+    if iscell(plotSlice)
+      plotSlice(cellfun(@isempty,plotSlice)) = deal({nan});
+    end
+    
     if hypercubeObj.meta.onlyNumericDataBool
       anyNumBool = true;
     else
@@ -136,10 +141,8 @@ makeAllSubplots();
     
     % make plot
     if anyNumBool
-%       feval(plotFn, hAx, plotDims, plotSlice);
       makePlot(hAx, plotDims, plotSlice);
     else
-%       feval(plotFn, hAx, plotDims, plotSlice, legendInfo);
       makePlot(hAx, plotDims, plotSlice, legendInfo);
     end
   end
@@ -150,7 +153,8 @@ makeAllSubplots();
       legendInfo = [];
     end
 
-    axInds = arrayfun(@makeAxInd, plotDims,'Uni',0);
+    axInds = arrayfun(@makeAxInd, plotDims,'Uni',0); % for ticks
+    axVals = arrayfun(@getValsForAxis, plotDims,'Uni',0); % for tick labels
     
     markerType = pluginObj.markerTypes{pluginObj.view.dynamic.markerVal};
     if length(axInds) ~= 2
@@ -171,6 +175,16 @@ makeAllSubplots();
           axValsVector{1} = axValsVector{2}*0;
         end
         axValsVector([1,2]) = axValsVector([2,1]);
+        
+        % remove empty inds
+        emptySliceLogical = isempty(plotSlice);
+        for iAx = 1:length(axInds)
+          thisAxInds = cell(1, length(axInds));
+          thisAxInds{iAx} = all(emptySliceLogical, iAx);
+          [thisAxInds{setxor(iAx, 1:length(axInds))}] = deal(':');
+          
+          axInds(thisAxInds{:}) = [];
+        end
         
         % linearize ax vals and data
         axValsVector = cellfunu(@linearize, axValsVector);
@@ -249,7 +263,6 @@ makeAllSubplots();
     end
     
     % Set axes
-    axVals = arrayfun(@getValsForAxis, plotDims,'Uni',0);
     set(hAx,'XTick', axInds{1});
     set(hAx,'XTicklabel', axVals{1});
     if length(axInds) > 1
