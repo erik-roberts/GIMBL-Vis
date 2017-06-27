@@ -22,6 +22,8 @@ uiControlsHandles.parent = mainVbox;
 
 if isempty(pluginObj.controller.activeHypercube.data)
   panelHandle = uiControlsHandles;
+  pluginObj.view.dynamic.nViewDims = 0;
+  pluginObj.view.dynamic.nViewDimsLast = 0;
   return
 end
 

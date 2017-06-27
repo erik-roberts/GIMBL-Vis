@@ -17,6 +17,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     pluginFieldName = 'plot';
     
     windowName = 'Plot Window';
+    
+    markerTypes = {'scatter', 'grid'};
   end
   
   
@@ -41,6 +43,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       cntrlObj.newListener('doPlot', @gvPlotWindowPlugin.Callback_doPlot);
       
       addlistener(pluginObj, 'panelControlsMade', @gvPlotWindowPlugin.Callback_panelControlsMade);
+      
+      pluginObj.initializeControlsDynamicVars();
     end
 
     
@@ -93,6 +97,10 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
     
+    function initializeControlsDynamicVars(pluginObj)
+      pluginObj.view.dynamic.markerVal = 1;
+    end
+    
     makePlotMarkerPanelControls(pluginObj, parentHandle)
     
     
@@ -123,8 +131,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     function addDataCursor(pluginObj)
-      dcm = datacursormode(pluginObj.handles.fig);
-      dcm.UpdateFcn = @gvPlotWindowPlugin.dataCursorCallback;
+      % TODO
+      %       dcm = datacursormode(pluginObj.handles.fig);
+%       dcm.UpdateFcn = @gvPlotWindowPlugin.dataCursorCallback;
     end
     
     
@@ -170,8 +179,10 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_plot_panel_openLegendButton(src, evnt)
+    function Callback_plot_panel_showLegendButton(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % TODO: show colorbar, in panel legend, or extern legend/colorbar
       
       pluginObj.openLegendWindow();
     end
@@ -281,6 +292,19 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       cntrlObj = pluginObj.controller;
       
       notify(cntrlObj, 'doPlot');
+    end
+    
+    
+    function Callback_plot_panel_markerTypeMenu(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % update and plot if changed value
+      if pluginObj.view.dynamic.markerVal ~= src.Value
+        pluginObj.view.dynamic.markerVal = src.Value;
+
+        cntrlObj = pluginObj.controller;
+        notify(cntrlObj, 'doPlot');
+      end
     end
     
     

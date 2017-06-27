@@ -53,8 +53,6 @@
 % get scrolling on autosize slider. make sure scrolling checks on which is
 %   active tab
 %
-% 3d marker update
-%
 % fontsize on plot window
 %
 % pop up for run loading from mat
@@ -64,6 +62,14 @@
 % data marker
 %
 % only replot what changed
+%
+% fix legend
+%
+% option to turn off 3d plots if slow bc too many points
+%
+% add more try statements
+%
+% same camera position in 3d after replot
 
 classdef gv < handle
   

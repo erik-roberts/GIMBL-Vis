@@ -7,6 +7,7 @@ baseFontSize = '12';
 closeMainWindowSaveDialogBool = '#!true';
 verboseModeBool = '#!true';
 plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
+autoOpenLoadedPluginWindows = '#!true';
 
 %% Write vars to disk
 vars = who; % get all vars

@@ -34,6 +34,8 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       setup@gvWindowPlugin(pluginObj, varargin{:});
       
       pluginObj.addDynamicCallbackFields();
+      
+      addlistener(pluginObj, 'panelControlsMade', @gvMainWindowPlugin.Callback_panelControlsMade);
     end
     
     
@@ -149,6 +151,23 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       else
         pluginFieldName = src.UserData.pluginFieldName;
         pluginObj.controller.disconnectPlugin(pluginFieldName);
+      end
+    end
+    
+    function Callback_panelControlsMade(src, ~)
+      pluginObj = src;
+      
+      if pluginObj.controller.app.config.autoOpenLoadedPluginWindows
+        
+        % get window plugins without main
+        windowPlugins = pluginObj.controller.windowPlugins;
+        windowPlugins = rmfield(windowPlugins, pluginObj.pluginFieldName);
+        windowPlugins = struct2cell(windowPlugins)';
+        
+        for windowPluginObj = windowPlugins(:)'
+          windowPluginObj{1}.openWindow();
+        end
+        
       end
     end
     

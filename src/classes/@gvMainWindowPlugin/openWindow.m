@@ -21,4 +21,7 @@ pluginObj.makeWindowControls( pluginObj.handles.fig );
 
 makeMenu(pluginObj, pluginObj.handles.fig);
 
+%% notify listener
+notify(pluginObj, 'panelControlsMade');
+
 end

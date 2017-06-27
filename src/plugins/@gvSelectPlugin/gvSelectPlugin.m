@@ -76,6 +76,7 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     
     function initializeControlsDynamicVars(pluginObj)
+      pluginObj.view.dynamic.nViewDims = 0;
       pluginObj.view.dynamic.nViewDimsLast = 0;
       pluginObj.updateViewDims();
       pluginObj.updateLockDims();
