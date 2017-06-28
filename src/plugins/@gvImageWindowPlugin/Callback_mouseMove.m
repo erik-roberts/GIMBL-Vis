@@ -37,8 +37,12 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     mouseAxPosIndScale = mouseAxPosIndScale(1:2);
     mouseAxPosIndScale = round(mouseAxPosIndScale); % round
     
-    plotDims = currAx.UserData.plotDims;
-    nPlotDims = length(plotDims);
+    try
+      plotDims = currAx.UserData.plotDims;
+      nPlotDims = length(plotDims);
+    catch
+      return % in case axis is deleted
+    end
     if nPlotDims > 2 %only 1d or 2d
       return
     end
