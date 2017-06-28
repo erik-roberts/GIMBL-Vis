@@ -147,6 +147,15 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       dirList = lscell(imageDir, true);
     end
     
+    
+    function updateImageTypeListControl(pluginObj)
+      % get menu handle
+      imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
+      
+      % update menu string with image types from dir
+      imgTypeMenu.String = pluginObj.getImageTypes();
+    end
+    
   end
   
   %% Callbacks %%
@@ -162,11 +171,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function Callback_image_panel_imageDirBox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
-      % get menu handle
-      imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
-      
-      % update menu string with image types from dir
-      imgTypeMenu.String = pluginObj.getImageTypes();
+      pluginObj.updateImageTypeListControl();
     end
     
     
@@ -178,6 +183,16 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj = src.controller.windowPlugins.image;
       
       pluginObj.addMouseMoveCallbackToPlotFig();
+    end
+  
+    
+    function Callback_image_panel_imageRegexpBox(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % update imageRegexp
+      pluginObj.metadata.imageRegexp = src.String;
+      
+      pluginObj.updateImageTypeListControl();
     end
     
     Callback_mouseMove(src, evnt)
