@@ -12,7 +12,7 @@
 format compact
 
 % Check if in gimbl-vis folder
-if ~exist(fullfile('.','gvTutorial.m'), 'file')
+if ~exist(fullfile('.','gvCommandLineTutorial.m'), 'file')
   error('Current folder should be the gimbl-vis folder in order to run this code block.')
 end
 
@@ -38,16 +38,25 @@ gv.Run; % or `gvObj = gv.Run;`
 gv().run % or `gvObj = gv().run;`
 
 %% Object Construction
+
+% Here is some sample data. The data has 3 dimensions.
 sampleData = rand(20,20,2);
-axis_vals = {1:20, 1:20,{'type1','type2'}};
+
+% Here are some names for the dimensions.
 axis_names = {'x','y','dataType'};
 
+% Here are the names of the possible values for each dimension.
+axis_vals = {1:20, 1:20,{'type1','type2'}};
+
+% The name of the multidimensional dataset.
 hypercubeName = 'sampleDataset';
 
+% Let's import the same data and axis information.
 sampleGvArray = gvArray(sampleData, axis_vals, axis_names);
 sampleGvArray.meta.defaultHypercubeName = hypercubeName;
 
-gvFilePath = 'gvSampleFile.mat';
+% Let's also store the path to some sample data stored on disk.
+gvFilePath = fullfile('.', 'gvSampleFile.mat');
 
 % 4 ways to use the gv constructor method (ie the class name as a function):
 
@@ -59,11 +68,11 @@ clear gvObj
 
 %   2) Call load method on file/dir. If dir, must have only 1 mat file. File can
 %   store a gv, gvArray, or MDD object.
-gvObj = gv(gvFilePath);
-gvObj.summary;
-
-gvObj = gv(gvFilePath, hypercubeName);
-gvObj.summary;
+% gvObj = gv(gvFilePath);
+% gvObj.summary;
+% 
+% gvObj = gv(gvFilePath, hypercubeName);
+% gvObj.summary;
 
 
 %   3) Call gvArray constructor on gvArray/MDD data
@@ -93,19 +102,20 @@ clear gvObj
 gvObj = gv(hypercubeName, sampleData, axis_vals, axis_names);
 gvObj.summary;
 
+%% Run from file
+% 2 ways to run directly from a file:
+% gv(gvFilePath).run;
+
+% gv.Run(gvFilePath);
+
+
+%% Advanced %%
+
+%% Command line control of GUI
 
 % Switch tabs
 gvObj.run();
 gvObj.view.gui.selectTab(2);
 gvObj.view.gui.selectTab('Main');
-
-%% Run from file
-gv(gvFilePath).run;
-
-gv.Run(gvFilePath);
-
-
-%% Advanced %%
-
 
 %% Dynasim Integration %%
