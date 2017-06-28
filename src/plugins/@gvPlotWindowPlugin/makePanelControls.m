@@ -12,6 +12,7 @@ uiControlsHandles = struct();
 % 1)
 % main vBox
 mainVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding', padding);
+uiControlsHandles.parent = mainVbox;
 
 % 1.1)
 % plot panel
@@ -48,7 +49,7 @@ panelHeight = fontHeight*5 + spacing + padding;
 set(mainVbox, 'Heights',[panelHeight*.75 panelHeight])
 
 %% argout
-panelHandle = mainVbox;
+panelHandle = uiControlsHandles;
 
 %% add scroll callback
 pluginObj.view.main.addDynamicCallback('WindowScrollWheelFcn', @gvPlotWindowPlugin.Callback_WindowScrollWheelFcn);

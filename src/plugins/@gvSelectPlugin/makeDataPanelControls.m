@@ -37,6 +37,8 @@ dataPanel = uix.Panel(...
 
 dataVbox = uix.VBox('Parent',dataPanel); % make box to hold 1)titles and 2)data
 
+uiControlsHandles.parent = dataVbox;
+
 % 1) Name
 makeActiveHypercubeEdit(dataVbox)
 
@@ -58,8 +60,6 @@ set(dataVbox, 'Heights',[fontHeight*2, fontHeight*2,-1]);
 dataPanelheight = (pxHeight+spacing)*nDims + padding*2;
 set(dataScrollingPanel, 'Heights',dataPanelheight);
 
-% Store Handles
-% pluginObj.handles.controls = catstruct(pluginObj.handles.dataPanel.controls, uiControlsHandles); % add to handles from makeDataPanelTitles
 
 %% Nested fn
   function makeActiveHypercubeEdit(parentHandle)

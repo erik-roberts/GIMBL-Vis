@@ -39,7 +39,7 @@ elseif ispc
   end
 end
 
-if isempty(dirList{1})
+if isempty(dirList) || isempty(dirList{1})
   dirList = {};
 end
 

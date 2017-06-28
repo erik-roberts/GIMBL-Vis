@@ -64,10 +64,7 @@ panelHandle = uiControlsHandles;
     
     % row 2
     thisTag = pluginObj.panelTag('scrollingPanel');
-    scrollingPanel = uix.ScrollingPanel(...
-      'Tag',thisTag,...
-      'Parent', pluginVbox...
-      );
+    scrollingPanel = uix.ScrollingPanel('Tag',thisTag, 'Parent',pluginVbox);
     uiControlsHandles.scrollingPanel = scrollingPanel;
     
     % TODO fix scrolling

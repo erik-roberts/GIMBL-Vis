@@ -19,23 +19,19 @@ uiControlsHandles = struct();
 vBox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
 
 % Row 1
-row1hBox = uix.HBox('Parent', vBox, 'Spacing', spacing);
-makeRow1hBox(row1hBox);
-
+makeRow1hBox(vBox);
 
 % Row 2
-row2hBox = uix.HBox( 'Parent', vBox, 'Spacing', spacing);
-makeRow2hBox(row2hBox);
+makeRow2hBox(vBox);
 
 % Set vBox Heights
 set(vBox, 'Heights',[-1 -1]);
 
-% Store Handles
-% pluginObj.handles.plotMarkerPanel.controls = uiControlsHandles;
-
 
 %% Nested fn
   function makeRow1hBox(parentHandle)
+    thisHbox = uix.HBox('Parent', parentHandle, 'Spacing', spacing);
+    
     % autoSizeToggle
     thisTag = pluginObj.panelTag('autoSizeToggle');
     uiControlsHandles.autoSizeMarkerLabel = uicontrol(...
@@ -47,7 +43,7 @@ set(vBox, 'Heights',[-1 -1]);
       'Value',1,...
       'UserData',pluginObj.userData,...
       'Callback',pluginObj.callbackHandle(thisTag),...
-      'Parent',parentHandle);
+      'Parent',thisHbox);
     
     % markerSizeSlider
     thisTag = pluginObj.panelTag('markerSizeSlider');
@@ -63,14 +59,15 @@ set(vBox, 'Heights',[-1 -1]);
       'Enable', 'off',...
       'UserData',pluginObj.userData,...
       'Callback',pluginObj.callbackHandle(thisTag),...
-      'Parent',parentHandle);
+      'Parent',thisHbox);
     
     % Set Box Widths
-    set(parentHandle, 'Widths',[-2 -3]);
+    set(thisHbox, 'Widths',[-2 -3]);
   end
 
 
   function makeRow2hBox(parentHandle)
+    thisHbox = uix.HBox( 'Parent', parentHandle, 'Spacing', spacing);
     
     % markerTypeLabel
     thisTag = pluginObj.panelTag('markerTypeLabel');
@@ -80,7 +77,7 @@ set(vBox, 'Heights',[-1 -1]);
       'FontUnits','points',...
       'FontSize',fontSize,...
       'String','2D Marker Type:',...
-      'Parent',parentHandle);
+      'Parent',thisHbox);
     
     
     % markerTypeMenu
@@ -95,10 +92,10 @@ set(vBox, 'Heights',[-1 -1]);
       'Value',markerVal,...
       'UserData',pluginObj.userData,...
       'Callback',pluginObj.callbackHandle(thisTag),...
-      'Parent',parentHandle);
+      'Parent',thisHbox);
     
     % Set row2hBox Widths
-    set(parentHandle, 'Widths',[-2 -3]);
+    set(thisHbox, 'Widths',[-2 -3]);
   end
 
 end

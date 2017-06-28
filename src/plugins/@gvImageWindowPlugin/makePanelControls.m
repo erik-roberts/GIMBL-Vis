@@ -51,6 +51,9 @@ set(mainVbox, 'Heights',[panelHeight, panelHeight, panelHeight, panelHeight])
 %% argout
 panelHandle = uiControlsHandles;
 
+%% notify listener
+notify(pluginObj, 'panelControlsMade');
+
 
 %% Nested fn
   function makeImageDirPathControls(parentHandle)

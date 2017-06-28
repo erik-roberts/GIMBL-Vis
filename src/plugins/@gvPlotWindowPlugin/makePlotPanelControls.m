@@ -41,11 +41,4 @@ uiControlsHandles.showLegendButton = uicontrol(...
 % Set layout sizes
 set(grid, 'Heights',[-1], 'Widths',[-1 -1]);
 
-% Store Handles
-% pluginObj.handles.plotPanel.controls = uiControlsHandles;
-
-
-%% Nested fn
-  
-
 end

@@ -1,16 +1,18 @@
 classdef minimalPlugin < gvPlugin
   
+  %% Public properties %%
+  properties (Constant)
+    pluginName = 'MinimalPlugin'
+    pluginFieldName = 'minimalPlugin'
+  end
+  
   properties
     metadata
     
     handles
   end
   
-  properties (Constant)
-    pluginName = 'MinimalPlugin'
-    pluginFieldName = 'minimalPlugin'
-  end
-  
+  %% Public methods %%
   methods
     
     function out = makePanelControls(pluginObj, parentHandle)

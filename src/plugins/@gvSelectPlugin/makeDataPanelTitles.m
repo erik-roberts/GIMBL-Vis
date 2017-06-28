@@ -61,9 +61,6 @@ uiControlsHandles.lockTitle = uicontrol(...
   'FontSize',fontSize,...
   'Parent',dataTitlesHbox);
 
-set(dataTitlesHbox, 'Widths',[-5,-6,-2.5,fontWidth*8,fontWidth*8])
-
-% Store Handles
-% pluginObj.handles.dataPanel.controls = uiControlsHandles;
+set(dataTitlesHbox, 'Widths',[-5,-6,-2.5,fontWidth*8,fontWidth*8]);
 
 end

@@ -1,7 +1,7 @@
-%% gvImageWindow - Image Window Class for GIMBL-Vis
+%% gvImageWindowPlugin - Image Window Plugin Class for GIMBL-Vis
 %
 % Description: An object of this class becomes a property of gvView to provide 
-%              methods for a GIMBL-Vis image window
+%              methods for a GIMBL-Vis image window.
 
 classdef gvImageWindowPlugin < gvWindowPlugin
 
