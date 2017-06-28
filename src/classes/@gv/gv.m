@@ -23,58 +23,6 @@
 %
 % Author: Erik Roberts
 
-
-% TODO:
-% fill nans in gvarray and have index
-% add callbacks
-%   plot marker
-%   marker type
-% model value2ref
-% function for classifying inputs and swtich to case
-% move data handling methods to model
-%
-% panel store handles
-% dependencies
-%
-% automate callback names from tags and prefix all tags
-% have CLI property for accessing methods
-% reset just ui element that needs to change
-% inner and outer analysis + plots, outer images
-% plot overlays
-% select subsets from view or all data based on values, either 
-%
-% have gen data selector which adds a hypercube that only has the selected values
-% make fn that returns currently selected hypercube indicies
-%
-% deal with sorting of handle names when number exceeeds 9
-%
-% add cwd listener
-%
-% get scrolling on autosize slider. make sure scrolling checks on which is
-%   active tab
-%
-% fontsize on plot window
-%
-% pop up for run loading from mat
-%
-% plot colorscale based on slice or total hypercube using meta.numericLimits
-%
-% data markers
-%
-% only replot what changed
-%
-% fix legend
-%
-% option to turn off 3d plots if slow bc too many points
-%
-% add more try statements
-%
-% same camera position in 3d after replot
-%
-% move iterate to select
-%
-% allow non string, non numeric data
-
 classdef gv < handle
   
   %% Public Properties %%
@@ -280,17 +228,10 @@ classdef gv < handle
       % run (public) - run gv GUI
       %
       % See also: gv.Run (static method)
-      
-      options = checkOptions(varargin,{...
-        'workingDir',[],[],...
-        'overwriteBool', 0, {0,1},...
-        },false);
-      
+
       % if specify load path
-      if ~isempty(options.workingDir)
-        gvObj.workingDir = options.workingDir;
-      else
-        gvObj.workingDir = pwd;
+      if nargin > 1 && ischar(varargin{1})
+        gvObj.workingDir = varargin{1};
       end
       
       gvObj.view.run();
@@ -506,6 +447,11 @@ classdef gv < handle
       end
       
       gvObj = gv();
+      
+      % update working dir with char src
+      if ischar(src)
+        gvObj.workingDir = src;
+      end
       
       gvObj.load(src, hypercubeName, true);
     end

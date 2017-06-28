@@ -26,7 +26,7 @@ while iterBool
   % Check for delay time
   delayBoxObj = findobjReTag('select_panel_delayValueBox');
   try
-    delayTime = str2double(delayBoxObj.String);
+    delayTime = delayBoxObj.Value;
   catch
     if ~exist(delayTime,'var')
       delayTime = .1;

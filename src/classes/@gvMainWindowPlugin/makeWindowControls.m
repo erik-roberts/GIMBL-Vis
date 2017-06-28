@@ -14,7 +14,7 @@ pluginObj.handles.controls = uiControlsHandles;
     
     guiPlugins = pluginObj.controller.guiPlugins;
     guiPluginFlds = fieldnames(guiPlugins);
-    guiPluginFlds = unique( [{guiPlugins.main.pluginFieldName}; guiPluginFlds] ); % set main to first plugin
+    guiPluginFlds = unique( [{guiPlugins.main.pluginFieldName}; unique(guiPluginFlds)], 'stable' ); % set main to first plugin
     
     uiControlsHandles.tabs = {};
     for k = 1:length(guiPluginFlds)

@@ -45,7 +45,7 @@ if exist(src, 'dir')
     if ~staticBool
       error('No mat files found in dir for loading.')
     else % called gv.Run() in directory without mat files
-      modelObj.vprintf('No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
+      modelObj.vprintf('gvModel: No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
       return
     end
   end

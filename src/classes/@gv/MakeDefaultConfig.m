@@ -5,9 +5,15 @@ function MakeDefaultConfig()
 defaultPlugins = '#!{''gvMainWindowPlugin'', ''gvSelectPlugin'', ''gvPlotWindowPlugin''}';
 baseFontSize = '12';
 closeMainWindowSaveDialogBool = '#!true';
-verboseModeBool = '#!true';
-plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
+verboseModeBool = '#!false';
 autoOpenLoadedPluginWindows = '#!true';
+
+% gvPlotWindowPlugin
+plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
+
+% gvImageWindowPlugin
+defaultImagePath = './images/';
+defaultImageRegexp = '^(.+)(\d+)\.\w+$'; % 2 capture groups: 1 for image type, 1 for index
 
 %% Write vars to disk
 vars = who; % get all vars

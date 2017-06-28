@@ -10,6 +10,10 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     windowName
   end
   
+  %% Events %%
+  events
+    windowOpened
+  end
   
   %% Abstract Methods %%
   methods (Abstract)

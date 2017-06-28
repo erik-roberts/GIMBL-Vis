@@ -29,7 +29,7 @@ end
 %% Load or Make gvData
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data
-  modelObj.vprintf('Importing studyinfo...\n')
+  modelObj.vprintf('gvModel: Importing studyinfo...\n')
   studyinfo = dsCheckStudyinfo(src);
   
   studyinfoParams = studyinfo.base_model.parameters;
@@ -112,7 +112,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   % convert to fn handles
   resultFns = cellfunu(@str2func, resultFns);
   
-  modelObj.vprintf('Importing varied parameter values...\n')
+  modelObj.vprintf('gvModel: Importing varied parameter values...\n')
   
   % Get varied params
   variedParamNames = vertcat(modNames{:});
@@ -142,7 +142,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   modelObj.vprintf('\tDone importing varied parameter values.\n')
   
   % Import analysis results
-  modelObj.vprintf('Importing analysis results...\n')
+  modelObj.vprintf('gvModel: Importing analysis results...\n')
   analysisResults = struct();
   for iFn = 1:numel(resultFns)
     thisResultFn = resultFns{iFn};
@@ -154,7 +154,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   modelObj.vprintf('\tDone importing analysis results\n')
   
-  modelObj.vprintf('Preparing data to save...\n')
+  modelObj.vprintf('gvModel: Preparing data to save...\n')
   
   simIDs = {studyinfo.simulations.sim_id}';
   
@@ -275,14 +275,14 @@ if ~exist(filePath,'file') || options.overwriteBool
   hypercubeObj = gvArrayRef(dynasimData);
   modelObj.addHypercube(hypercubeObj);
   
-  modelObj.vprintf('Imported multidimensional array object from Dynasim data from: %s\n', filePath)
+  modelObj.vprintf('gvModel: Imported multidimensional array object from Dynasim data from: %s\n', filePath)
   
   % Save
   save(filePath, 'dynasimData') % save gvArray obj
   modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
-  modelObj.vprintf('Loading dynasim data from: %s\n', filePath)
+  modelObj.vprintf('gvModel: Loading dynasim data from: %s\n', filePath)
   
   modelObj.load(filePath);
 end

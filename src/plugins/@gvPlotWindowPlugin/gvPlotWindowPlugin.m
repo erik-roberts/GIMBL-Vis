@@ -116,11 +116,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
         'UserData',pluginObj.userData...
         );
-      %         'WindowButtonMotionFcn',@gvPlotWindowPlugin.mouseMoveCallback...
 
       % set plot handle
       pluginObj.handles.fig = plotWindowHandle;
-%       pluginObj.handles.ax = axes(plotWindowHandle);
     end
     
     
@@ -239,7 +237,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 %         nViewDimsLast = pluginObj.view.dynamic.nViewDimsLast;
 
         if ~(nViewDims > 0)
-          pluginObj.vprintf('Skipping Plot\n')
+          pluginObj.vprintf('gvPlotWindowPlugin: Skipping Plot\n')
           return
         end
 
@@ -292,8 +290,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     Callback_WindowScrollWheelFcn(src, evnt)
-
-    mouseMoveCallback(src, evnt)
+    
     
     Callback_dataCursor(src, evnt)
     

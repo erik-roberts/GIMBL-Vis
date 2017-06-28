@@ -9,8 +9,6 @@ classdef gvImageWindowPlugin < gvWindowPlugin
   properties
     metadata = struct()
     
-    plotDir = fullfile('.', 'plots')
-    
     handles = struct()
   end
   
@@ -35,11 +33,20 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function pluginObj = gvImageWindowPlugin(varargin)
       pluginObj@gvWindowPlugin(varargin{:});
     end
+    
+    
+    function setup(pluginObj, cntrlObj)
+      setup@gvWindowPlugin(pluginObj, cntrlObj);
+      
+      pluginObj.metadata.imageRegexp = pluginObj.controller.app.config.defaultImageRegexp;
+      
+      pluginObj.addWindowOpenedListenerToPlotPlugin();
+    end
 
     openWindow(pluginObj)
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
-    
+
   end
   
   
@@ -65,12 +72,115 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       % set image handle
       pluginObj.handles.fig = imageWindowHandle;
     end
+    
+    
+    function addWindowOpenedListenerToPlotPlugin(pluginObj)
+      if isfield(pluginObj.controller.windowPlugins, 'plot')
+        if isfield(pluginObj.metadata, 'plotWindowListener')
+          delete(pluginObj.metadata.plotWindowListener)
+        end
+        
+        pluginObj.metadata.plotWindowListener = addlistener(pluginObj.controller.windowPlugins.plot, 'windowOpened', @gvImageWindowPlugin.Callback_plotWindowOpened);
+        
+        pluginObj.vprintf('gvImageWindowPlugin: Added window opened listener to plot plugin.\n');
+      end
+    end
+    
+    
+    function addMouseMoveCallbackToPlotFig(pluginObj)
+      if isfield(pluginObj.controller.windowPlugins, 'plot')
+        plotFigH = pluginObj.controller.windowPlugins.plot.handles.fig;
+        set(plotFigH, 'WindowButtonMotionFcn', @gvImageWindowPlugin.Callback_mouseMove);
+        
+        pluginObj.vprintf('gvImageWindowPlugin: Added WindowButtonMotionFcn callback to plot plugin figure.\n');
+      end
+    end
+    
+    
+    function pathStr = getImageDirPath(pluginObj)
+      boxObj = findobjReTag('image_panel_imageDirBox');
+      pathStr = boxObj.String;
+      
+      cwd = pluginObj.controller.app.workingDir;
+      if isempty(pathStr) % if blank
+        pathStr = cwd;
+      elseif pathStr(1) == '.' % if rel path
+        pathStr = fullfile(cwd, pathStr);
+      end
+    end
 
+    
+    function imageTypes = getImageTypes(pluginObj)
+      imageDir = pluginObj.getImageDirPath;
+      
+      if exist(imageDir, 'dir')
+        % Find images in imageDir
+        dirList = pluginObj.getImageList();
+              
+        % Parse image names
+        imageFiles = regexp(dirList, pluginObj.metadata.imageRegexp, 'tokens');
+        imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
+        imageFiles = cellfunu(@(x) x{1}, imageFiles);
+        imageFiles = cellfunu(@(x) x{1}, imageFiles);
+        
+        if isempty(imageFiles)
+          imageTypes = '[ None ]';
+        else
+          imageTypes = unique(imageFiles);
+        end
+      else
+        imageTypes = '[ None ]';
+      end
+    end
+    
+    function imageType = getImageTypeFromGUI(pluginObj)
+      % get menu handle
+      imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
+      
+      imageType = imgTypeMenu.String;
+    end
+    
+    
+    function dirList = getImageList(pluginObj)
+      imageDir = pluginObj.getImageDirPath;
+      
+      dirList = lscell(imageDir, true);
+    end
+    
   end
   
   %% Callbacks %%
   methods (Static)
     
+    function Callback_image_panel_openWindowButton(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      pluginObj.openWindow();
+    end
+    
+    
+    function Callback_image_panel_imageDirBox(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % get menu handle
+      imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
+      
+      % update menu string with image types from dir
+      imgTypeMenu.String = pluginObj.getImageTypes();
+    end
+    
+    
+    function Callback_image_panel_imageTypeMenu(src, evnt)
+%       pluginObj = src.UserData.pluginObj; % window plugin
+    end
+    
+    function Callback_plotWindowOpened(src, evnt)
+      pluginObj = src.controller.windowPlugins.image;
+      
+      pluginObj.addMouseMoveCallbackToPlotFig();
+    end
+    
+    Callback_mouseMove(src, evnt)
   end
   
 end

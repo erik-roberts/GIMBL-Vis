@@ -355,6 +355,11 @@ classdef gvSelectPlugin < gvGuiPlugin
         src.String = sprintf('Iterate ( %s )', char(9654)); %start char (arrow)
       end
     end
+
+    
+    function Callback_select_panel_delayValueBox(src, evnt)
+      src.Value = str2double(src.String);
+    end
     
     
     Callback_WindowScrollWheelFcn(src, evnt);

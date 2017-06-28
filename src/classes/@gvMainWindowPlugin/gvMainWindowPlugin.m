@@ -179,6 +179,10 @@ classdef gvMainWindowPlugin < gvWindowPlugin
 
       newWD = uigetdir(pluginObj.controller.app.workingDir, 'New Working Directory');
       
+      if isequal(newWD,0)
+        return
+      end
+      
       pluginObj.controller.app.workingDir = newWD;
     end
     

@@ -96,7 +96,7 @@ makeAllSubplots();
 
   function makeSubplot(hAx, plotDims)
     set(hFig,'CurrentAxes', hAx);
-    
+
     sliceInds = sliderVals;
     sliceInds = num2cell(sliceInds);
     [sliceInds{plotDims}] = deal(':');
@@ -315,10 +315,12 @@ makeAllSubplots();
     
     hAx.FontSize = fontSize;
     
+    % add plotDims to ax user data
+    hAx.UserData = struct('plotDims', plotDims);
+    
     
     %% Nested fn
     function out = makeAxInd(x)
-      
       out = 1:length(hypercubeObj.axisValues{x});
     end
     

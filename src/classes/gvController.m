@@ -104,7 +104,7 @@ classdef gvController < handle
         cntrlObj.plugins.(pluginFieldName) = feval(pluginSrc);
       end
 
-      cntrlObj.vprintf('Plugin ''%s'' added.\n', pluginFieldName);
+      cntrlObj.vprintf('gvController: Plugin ''%s'' added.\n', pluginFieldName);
     end
     
     
@@ -135,7 +135,7 @@ classdef gvController < handle
       
       cntrlObj.plugins = rmfield(cntrlObj.plugins, pluginFieldName);
       
-      cntrlObj.vprintf('Plugin ''%s'' removed.\n', pluginFieldName);
+      cntrlObj.vprintf('gvController: Plugin ''%s'' removed.\n', pluginFieldName);
     end
     
     
@@ -310,7 +310,7 @@ classdef gvController < handle
       new_activeHypercubeName = evnt.data.activeHypercubeName;
 %       prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
 %       if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
-        cntrlObj.vprintf('New active hypercube: %s\n',new_activeHypercubeName);
+        cntrlObj.vprintf('gvController: New active hypercube: %s\n',new_activeHypercubeName);
         
         % TODO: more precise change
         if cntrlObj.view.checkMainWindowExists()
@@ -328,7 +328,7 @@ classdef gvController < handle
       new_activeHypercubeName = evnt.data.activeHypercubeName;
       prior_activeHypercubeName = cntrlObj.prior_activeHypercubeName;
       if ~strcmp(new_activeHypercubeName, prior_activeHypercubeName)
-        cntrlObj.vprintf('New active hypercube Name: %s\n',new_activeHypercubeName);
+        cntrlObj.vprintf('gvController: New active hypercube Name: %s\n',new_activeHypercubeName);
         
         cntrlObj.activeHypercubeName = new_activeHypercubeName;
         cntrlObj.prior_activeHypercubeName = new_activeHypercubeName;

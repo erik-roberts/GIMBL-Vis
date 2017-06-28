@@ -69,7 +69,7 @@ notify(pluginObj, 'panelControlsMade');
 
 
   function makeIterateControls(parentHandle)
-    iterateHbox = uix.HBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
+    thisHbox = uix.HBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
     
     % iterateToggle
     thisTag = pluginObj.panelTag('iterateToggle');
@@ -81,21 +81,21 @@ notify(pluginObj, 'panelControlsMade');
       'String','Iterate',...
       'UserData',pluginObj.userData,...
       'Callback',pluginObj.callbackHandle(thisTag),...
-      'Parent',iterateHbox);
+      'Parent',thisHbox);
     
     % Change iterateToggle String
     set(uiControlsHandles.iterateToggle, 'String', sprintf('Iterate ( %s )', char(9654))); %start char (arrow)
 
     
     % delayControls
-    makeDelayControls(iterateHbox);
+    makeDelayControls(thisHbox);
     
-    set(iterateHbox, 'Widths',[-1, -1]);
+    set(thisHbox, 'Widths',[-1, -1]);
   end
 
 
   function makeDelayControls(parentHandle)
-    delayHbox = uix.HBox('Parent',parentHandle);
+    thisHbox = uix.HBox('Parent',parentHandle);
     
     % delayLabel
     thisTag = pluginObj.panelTag('delayLabel');
@@ -105,7 +105,7 @@ notify(pluginObj, 'panelControlsMade');
       'FontUnits','points',...
       'FontSize',fontSize,...
       'String','Delay [s]:',...
-      'Parent',delayHbox);
+      'Parent',thisHbox);
     
     
     % delayValueBox
@@ -118,10 +118,10 @@ notify(pluginObj, 'panelControlsMade');
       'String','0.5',...
       'Value',0.5,...
       'UserData',pluginObj.userData,...
-      'Callback',@gvPlotWindowPlugin.delayEditCallback,...
-      'Parent',delayHbox);
+      'Callback',pluginObj.callbackHandle(thisTag),...
+      'Parent',thisHbox);
     
-      set(delayHbox, 'Widths',[-3, -1.3]);
+      set(thisHbox, 'Widths',[-3, -1.3]);
   end
 
 end

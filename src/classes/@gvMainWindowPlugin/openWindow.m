@@ -4,7 +4,7 @@ function openWindow(pluginObj)
 mainWindowExistBool = pluginObj.view.checkMainWindowExists();
 
 if mainWindowExistBool
-  pluginObj.vprintf('Reopening main window\n')
+  pluginObj.vprintf('@gvMainWindowPlugin: Reopening main window.\n')
   
   pluginObj.handles.fig.delete()
 end
@@ -23,5 +23,6 @@ makeMenu(pluginObj, pluginObj.handles.fig);
 
 %% notify listener
 notify(pluginObj, 'panelControlsMade');
+notify(pluginObj, 'windowOpened');
 
 end
