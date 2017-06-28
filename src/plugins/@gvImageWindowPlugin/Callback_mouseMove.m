@@ -4,7 +4,7 @@ plotFig = src;
 plotPluginObj = plotFig.UserData.pluginObj;
 imagePluginObj = plotPluginObj.controller.guiPlugins.image;
 
-if plotPluginObj.checkWindowExists()
+if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
   
   mousePosPx = get(plotFig, 'CurrentPoint'); %pixels
   figPos = plotFig.Position;
