@@ -5,7 +5,10 @@ padding = 5;
 fontSize = pluginObj.fontSize;
 fontHeight = pluginObj.fontHeight;
 
-panelVbox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding', padding);
+thisTag = pluginObj.panelTag('scrollingPanel');
+scrollingPanel = uix.ScrollingPanel('Tag',thisTag, 'Parent',parentHandle);
+
+panelVbox = uix.VBox('Parent',scrollingPanel, 'Spacing',spacing, 'Padding', padding);
 
 makeHypercubeSourceControls(panelVbox);
 
@@ -16,8 +19,10 @@ makeFnNameControls(panelVbox);
 makeFnArgsControls(panelVbox);
 
 % set vbox sizes
-panelHeight = fontHeight + spacing + padding;
-set(panelVbox, 'Heights', -ones(4,1) );
+controlHeight = 1.5*fontHeight + spacing;
+vBoxHeights = controlHeight*[1 2 1 .8];
+set(panelVbox, 'Heights', vBoxHeights );
+set(scrollingPanel, 'Heights', sum(vBoxHeights)+spacing*2+padding*2 );
 
 %% Nested Fn
   function makeHypercubeSourceControls(parentHandle)
