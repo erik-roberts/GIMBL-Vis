@@ -151,7 +151,11 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
       
       % slider
       thisMax = pluginObj.controller.activeHypercube.size(n);
-      thisFracIncrOne = 1/(thisMax-1); % frac change for increment of 1 index
+      if thisMax == 1
+        thisFracIncrOne = 0;
+      else
+        thisFracIncrOne = 1/(thisMax-1); % frac change for increment of 1 index
+      end
       thisTag = thisSliderTag;
       uiControlsHandles.(['slider' nStr]) = uicontrol(...
         'Tag',thisTag,...

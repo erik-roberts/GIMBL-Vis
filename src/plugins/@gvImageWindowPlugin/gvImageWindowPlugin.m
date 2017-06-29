@@ -137,7 +137,9 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       % get menu handle
       imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
       
-      imageType = imgTypeMenu.String;
+      imageTypes = imgTypeMenu.String;
+      
+      imageType = imageTypes{imgTypeMenu.Value};
     end
     
     

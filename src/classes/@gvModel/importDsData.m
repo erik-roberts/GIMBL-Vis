@@ -82,6 +82,10 @@ if ~exist(filePath,'file') || options.overwriteBool
     modVals{iMod} = thisModVals(:); % ensure col array
   end
   
+  importVariedParamVals();
+  
+  simIDs = {studyinfo.simulations.sim_id}';
+  
   % TODO in case this is useful later:
   %   modNames = cat(2,modNames(:,1), repmat({'_'},size(modNames,1), 1), modNames(:,2));
   
@@ -101,110 +105,84 @@ if ~exist(filePath,'file') || options.overwriteBool
   resultFns = savedResultFns; %intersect(studyinfoResultFns, savedResultFns);
   
   % Determine classification functions
-  if isempty(options.classifyFn)
+  if isempty(options.classifyFn) && ~isempty(savedResultFns)
     classifyFns = regexpi(savedResultFns, '(.*class.*)', 'tokens');
     classifyFns = [classifyFns{:}]; % remove empty
     classifyFns = [classifyFns{:}]; % cat
-  else
+  elseif ~isempty(options.classifyFn)
     classifyFns = options.classifyFn;
   end
   
-  % convert to fn handles
-  resultFns = cellfunu(@str2func, resultFns);
   
-  modelObj.vprintf('gvModel: Importing varied parameter values...\n')
-  
-  % Get varied params
-  variedParamNames = vertcat(modNames{:});
-  variedParamNames = unique(variedParamNames)';
-  nVariedParams = numel(variedParamNames);
-  
-  % Get param values for each sim
-  variedParamValues = cell(nMods, nVariedParams);
-  for iParam = 1:nVariedParams
-    thisParam = variedParamNames{iParam};
-    thisStudyinfoParamValue = studyinfoParams.(thisParam);
-    for iMod = 1:nMods
-      thisModParams = modNames{iMod};
-      thisModInd = strcmp(thisModParams, thisParam);
-      if any(thisModInd)
-        variedParamValues{iMod, iParam} = modVals{iMod}{thisModInd};
-      else  % param missing for this sim, so use the value from studyinfo (for sims with sparse vary, ie non lattice)
-        variedParamValues{iMod, iParam} = thisStudyinfoParamValue;
+  if ~isempty(resultFns)
+    % convert to fn handles
+    resultFns = cellfunu(@str2func, resultFns);
+    
+    
+    % Import analysis results
+    modelObj.vprintf('gvModel: Importing analysis results...\n')
+    analysisResults = struct();
+    for iFn = 1:numel(resultFns)
+      thisResultFn = resultFns{iFn};
+      analysisResults.(func2str(thisResultFn)) = dsImportResults(src, thisResultFn);
+      
+      if length(analysisResults.(func2str(thisResultFn))) ~= size(variedParamValues,1)
+        wprintf('\tDifferent lengths for number of modifications and %s results.', func2str(thisResultFn))
       end
     end
-  end
-  
-  %   for iParam = 1:nVariedParams
-  %     VariedData.(variedParamNames{iParam}) = variedParamValues(:,iParam);
-  %   end
-  
-  modelObj.vprintf('\tDone importing varied parameter values.\n')
-  
-  % Import analysis results
-  modelObj.vprintf('gvModel: Importing analysis results...\n')
-  analysisResults = struct();
-  for iFn = 1:numel(resultFns)
-    thisResultFn = resultFns{iFn};
-    analysisResults.(func2str(thisResultFn)) = dsImportResults(src, thisResultFn);
+    modelObj.vprintf('\tDone importing analysis results\n')
     
-    if length(analysisResults.(func2str(thisResultFn))) ~= size(variedParamValues,1)
-      wprintf('\tDifferent lengths for number of modifications and %s results.', func2str(thisResultFn))
-    end
-  end
-  modelObj.vprintf('\tDone importing analysis results\n')
-  
-  modelObj.vprintf('gvModel: Preparing data to save...\n')
-  
-  simIDs = {studyinfo.simulations.sim_id}';
-  
-  % Remove missing data
-  missingClassResultsInd = cellfun(@isempty,analysisResults.(func2str(thisResultFn)));
-  for fld = fieldnames(analysisResults)
-    missingClassResultsInd = missingClassResultsInd | cellfun(@isempty,analysisResults.(fld{1}));
-  end
-  
-  for fld = fieldnames(analysisResults)'
-    analysisResults.(fld{1})(missingClassResultsInd) = [];
-  end
-  variedParamValues(missingClassResultsInd,:) = [];
-  simIDs(missingClassResultsInd) = [];
-  
-  % Get class info
-  classes = struct();
-  for iFn = 1:numel(classifyFns)
-    if numel(classifyFns) == 1 % rename class fn to 'class'
-      thisFnStr = 'class';
-      analysisResults.(thisFnStr) = analysisResults.(classifyFns{1});
-      analysisResults = rmfield(analysisResults, classifyFns{1});
-      thisFnHandle = str2func(classifyFns{1});
-      classifyFns{1} = thisFnStr;
-    else
-      thisFnStr = classifyFns{iFn};
-      thisFnHandle = str2func(thisFnStr);
+    modelObj.vprintf('gvModel: Preparing data to save...\n')
+    
+    
+    % Remove missing data
+    missingClassResultsInd = cellfun(@isempty,analysisResults.(func2str(thisResultFn)));
+    for fld = fieldnames(analysisResults)
+      missingClassResultsInd = missingClassResultsInd | cellfun(@isempty,analysisResults.(fld{1}));
     end
     
-    uClassNames = unique(analysisResults.(thisFnStr));
+    for fld = fieldnames(analysisResults)'
+      analysisResults.(fld{1})(missingClassResultsInd) = [];
+    end
+    variedParamValues(missingClassResultsInd,:) = [];
+    simIDs(missingClassResultsInd) = [];
     
-    try % to get info from class fn call
-      info = feval(thisFnHandle, 'info');
-      assert(size(info, 1) >= length(uClassNames))
-      classes.(thisFnStr).labels = info(:,1);
-      if size(info, 2) > 1 % if color col
-        tempColors = info(:,2); % as cells
-        tempColors = vertcat(tempColors{:}); % convert cell 2 mat
-        classes.(thisFnStr).colors = tempColors; % store mat
-        clear tempColors
+    % Get class info
+    classes = struct();
+    for iFn = 1:numel(classifyFns)
+      if numel(classifyFns) == 1 % rename class fn to 'class'
+        thisFnStr = 'class';
+        analysisResults.(thisFnStr) = analysisResults.(classifyFns{1});
+        analysisResults = rmfield(analysisResults, classifyFns{1});
+        thisFnHandle = str2func(classifyFns{1});
+        classifyFns{1} = thisFnStr;
       else
-        classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
+        thisFnStr = classifyFns{iFn};
+        thisFnHandle = str2func(thisFnStr);
       end
       
-      if size(info, 2) > 2 % if marker col
-        classes.(thisFnStr).markers = info(:,3);
+      uClassNames = unique(analysisResults.(thisFnStr));
+      
+      try % to get info from class fn call
+        info = feval(thisFnHandle, 'info');
+        assert(size(info, 1) >= length(uClassNames))
+        classes.(thisFnStr).labels = info(:,1);
+        if size(info, 2) > 1 % if color col
+          tempColors = info(:,2); % as cells
+          tempColors = vertcat(tempColors{:}); % convert cell 2 mat
+          classes.(thisFnStr).colors = tempColors; % store mat
+          clear tempColors
+        else
+          classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
+        end
+        
+        if size(info, 2) > 2 % if marker col
+          classes.(thisFnStr).markers = info(:,3);
+        end
+      catch
+        classes.(thisFnStr).labels = uClassNames;
+        classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
       end
-    catch
-      classes.(thisFnStr).labels = uClassNames;
-      classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
     end
   end
   
@@ -289,6 +267,38 @@ end
 
 
 %% Nested Fns
+  function  importVariedParamVals()
+    modelObj.vprintf('gvModel: Importing varied parameter values...\n')
+    
+    % Get varied params
+    variedParamNames = vertcat(modNames{:});
+    variedParamNames = unique(variedParamNames)';
+    nVariedParams = numel(variedParamNames);
+    
+    % Get param values for each sim
+    variedParamValues = cell(nMods, nVariedParams);
+    for iParam = 1:nVariedParams
+      thisParam = variedParamNames{iParam};
+      thisStudyinfoParamValue = studyinfoParams.(thisParam);
+      for iMod = 1:nMods
+        thisModParams = modNames{iMod};
+        thisModInd = strcmp(thisModParams, thisParam);
+        if any(thisModInd)
+          variedParamValues{iMod, iParam} = modVals{iMod}{thisModInd};
+        else  % param missing for this sim, so use the value from studyinfo (for sims with sparse vary, ie non lattice)
+          variedParamValues{iMod, iParam} = thisStudyinfoParamValue;
+        end
+      end
+    end
+    
+    %   for iParam = 1:nVariedParams
+    %     VariedData.(variedParamNames{iParam}) = variedParamValues(:,iParam);
+    %   end
+    
+    modelObj.vprintf('\tDone importing varied parameter values.\n')
+  end
+
+
   function mods = arrows2underscores(mods)
     % Purpose: fix arrow direction and convert to underscores
     mods(:,1:2) = cellfun( @fix_arrows, mods(:,1:2),'UniformOutput',0); % fix order of directionality to be L -> R
@@ -301,6 +311,7 @@ end
       end
     end
   end
+
 
   function modifications = expand_simultaneous_modifications(mods)
     % Purpose: expand simultaneous modifications into larger list

@@ -19,6 +19,10 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
     numLogical = cellfun(@isnumeric, hypercubeObj.data);
   else
     hypercubeObj.meta.onlyNumericDataBool = true;
+    
+    if iscellscalar(hypercubeObj.data)
+      hypercubeObj.data = cell2mat(hypercubeObj.data);
+    end
   end
   
   nDims = ndims(hypercubeObj.data);

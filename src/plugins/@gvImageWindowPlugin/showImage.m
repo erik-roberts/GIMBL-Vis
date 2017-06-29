@@ -16,7 +16,6 @@ imageInd = cellfunu(@(x) x{2}, imageFiles);
 imageInd = str2double(imageInd);
 
 imageType = pluginObj.getImageTypeFromGUI();
-imageType = imageType{1};
 
 fileLogicalInd = strcmp(imageTypes, imageType) & (index == imageInd);
 
