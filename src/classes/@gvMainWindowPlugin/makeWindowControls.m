@@ -23,7 +23,8 @@ pluginObj.handles.controls = uiControlsHandles;
       
       % get handle to uitab
       thisTag = pluginObj.windowTag(['tab_' thisPlugin.pluginName]);
-      thisUItab = uitab(tabPanel, 'title', thisPlugin.pluginName, 'Tag',thisTag);
+      thisUItab = uitab(tabPanel, 'title', thisPlugin.pluginName, 'Tag',thisTag,....
+        'UserData',struct('plugin',thisPlugin));
       uiControlsHandles.tabs{k}.uitab = thisUItab;
       
       % get handle to uitab child

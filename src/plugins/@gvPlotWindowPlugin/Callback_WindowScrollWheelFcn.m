@@ -5,7 +5,7 @@ guiPluginObj = mainPluginObj.controller.guiPlugins.plot;
 
 sliderObj = findobjReTag('plot_panel_markerSizeSlider');
 
-if ~strcmp(mainPluginObj.whichTabActive.Title, guiPluginObj.pluginName) || strcmp(sliderObj.Enable, 'off')
+if ~strcmp(mainPluginObj.currentTab.Title, guiPluginObj.pluginName) || strcmp(sliderObj.Enable, 'off')
   return % since wrong tab selected or slider off
 end
 

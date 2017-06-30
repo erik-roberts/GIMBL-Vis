@@ -79,6 +79,25 @@ menuLabel = 'Reset Window';
 makeMenuRow();
 
 
+%% Help
+menuLabel = 'Help';
+menuHandleStr = lower(menuLabel);
+rowParent = makeMenuCol();
+
+handleStr = 'pluginHelp';
+menuLabel = 'Current Plugin Help in Command Window';
+makeMenuRow();
+
+handleStr = 'onlineHelp';
+menuLabel = 'Online Help in Browser';
+makeMenuRow();
+
+handleStr = 'pluginDocs';
+menuLabel = 'Current Plugin Reference page in Help browser';
+makeMenuRow();
+
+
+
 %% Store Handles
 pluginObj.handles.menu = uiMenuHandles;
 

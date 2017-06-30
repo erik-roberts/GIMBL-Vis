@@ -30,7 +30,6 @@ classdef (Abstract) gvPlugin < handle
   
   %% Abstract Methods %%
   methods (Abstract)
-     
   end
   
   %% Concrete Methods %%
@@ -88,11 +87,21 @@ classdef (Abstract) gvPlugin < handle
       pluginObj.removeController();
     end
     
+    
+    function varargout = getHelp(pluginObj)
+      str = pluginObj.helpStr();
+      if ~nargout
+        fprintf(['\n' str '\n'])
+      else
+        varargout{1} = str;
+      end
+    end
+    
   end
   
-  %% Concrete Static Methods %%
-  methods (Static)
-    
+  %% Abstract Static Methods %%
+  methods (Abstract, Static, Hidden)
+    helpStr() % should return help string if argout, else fprintf the help string
   end
   
 end

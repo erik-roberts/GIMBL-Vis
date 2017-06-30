@@ -157,9 +157,17 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 
   end
   
-  %% Callbacks %%
-  methods (Static)
+  %% Static %%
+  methods (Static, Hidden)
     
+    function str = helpStr()
+      str = [gvPlotWindowPlugin.pluginName ':\n',...
+        'Choose plot seetings.\n'
+        ];
+    end
+    
+    
+    %% Callbacks %%
     function Callback_panelControlsMade(src, evnt)
       pluginObj = src; % window plugin
       

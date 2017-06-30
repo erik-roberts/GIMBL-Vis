@@ -54,7 +54,12 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
     
-    function tab = whichTabActive(pluginObj)
+    function plugin = currentPlugin(pluginObj)
+      plugin = pluginObj.currentTab.UserData.plugin;
+    end
+    
+    
+    function tab = currentTab(pluginObj)
       tab = pluginObj.handles.controls.tabPanel.SelectedTab;
     end
     
@@ -101,9 +106,16 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     uiControlsHandles = makeHypercubePanelControls(pluginObj, parentHandle)
 
   end
+
   
-  %% Callbacks %%
   methods (Static, Hidden)
+    
+    function str = helpStr()
+      str = [gvMainWindowPlugin.pluginName ':\n',...
+        'Use the Main tab to load different plugins by clicking the checkbox.\n'
+        ];
+    end
+    
     
     %% Event Callbacks
     function Callback_CloseRequestFcn(src, ~)
@@ -366,6 +378,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj.Callback_resetWindow(src, evnt);
     end
     
+    
     function Callback_WindowScrollWheelFcn(src, evnt)
       pluginObj = src.UserData.pluginObj;
       
@@ -376,6 +389,26 @@ classdef gvMainWindowPlugin < gvWindowPlugin
           feval(fnHandle{1}, src, evnt); % evaluate each callback
         end
       end
+    end
+    
+    
+    %% Help
+    function Callback_main_menu_help_pluginHelp(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      pluginObj.currentPlugin.getHelp();
+    end
+    
+    
+    function Callback_main_menu_help_onlineHelp(~, ~)
+      web('http://www.earoberts.com/GIMBL-Vis-Docs/', '-browser')
+    end
+    
+    
+    function Callback_main_menu_help_pluginDocs(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      doc(pluginObj.currentPlugin.pluginClassName);
     end
     
   end

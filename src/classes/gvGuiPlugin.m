@@ -67,6 +67,10 @@ classdef (Abstract) gvGuiPlugin < gvPlugin
       handle = str2func([pluginObj.pluginClassName '.Callback_' tag]);
     end
     
+    function handle = prefixHandle(pluginObj, prefix, tag)
+      handle = str2func([pluginObj.pluginClassName '.' prefix '_' tag]);
+    end
+    
     
     function findObjects(pluginObj)
       pluginObj.handles.all = sortByTag(findobj('-regexp','Tag',['^' pluginObj.pluginFieldName]));

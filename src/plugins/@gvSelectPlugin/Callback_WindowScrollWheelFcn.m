@@ -4,7 +4,7 @@ function Callback_WindowScrollWheelFcn(src, evnt)
 mainPluginObj = src.UserData.pluginObj;
 guiPluginObj = mainPluginObj.controller.guiPlugins.select;
 
-if ~strcmp(mainPluginObj.whichTabActive.Title, guiPluginObj.pluginName)
+if ~strcmp(mainPluginObj.currentTab.Title, guiPluginObj.pluginName)
   return % since wrong tab selected
 end
 

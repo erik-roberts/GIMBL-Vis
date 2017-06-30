@@ -221,9 +221,17 @@ classdef gvSelectPlugin < gvGuiPlugin
 
   end
   
-  %% Callbacks %%
-  methods (Static)
+  %% Static %%
+  methods (Static, Hidden)
 
+    function str = helpStr()
+      str = [gvSelectPlugin.pluginName ':\n',...
+        'Use the sliders or the adjoining box to choose a slice of the data.\n'
+        ];
+    end
+    
+    
+    %% Callbacks %%
     function Callback_panelControlsMade(src, evnt)
       pluginObj = src; % window plugin
       

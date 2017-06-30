@@ -160,9 +160,18 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     
   end
   
-  %% Callbacks %%
-  methods (Static)
+  %% Static %%
+  methods (Static, Hidden)
     
+    function str = helpStr()
+      str = [gvImageWindowPlugin.pluginName ':\n',...
+        'Use the Select tab or mouse over a Plot window data point to choose an ',...
+        'image to display.\n'
+        ];
+    end
+    
+    
+    %% Callbacks %%
     function Callback_image_panel_openWindowButton(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
