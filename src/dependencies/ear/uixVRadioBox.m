@@ -14,6 +14,7 @@ classdef uixVRadioBox < uix.VBox
   
   properties (Dependent)
     Value
+    String
     Button
   end
   
@@ -32,9 +33,16 @@ classdef uixVRadioBox < uix.VBox
       
     end % constructor
     
+    
     function value = get.Value(obj)
       value = find([obj.Children.Value]);
     end
+    
+    
+    function str = get.String(obj)
+      str = {obj.Children.String}';
+    end
+    
     
     function button = get.Button(obj)
       button = obj.Children(obj.Value);

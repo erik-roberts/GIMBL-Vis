@@ -59,7 +59,7 @@ pluginObj.makeOutputPanelControls(outputPanel);
 
 %% Set layout sizes
 % panelHeight = fontHeight + spacing + padding;
-set(mainVbox, 'Heights',[-1, -1, fontHeight*1.5]);
+set(mainVbox, 'Heights',[-1, -1, fontHeight*2]);
 
 %% argout
 panelHandle = uiControlsHandles;
