@@ -283,6 +283,12 @@ classdef gvController < handle
     
     function Callback_modelChanged(src, evnt)
       cntrlObj = src;
+       
+      if ~isempty(cntrlObj.activeHypercubeName) && ~any(strcmp(fieldnames(cntrlObj.model.data), cntrlObj.activeHypercubeName))
+        cntrlObj.activeHypercubeName = [];
+        cntrlObj.activeHypercube = [];
+      end
+      
       
       if strcmp(cntrlObj.activeHypercubeName, '[None]')
         hypercubeNames = fieldnames(cntrlObj.model.data);

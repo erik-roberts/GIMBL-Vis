@@ -32,6 +32,8 @@ classdef gvAnalysisPlugin < gvGuiPlugin
     
     panelHandle = makePanelControls(pluginObj, parentHandle)
     
+    applyFn(pluginObj)
+    
   end
   
   
@@ -66,6 +68,75 @@ classdef gvAnalysisPlugin < gvGuiPlugin
       end
     end
     
+    
+    function updateSettingsFromPanel(pluginObj)
+      % Input:
+      % get source
+      obj = findobjReTag('analysis_panel_hypercubeMenu');
+      hypercubeName = obj.String{obj.Value};
+      settings.sourceHypercubeName = hypercubeName;
+      
+      % get source type
+      obj = findobjReTag('analysis_panel_sourceRadioBox');
+      settings.sourceType = obj.Button.String;
+      
+      % get apply fn
+      obj = findobjReTag('analysis_panel_fnMenu');
+      if obj.Value == 1 % then use custom fn from box
+        obj = findobjReTag('analysis_panel_fnBox');
+        
+        fnStr = shebangParse(obj.String);
+        if ~isempty(fnStr)
+          fnHandle = str2func(fnStr);
+        else
+          error('Enter a custom function name or choose a function from the dropdown menu.')
+        end
+      else
+        fnHandle = str2func(obj.String{obj.Value});
+      end
+      settings.fn = fnHandle;
+      
+      % get fn args
+      obj = findobjReTag('fnArgsBox');
+      argsStr = shebangParse(obj.String);
+      settings.fnArgs = parseArgStr(argsStr);
+
+      % Output:
+      % get target type
+      obj = findobjReTag('analysis_panel_targetRadioBox');
+      settings.targetType = obj.Button.String;
+      
+      % get target string
+      obj = findobjReTag('targetNameBox');
+      settings.targetStr =  shebangParse(obj.String);
+      
+      % delete source toggle
+      obj = findobjReTag('deleteSourceHcToggle');
+      settings.deleteSourceBool =  logical(obj.Value);
+      
+      % update pluginObj property
+      pluginObj.metadata.settings = settings;
+      
+      % Nested Fn
+      function args = parseArgStr(argsStr)
+        if iscell(argsStr)
+          args = argsStr;
+        elseif ~isempty(argsStr)
+          if strcmp(argsStr([1,end]), '{}')
+            args = evalin('base', argsStr);
+          elseif strcmp(argsStr([1,end]), '()')
+            argsStr([1,end]) = '{}';
+            args = parseArgStr(argsStr);
+          else
+            argsStr = ['{' argsStr '}'];
+            args = parseArgStr(argsStr);
+          end
+        else
+          args = {};
+        end
+      end
+    end
+    
   end
   
   
@@ -97,7 +168,7 @@ classdef gvAnalysisPlugin < gvGuiPlugin
           nameLabelObj.String = 'Target Hypercube';
           
           deleteSourceHcLabelObj.Enable = 'on';
-          deleteSourceHcToggleObj.Enable = 'off';
+          deleteSourceHcToggleObj.Enable = 'on';
         case 'Workspace Variable'
           nameLabelObj.String = 'Target Variable';
           
@@ -108,6 +179,19 @@ classdef gvAnalysisPlugin < gvGuiPlugin
           
           deleteSourceHcLabelObj.Enable = 'on';
           deleteSourceHcToggleObj.Enable = 'on';
+      end
+    end
+    
+    function Callback_analysis_panel_sourceRadioBox(src)
+      fnArgsBoxObj = findobjReTag('analysis_panel_fnArgsBox');
+      fnArgsLabelObj = findobjReTag('analysis_panel_fnArgsLabel');
+      
+      if src.Value == 2
+        fnArgsLabelObj.Enable = 'off';
+        fnArgsBoxObj.Enable = 'off';
+      else
+        fnArgsLabelObj.Enable = 'on';
+        fnArgsBoxObj.Enable = 'on';
       end
     end
 
@@ -133,8 +217,12 @@ classdef gvAnalysisPlugin < gvGuiPlugin
     end
     
     
-    function Callback_analysis_panel_applyButton()
+    function Callback_analysis_panel_applyButton(src, evnt)
+      pluginObj = src.UserData.pluginObj;
       
+      pluginObj.updateSettingsFromPanel();
+      
+      pluginObj.applyFn();
     end
     
   end

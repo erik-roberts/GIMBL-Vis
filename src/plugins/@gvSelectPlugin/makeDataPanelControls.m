@@ -181,7 +181,7 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
         'Callback',pluginObj.callbackHandle(pluginObj.panelTag('sliderVal')),...  use same callback for each
         'Parent',sliderHbox);
       
-        set(sliderHbox, 'Widths',[-2, -1]);
+        set(sliderHbox, 'Widths',[-1, -1]);
     end
     
   end
@@ -194,7 +194,7 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
     for n = 1:nDims
       nStr = num2str(n);
       
-      if isfield(pluginObj.view.dynamic, 'viewDims')
+      if isfield(pluginObj.view.dynamic, 'viewDims') && (n <= length(pluginObj.view.dynamic.viewDims))
         thisVal = pluginObj.view.dynamic.viewDims(n);
       else
         thisVal = 0;
@@ -222,7 +222,7 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
     for n = 1:nDims
       nStr = num2str(n);
       
-      if isfield(pluginObj.view.dynamic, 'lockDims')
+      if isfield(pluginObj.view.dynamic, 'lockDims') && (n <= length(pluginObj.view.dynamic.lockDims))
         thisVal = pluginObj.view.dynamic.lockDims(n);
       else
         thisVal = 0;

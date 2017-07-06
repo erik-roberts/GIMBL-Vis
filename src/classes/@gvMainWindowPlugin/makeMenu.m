@@ -40,6 +40,10 @@ handleStr = 'saveHC';
 menuLabel = 'Save Hypercube as MDD Object';
 makeMenuRow();
 
+handleStr = 'evalInBase';
+menuLabel = 'Evaluate GV Object in Command Window';
+makeMenuRow();
+
 
 %% Model
 menuLabel = 'Model';
