@@ -19,6 +19,18 @@ classdef gvArrayAxis < MDDAxis
   
   methods
     
+    function axObj = gvArrayAxis(varargin)
+      % gvArrayAxis - constructor
+      %
+      % Usage:
+      %   obj = gvArrayAxis()
+      %   obj = gvArrayAxis(axis_vals)
+      %   obj = gvArrayAxis(axis_vals, axis_name)
+      %   obj = gvArrayAxis(axis_vals, axis_name, axismeta)
+            
+      axObj@MDDAxis(varargin{:});
+    end
+    
     function vals = valueAsStr(axObj, ind)
        vals = axObj.getvalue_char(ind);
     end
