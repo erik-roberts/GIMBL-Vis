@@ -45,13 +45,20 @@ gv().run % or `gvObj = gv().run;`
 %% Object Construction
 
 % Here is some sample data. The data has 3 dimensions.
-sampleData = rand(20,20,2);
+vec = -9:1:10;
+[x,y,z] = meshgrid(vec,vec,vec);
+sampleData = x.*y.*z;
+sampleData = cat(4,sampleData,sampleData);
+sampleData = cat(4,sampleData,sampleData);
+sampleData = cat(4,sampleData,sampleData);
+sampleData = sampleData + 0.5*max(sampleData(:))*rand(size(sampleData));
 
 % Here are some names for the dimensions.
-axis_names = {'x','y','dataType'};
+axis_names = {'x','y','z','dataType'};
 
 % Here are the names of the possible values for each dimension.
-axis_vals = {1:20, 1:20,{'type1','type2'}};
+dataTypeAxisVals = cellfunu(@(x) ['dataType' x],mat2cellstr(1:size(sampleData,4)));
+axis_vals = {1:20, 1:20, 1:20, dataTypeAxisVals};
 
 % The name of the multidimensional dataset.
 hypercubeName = 'sampleDataset';

@@ -144,6 +144,11 @@ classdef gvController < handle
       
       pluginClassName = cntrlObj.plugins.(pluginFieldName).pluginClassName;
       
+      % close window if open
+      if isa(cntrlObj.plugins.(pluginFieldName), 'gvWindowPlugin')
+        cntrlObj.plugins.(pluginFieldName).closeWindow();
+      end
+      
       % remove controller from plugin
       cntrlObj.plugins.(pluginFieldName).removeController();
       

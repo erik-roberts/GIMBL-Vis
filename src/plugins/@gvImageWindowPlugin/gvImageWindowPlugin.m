@@ -191,9 +191,11 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
     
     function Callback_plotWindowOpened(src, evnt)
-      pluginObj = src.controller.windowPlugins.image;
-      
-      pluginObj.addMouseMoveCallbackToPlotFig();
+      if isfield(src.controller.windowPlugins, 'image')
+        pluginObj = src.controller.windowPlugins.image;
+
+        pluginObj.addMouseMoveCallbackToPlotFig();
+      end
     end
   
     
