@@ -21,6 +21,11 @@ if ~exist('gv','class')
   addpath(genpath(pwd));
 end
 
+% Check for MDD toolbox
+if ~exist('MDD','class')
+  error('Download MDD toolbox: https://github.com/davestanley/MultiDimensionalDictionary');
+end
+
 
 %% Basics %%
 
@@ -56,7 +61,7 @@ sampleGvArray = gvArray(sampleData, axis_vals, axis_names);
 sampleGvArray.meta.defaultHypercubeName = hypercubeName;
 
 % Let's also store the path to some sample data stored on disk.
-gvFilePath = fullfile('.', 'gvSampleFile.mat');
+% gvFilePath = fullfile('.', 'gvSampleFile.mat');
 
 % 4 ways to use the gv constructor method (ie the class name as a function):
 

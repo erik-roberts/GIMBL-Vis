@@ -16,9 +16,9 @@ gap = 0.1;
 marg_h = 0.1;
 marg_w = 0.1;
 
-gap_s = 0.03;
-marg_h_s = 0.03;
-marg_w_s = 0.03;
+gap_s = 0.04;
+marg_h_s = 0.04;
+marg_w_s = 0.04;
 
 switch nViewDims
   case 1
