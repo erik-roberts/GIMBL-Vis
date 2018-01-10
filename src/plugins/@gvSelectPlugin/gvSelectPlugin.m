@@ -304,7 +304,6 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     function Callback_select_panel_slider(src, ~)
       sliderObj = src;
-      
       pluginObj = sliderObj.UserData.pluginObj;
       
       % round value
@@ -335,7 +334,8 @@ classdef gvSelectPlugin < gvGuiPlugin
         try
            sliderVal = gvArrayAxis.regex_lookup(axVals, editObj.String);
         catch
-          wprintf('Coudln''t find regexp match to entered string.\n')
+          wprintf('Coudln''t find regexp match to entered string.\n         Defaulting to first value.\n')
+          editObj.String = axVals{1};
           return
         end
         finalString = axVals{sliderVal};
