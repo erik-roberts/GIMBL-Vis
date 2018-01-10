@@ -44,14 +44,25 @@ gv().run % or `gvObj = gv().run;`
 
 %% Object Construction
 
-% Here is some sample data. The data has 3 dimensions.
+% Here is some sample data. The data has 4 dimensions.
 vec = -9:1:10;
 [x,y,z] = meshgrid(vec,vec,vec);
+
 sampleData = x.*y.*z;
-sampleData = cat(4,sampleData,sampleData);
-sampleData = cat(4,sampleData,sampleData);
-sampleData = cat(4,sampleData,sampleData);
-sampleData = sampleData + 0.5*max(sampleData(:))*rand(size(sampleData));
+
+sampleData2 = x+y+z;
+sampleData2 = sampleData2 + 0.5*max(sampleData2(:))*rand(size(sampleData2));
+
+sampleData3 = x.^2+y+z;
+sampleData3 = sampleData3 + 0.5*max(sampleData3(:))*rand(size(sampleData3));
+
+sampleData4 = sqrt(abs(x)).*y.*z;
+sampleData4 = sampleData4 + 0.5*max(sampleData4(:))*rand(size(sampleData4));
+
+% Combine data
+sampleData = cat(4,sampleData,sampleData2);
+sampleData = cat(4,sampleData,sampleData3);
+sampleData = cat(4,sampleData,sampleData4);
 
 % Here are some names for the dimensions.
 axis_names = {'x','y','z','dataType'};
