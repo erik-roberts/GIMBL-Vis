@@ -19,7 +19,7 @@ One can zoom in on a region of high dimensional space by taking a subset of a `h
 
 ## Installation and Usage Instructions
 To install and setup GV:
-- Download the zip file or clone the git repository for GIMBL-Vis
+- Download the [zip file](https://github.com/erik-roberts/GIMBL-Vis/archive/master.zip) or clone the [git repository](https://github.com/erik-roberts/GIMBL-Vis.git) for GIMBL-Vis
 - Do the same for the [MultiDimensional Dictionary (MDD)](https://github.com/davestanley/MultiDimensionalDictionary) class.
 - Add the GIMBL-Vis and MDD folders to your matlab path
   - If you don't already have one, create a file named `startup.m` in the following folder:
