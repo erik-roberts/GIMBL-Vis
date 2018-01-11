@@ -13,7 +13,7 @@ function plot(pluginObj)
 
 hFig = pluginObj.handles.fig;
 hAx = pluginObj.handles.ax;
-figure(hFig); % make hFig gcf
+figure(hFig); % make hFig gcf % TODO find way to remove this
 
 nViewDims = pluginObj.view.dynamic.nViewDims;
 if nViewDims == 0
@@ -25,7 +25,7 @@ fontSize = pluginObj.view.fontSize;
 
 hypercubeObj = pluginObj.controller.activeHypercube;
 dimNames = hypercubeObj.axisNames;
-dimNames = strrep(dimNames, '_', ' '); % replace '_' with ' ' to avoid subscript
+dimNames = strrep(dimNames, '_', '\_'); % replace '_' with '\_' to avoid subscript
 sliderVals = pluginObj.view.dynamic.sliderVals;
 
 makeAllSubplots();
@@ -248,20 +248,22 @@ makeAllSubplots();
     if length(axInds) < 3
       switch markerType
         case 'scatter'
-          scatter(axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+          scatter(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
         case 'grid'
+          figure(hFig); % make hFig gcf % TODO find way to remove this
           if isempty(legendInfo)
             image(axValsVector{:}, plotSlice, 'CDataMapping','scaled'); % slice specific colormap
           else
             image(axValsVector{:}, plotSlice); % slice specific colormap
           end
+          
           axis xy
         otherwise
           wprintf('Unknown Marker Type')
           return
       end
     else
-      scatter3(axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+      scatter3(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
     end
     if isempty(legendInfo)
       colorbar

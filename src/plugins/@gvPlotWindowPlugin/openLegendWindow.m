@@ -64,8 +64,7 @@
         legendWindowHandle = figure('Name','GIMBL-Vis: Legend Window','NumberTitle','off','menubar','none',...
           'Position',[mainWindowPos(1),max(mainWindowPos(2)-ht-50, 0),wd,ht]);
         
-        axes(legendWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
-          'XTick',[], 'YTick',[]);
+        makeBlankAxes(legendWindowHandle);
         
         % set legend handle
         pluginObj.handles.legendWindow = legendWindowHandle;
