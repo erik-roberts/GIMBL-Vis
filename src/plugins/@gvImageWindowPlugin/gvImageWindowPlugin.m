@@ -53,8 +53,14 @@ classdef gvImageWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
     
-    function makeFig(pluginObj)
+    function status = makeFig(pluginObj)
       % makeFig - make image window figure
+      
+      if ~isValidFigHandle(pluginObj.controller.plugins.plot.handles.fig)
+        wprintf('Plot Window must be open to open Image Window.');
+        status = 1;
+        return
+      end
       
       plotPanPos = pluginObj.controller.plugins.plot.handles.fig.Position;
       newPos = plotPanPos; % same size as plot window
@@ -64,12 +70,15 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         'Name',['GIMBL-VIS: ' pluginObj.windowName],...
         'Tag',pluginObj.figTag(),...
         'NumberTitle','off',...
-        'Position',newPos);
+        'Position',newPos,...
+        'color','white');
       
       makeBlankAxes(imageWindowHandle);
       
       % set image handle
       pluginObj.handles.fig = imageWindowHandle;
+      
+      status = 0;
     end
     
     

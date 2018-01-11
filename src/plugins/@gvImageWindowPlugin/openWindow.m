@@ -6,7 +6,9 @@ mainWindowExistBool = pluginObj.view.checkMainWindowExists(warnBool);
 
 if mainWindowExistBool && ~pluginObj.checkWindowExists()
     %% Make Image Window
-    pluginObj.makeFig();
+    if pluginObj.makeFig() ~= 0
+      return % error
+    end
     
     pluginObj.addWindowOpenedListenerToPlotPlugin();
     pluginObj.addMouseMoveCallbackToPlotFig();

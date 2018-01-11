@@ -70,7 +70,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
       % makeFig - make dsPlot window figure
       
       if ~isValidFigHandle(pluginObj.controller.plugins.plot.handles.fig)
-        wprintf('Plot Window Must Be Open to Open dsPlot Window.');
+        wprintf('Plot Window must be open to open dsPlot Window.');
         status = 1;
         return
       end
