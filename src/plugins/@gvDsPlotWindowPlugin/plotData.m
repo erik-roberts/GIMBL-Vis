@@ -30,6 +30,7 @@ if ~isempty(data) && length(data) >= index
   
   % plot
   plotFn = str2func(pluginObj.metadata.plotFn);
+  h = figH; % enable this as alias in gui
   try
     plotFnOpts = eval(['{' pluginObj.metadata.plotFnOpts ' ''visible'',''off''' '}']);
   catch
@@ -41,18 +42,23 @@ if ~isempty(data) && length(data) >= index
   plotH = feval(plotFn, thisData, plotFnOpts{:});
   pluginObj.fig2copy = plotH; % allows lock in Callback_mouseMove
   
-  % delete axis and title
-  %   delete(th);
-  delete(findobj(figH,'type','axes'));
   
   % copy axes from plotFn handle output
-  axh = findobj(plotH,'type','axes');
-  copyobj(axh, figH);
-  plotAxH = findobj(figH.Children,'type','axes');
+  if figH ~= plotH(1)
+    % delete axis and title
+    %   delete(th);
+    delete(findobj(figH,'type','axes'));
+  
+    axh = findobj(plotH,'type','axes');
+    copyobj(axh, figH);
+    plotAxH = findobj(figH.Children,'type','axes');
+    close(plotH)
+  else
+    delete(th)
+  end
   
   % close hidden plot from plotFn eval
   pluginObj.fig2copy = [];
-  close(plotH)
     
   % fig title
   figTitle = sprintf('SimID:%i; Vary:', index);
