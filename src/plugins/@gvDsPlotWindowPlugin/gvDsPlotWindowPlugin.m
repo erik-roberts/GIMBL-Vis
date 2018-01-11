@@ -111,8 +111,8 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     function addMouseMoveCallbackToPlotFig(pluginObj)
       if isfield(pluginObj.controller.windowPlugins, 'plot')
         plotFigH = pluginObj.controller.windowPlugins.plot.handles.fig;
-%         set(plotFigH, 'WindowButtonMotionFcn', @gvDsPlotWindowPlugin.Callback_mouseMove);
-        set(plotFigH, 'WindowButtonDownFcn', @gvDsPlotWindowPlugin.Callback_mouseClick);
+%         set(plotFigH, 'WindowButtonMotionFcn', @gvDsPlotWindowPlugin.Callback_mouse);
+        set(plotFigH, 'WindowButtonDownFcn', @gvDsPlotWindowPlugin.Callback_mouse);
         
         pluginObj.vprintf('gvDsPlotWindowPlugin: Added WindowButtonMotionFcn callback to plot plugin figure.\n');
       end
@@ -166,7 +166,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
       pluginObj.metadata.plotFnOpts = src.String;
     end
     
-    Callback_mouseClick(src, evnt)
+    Callback_mouse(src, evnt)
   end
   
 end

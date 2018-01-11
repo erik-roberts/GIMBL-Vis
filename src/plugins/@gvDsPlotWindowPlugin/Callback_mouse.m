@@ -1,4 +1,4 @@
-function Callback_mouseClick(src, evnt)
+function Callback_mouse(src, evnt)
 
 if ~strcmp(evnt.EventName, 'WindowMousePress') % not mouse click
   return
