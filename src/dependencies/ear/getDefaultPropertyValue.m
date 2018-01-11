@@ -1,4 +1,5 @@
 function value = getDefaultPropertyValue(class, propertyName)
+% Author: Erik Roberts
 
 if isobject(class)
   metaObj = metaclass(class);

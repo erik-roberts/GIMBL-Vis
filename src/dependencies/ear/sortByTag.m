@@ -1,5 +1,7 @@
 function sortedHandles = sortByTag( handleArray, byNumSuffixBool )
-
+%
+% Author: Erik Roberts
+  
 if nargin < 2
   byNumSuffixBool = false;
 end

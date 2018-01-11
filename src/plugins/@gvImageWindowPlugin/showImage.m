@@ -36,7 +36,7 @@ if ~isempty(fullFilename)
     
     % parse filename
     [~, filename] = fileparts(fullFilename);
-    filename = strrep(filename, '_',' ');
+    filename = strrep(filename, '_','\_'); % replace '_' with '\_' to avoid subscript
     
     try
       title(imAxH, filename);

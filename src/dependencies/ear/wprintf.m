@@ -10,6 +10,8 @@ function wprintf(varargin)
 % Input: str - string for warning
 %
 % Output (to stdout): ['\nWarning: ' fortmattedStr '\n\n'].
+%
+% Author: Erik Roberts
 
 str = sprintf(varargin{:});
 
