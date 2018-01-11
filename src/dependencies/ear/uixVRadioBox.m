@@ -7,6 +7,8 @@ classdef uixVRadioBox < uix.VBox
   %  A vertical box lays out radio buttons from top to bottom.
   %
   %  See also: uix.VBox, uix.HBox, uix.Grid, uix.VButtonBox, uix.VBoxFlex
+  %
+  % Modifed by: Erik Roberts
   
   properties
     Callback
@@ -90,4 +92,3 @@ classdef uixVRadioBox < uix.VBox
   end
   
 end
-

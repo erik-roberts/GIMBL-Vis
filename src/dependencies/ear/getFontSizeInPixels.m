@@ -1,6 +1,7 @@
 function [textWidth, textHeight] = getFontSizeInPixels(fontSize, s)
 % getFontSizeInPixels - get font size in pixels based on fontSize input
-
+%
+% Author: Erik Roberts
 s.FontSize = fontSize;
 if nargin < 2
   s.FontUnits = 'points';

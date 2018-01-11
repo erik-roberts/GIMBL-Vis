@@ -23,7 +23,8 @@ function ha = tight_subplot2(Nh, Nw, gap, marg_h, marg_w, hFig)
 
 % Pekka Kumpulainen 20.6.2010   @tut.fi
 % Tampere University of Technology / Automation Science and Engineering
-
+%
+% Edited by Erik Roberts
 
 if nargin<3 || isempty(gap); gap = .02; end
 if nargin<4 || isempty(marg_h); marg_h = .05; end

@@ -1,5 +1,7 @@
 function hideEmptyAxes(hFig)
-
+%
+% Author: Erik Roberts
+  
 hAx = hFig.Children;
 
 for hInd = 1:length(hAx)
