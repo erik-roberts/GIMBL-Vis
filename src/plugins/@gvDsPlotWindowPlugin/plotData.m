@@ -1,5 +1,5 @@
 function plotData(pluginObj, index)
-% TODO: handle missing data
+% TODO: handle missing data, fix axis labels on copy
 
 % update stored index
 pluginObj.lastIndex = index;
@@ -15,12 +15,18 @@ end
 
 figH = pluginObj.handles.fig;
 
+% open window if closed
+if ~isValidFigHandle(figH)
+  pluginObj.openWindow();
+  figH = pluginObj.handles.fig;
+end
+
 if ~isempty(data) && length(data) >= index
   thisData = data(index);
   
   clf(figH);
   plotAxH = makeBlankAxes(figH);
-  addTextToBlankAx(plotAxH, sprintf('Plotting index %i...', index) );
+  th = addTextToBlankAx(plotAxH, sprintf('Plotting index %i...', index) );
   
   % plot
   plotFn = str2func(pluginObj.metadata.plotFn);
@@ -34,6 +40,10 @@ if ~isempty(data) && length(data) >= index
   end
   plotH = feval(plotFn, thisData, plotFnOpts{:});
   pluginObj.fig2copy = plotH; % allows lock in Callback_mouseMove
+  
+  % delete axis and title
+  %   delete(th);
+  delete(findobj(figH,'type','axes'));
   
   % copy axes from plotFn handle output
   axh = findobj(plotH,'type','axes');
@@ -63,7 +73,7 @@ end
 end
 
 %% Local Fn
-function addTextToBlankAx(axH, str)
-text(axH, 0.1,0.5, str,...
+function th = addTextToBlankAx(axH, str)
+th = text(axH, 0.1,0.5, str,...
   'FontUnits','normalized', 'FontSize',0.06);
 end

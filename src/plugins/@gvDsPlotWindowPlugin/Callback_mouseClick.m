@@ -1,4 +1,8 @@
-function Callback_mouseMove(src, evnt)
+function Callback_mouseClick(src, evnt)
+
+if ~strcmp(evnt.EventName, 'WindowMousePress') % not mouse click
+  return
+end
 
 plotFig = src;
 plotPluginObj = plotFig.UserData.pluginObj;
@@ -82,7 +86,9 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     
     % plot data
     if ~isempty(dataIndex) && (dataIndex ~= dsPlotPluginObj.lastIndex)
-      waitfor(dsPlotPluginObj.fig2copy);
+      if ~isempty(dsPlotPluginObj.fig2copy)
+        return
+      end
       dsPlotPluginObj.plotData(dataIndex);
     end
     

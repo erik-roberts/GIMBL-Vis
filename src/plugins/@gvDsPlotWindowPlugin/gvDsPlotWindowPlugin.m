@@ -66,8 +66,14 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
   %% Protected methods %%
   methods (Access = protected)
     
-    function makeFig(pluginObj)
+    function status = makeFig(pluginObj)
       % makeFig - make dsPlot window figure
+      
+      if ~isValidFigHandle(pluginObj.controller.plugins.plot.handles.fig)
+        wprintf('Plot Window Must Be Open to Open dsPlot Window.');
+        status = 1;
+        return
+      end
       
       plotPanPos = pluginObj.controller.plugins.plot.handles.fig.Position;
       newPos = plotPanPos; % same size as plot window
@@ -77,12 +83,15 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
         'Name',['GIMBL-VIS: ' pluginObj.windowName],...
         'Tag',pluginObj.figTag(),...
         'NumberTitle','off',...
-        'Position',newPos);
+        'Position',newPos,...
+        'color','white');
       
-      makeBlankAxes(dsPlotWindowHandle);
+%       makeBlankAxes(dsPlotWindowHandle);
       
       % set window handle
       pluginObj.handles.fig = dsPlotWindowHandle;
+      
+      status = 0;
     end
     
     
@@ -102,7 +111,8 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     function addMouseMoveCallbackToPlotFig(pluginObj)
       if isfield(pluginObj.controller.windowPlugins, 'plot')
         plotFigH = pluginObj.controller.windowPlugins.plot.handles.fig;
-        set(plotFigH, 'WindowButtonMotionFcn', @gvDsPlotWindowPlugin.Callback_mouseMove);
+%         set(plotFigH, 'WindowButtonMotionFcn', @gvDsPlotWindowPlugin.Callback_mouseMove);
+        set(plotFigH, 'WindowButtonDownFcn', @gvDsPlotWindowPlugin.Callback_mouseClick);
         
         pluginObj.vprintf('gvDsPlotWindowPlugin: Added WindowButtonMotionFcn callback to plot plugin figure.\n');
       end
@@ -156,7 +166,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
       pluginObj.metadata.plotFnOpts = src.String;
     end
     
-    Callback_mouseMove(src, evnt)
+    Callback_mouseClick(src, evnt)
   end
   
 end
