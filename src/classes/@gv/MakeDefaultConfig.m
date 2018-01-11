@@ -15,6 +15,9 @@ plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
 defaultImagePath = './images/';
 defaultImageRegexp = '^(.+)(\d+)\.\w+$'; % 2 capture groups: 1 for image type, 1 for index
 
+% gvDsPlotWindowPlugin
+defaultDsPlotFn = '@dsPlot';
+
 %% Write vars to disk
 vars = who; % get all vars
 
