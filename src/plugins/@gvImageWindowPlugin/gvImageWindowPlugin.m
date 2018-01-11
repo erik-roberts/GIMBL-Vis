@@ -66,8 +66,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         'NumberTitle','off',...
         'Position',newPos);
       
-      axes(imageWindowHandle, 'Position', [0 0 1 1], 'XTickLabels',[], 'YTickLabels',[],...
-        'XTick',[], 'YTick',[]);
+      makeBlankAxes(imageWindowHandle);
       
       % set image handle
       pluginObj.handles.fig = imageWindowHandle;
