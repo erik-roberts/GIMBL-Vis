@@ -23,6 +23,8 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     pluginFieldName = 'dsPlot';
     
     windowName = 'DS Plot Window';
+    
+    modes = {'manual', 'auto', 'withPlot', 'tempWithPlot'};
   end
   
   %% Protected properties %%
@@ -48,10 +50,25 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     function setup(pluginObj, cntrlObj)
       setup@gvWindowPlugin(pluginObj, cntrlObj);
       
-      pluginObj.metadata.plotFn = pluginObj.controller.app.config.defaultDsPlotFn;
-      pluginObj.metadata.plotFnOpts = ''; % default to no options
+      % pluginObj.metadata.plotFn
+      if isfield(pluginObj.controller.app.config, 'defaultDsPlotFn')
+        pluginObj.metadata.plotFn = pluginObj.controller.app.config.defaultDsPlotFn;
+      else
+        wprintf('Set defaultDsPlotFn in gvConfig.txt')
+        pluginObj.metadata.plotFn = '';
+      end
+      
+      % pluginObj.metadata.plotFnOpts
+      if isfield(pluginObj.controller.app.config, 'defaultDsPlotFnOpts')
+        pluginObj.metadata.plotFnOpts = pluginObj.controller.app.config.defaultDsPlotFnOpts;
+      else
+        wprintf('Set defaultDsPlotFnOpts in gvConfig.txt')
+        pluginObj.metadata.plotFnOpts = '';
+      end
       
       pluginObj.addWindowOpenedListenerToPlotPlugin();
+      
+      pluginObj.initializeControlsDynamicVars();
     end
 
     openWindow(pluginObj)
@@ -65,6 +82,11 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
   
   %% Protected methods %%
   methods (Access = protected)
+    
+    function initializeControlsDynamicVars(pluginObj)
+      pluginObj.view.dynamic.dsPlotModeVal = 1;
+    end
+    
     
     function status = makeFig(pluginObj)
       % makeFig - make dsPlot window figure
@@ -138,10 +160,10 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
       pluginObj.openWindow();
     end
     
+    Callback_dsPlot_panel_deleteDataButton(src, evnt)
     
     Callback_dsPlot_panel_importDataButton(src, evnt)
     
-
     function Callback_plotWindowOpened(src, evnt)
       if isfield(src.controller.windowPlugins, 'dsPlot')
         pluginObj = src.controller.windowPlugins.dsPlot;
@@ -164,6 +186,15 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
       
       % update func
       pluginObj.metadata.plotFnOpts = src.String;
+    end
+    
+    function Callback_dsPlot_panel_modeMenu(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % update val
+      if pluginObj.view.dynamic.dsPlotModeVal ~= src.Value
+        pluginObj.view.dynamic.dsPlotModeVal = src.Value;
+      end
     end
     
     Callback_mouse(src, evnt)
