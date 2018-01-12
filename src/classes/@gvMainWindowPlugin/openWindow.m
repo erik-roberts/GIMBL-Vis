@@ -4,7 +4,7 @@ function openWindow(pluginObj)
 mainWindowExistBool = pluginObj.view.checkMainWindowExists();
 
 if mainWindowExistBool
-  pluginObj.vprintf('@gvMainWindowPlugin: Reopening main window.\n')
+  pluginObj.vprintf('gvMainWindowPlugin: Reopening main window.\n')
   
   pluginObj.handles.fig.delete()
 end

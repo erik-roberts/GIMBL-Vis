@@ -20,16 +20,28 @@ handleStr = 'changeWD';
 menuLabel = 'Change Working Directory';
 makeMenuRow();
 
-handleStr = 'load';
-menuLabel = 'Load Object';
+handleStr = 'changeWD2pwd';
+menuLabel = 'Change Working Directory to Current Folder';
+makeMenuRow();
+
+handleStr = 'loadFile';
+menuLabel = 'Load Object from File';
+makeMenuRow();
+
+handleStr = 'loadCwd';
+menuLabel = 'Load Object from Working Directory';
 makeMenuRow();
 
 handleStr = 'importMdData';
-menuLabel = 'Import Multidimensional Data';
+menuLabel = 'Import Multidimensional Data from File';
 makeMenuRow();
 
 handleStr = 'importTable';
-menuLabel = 'Import Tabular Data';
+menuLabel = 'Import Tabular Data from File';
+makeMenuRow();
+
+handleStr = 'importCwd';
+menuLabel = 'Import Data from Working Directory';
 makeMenuRow();
 
 handleStr = 'saveGV';
@@ -38,10 +50,6 @@ makeMenuRow();
 
 handleStr = 'saveHC';
 menuLabel = 'Save Hypercube as MDD Object';
-makeMenuRow();
-
-handleStr = 'evalInBase';
-menuLabel = 'Evaluate GV Object in Command Window';
 makeMenuRow();
 
 
@@ -98,6 +106,10 @@ makeMenuRow();
 
 handleStr = 'pluginDocs';
 menuLabel = 'Current Plugin Reference page in Help browser';
+makeMenuRow();
+
+handleStr = 'evalInBase';
+menuLabel = 'Evaluate GV Object in Command Window';
 makeMenuRow();
 
 

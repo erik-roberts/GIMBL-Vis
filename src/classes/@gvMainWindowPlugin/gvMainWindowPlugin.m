@@ -196,10 +196,28 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       end
       
       pluginObj.controller.app.workingDir = newWD;
+      
+      pluginObj.vprintf('gvMainWindowPlugin: New working directory...\n\t%s \n', newWD);
     end
     
     
-    function Callback_main_menu_file_load(src, ~)
+    function Callback_main_menu_file_changeWD2pwd(src, ~)
+      pluginObj = src.UserData.pluginObj;
+
+      oldWD = pluginObj.controller.app.workingDir;
+      newWD = pwd;
+      
+      if isequal(newWD, oldWD)
+        return
+      end
+      
+      pluginObj.controller.app.workingDir = newWD;
+      
+      pluginObj.vprintf('gvMainWindowPlugin: New working directory...\n\t%s \n', newWD);
+    end
+    
+    
+    function Callback_main_menu_file_loadFile(src, ~)
       pluginObj = src.UserData.pluginObj;
       
       [fileName, pathName] = uigetfile('*.mat', 'Load gv, gvArray, or MDD Object from File');
@@ -211,6 +229,15 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.model.load(filePath);
+    end
+    
+    
+    function Callback_main_menu_file_loadCwd(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      dirPath = pluginObj.controller.app.workingDir;
+      
+      pluginObj.controller.model.load(dirPath);
     end
     
     
@@ -241,6 +268,15 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.model.importTabularDataFromFile(filePath);
+    end
+    
+    
+    function Callback_main_menu_file_importCwd(src, ~)
+      pluginObj = src.UserData.pluginObj;
+      
+      dirPath = pluginObj.controller.app.workingDir;
+      
+      pluginObj.controller.model.load(dirPath);
     end
     
     
@@ -390,6 +426,8 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.Callback_resetWindow(src, evnt);
+      
+      notify(pluginObj.controller, 'mainWindowReset');
     end
     
     
