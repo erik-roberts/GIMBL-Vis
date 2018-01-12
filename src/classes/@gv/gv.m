@@ -174,7 +174,7 @@ classdef gv < handle
     
     
     %% Importing
-    function importTabularDataFromFile(varargin)
+    function importTabularDataFromFile(gvObj, varargin)
       % importTabularDataFromFile (public) - Imports tabular data from a file to
       %                                      a new set of axes (ie hypercube)
       %
@@ -400,6 +400,7 @@ classdef gv < handle
       gvObj.controller.setup();
       gvObj.view.setup();
     end
+    
     
     function replaceApp(gvObj, newObj)
       % replaceApp - replace gv object with supplied one
