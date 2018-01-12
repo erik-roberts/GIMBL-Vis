@@ -258,6 +258,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   % Save
   save(filePath, 'dynasimData') % save gvArray obj
   modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
+  
 else % data file exists
   warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
   modelObj.vprintf('gvModel: Loading dynasim data from: %s\n', filePath)
