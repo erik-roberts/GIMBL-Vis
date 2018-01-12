@@ -49,8 +49,8 @@ classdef (Abstract) gvPlugin < handle
     end
     
     
-    function vprintf(pluginObj, str)
-      pluginObj.controller.app.vprintf(str);
+    function vprintf(pluginObj, varargin)
+      pluginObj.controller.app.vprintf(varargin{:});
     end
     
     
