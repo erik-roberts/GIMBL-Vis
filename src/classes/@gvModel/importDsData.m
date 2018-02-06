@@ -3,6 +3,8 @@ function importDsData(modelObj, src, varargin)
 %
 % src is a path to a dir or a mat file to save to.
 
+% DEV TODO: check classify functions and analysis functions mixture
+
 %% Setup args
 if nargin < 2
   src = pwd;
@@ -11,7 +13,8 @@ end
 %% Check Options
 options = checkOptions(varargin,{...
   'classifyFn', [], [],...
-  'overwriteBool', 0, {0,1},...
+  'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
+  'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces
   },false);
 
 %% Parse src
@@ -52,6 +55,11 @@ if ~exist(filePath,'file') || options.overwriteBool
     thisModVals = {};
     
     for iRow = 1:nRows
+      
+      % replace periods with underscore in names
+      modNames{iMod}{iRow,1} = strrep(modNames{iMod}{iRow,1}, '.','_');
+      modNames{iMod}{iRow,2} = strrep(modNames{iMod}{iRow,2}, '.','_');
+      
       thisRowName = [modNames{iMod}{iRow,1}, '_', modNames{iMod}{iRow,2}]; % get original row names
       thisRowVal = modVals{iMod}{iRow};% get original row val
       
@@ -64,12 +72,16 @@ if ~exist(filePath,'file') || options.overwriteBool
         tokens = [tokens{:}]; % remove empty
         tokens = [tokens{:}];
         
-        if numel(tokens) == 1
+        thisNrows = numel(tokens);
+        
+        if thisNrows == 0 % token name not found. likely didn't match so didn't do anything
+          % skip it
+          continue
+        elseif thisNrows == 1 || ~options.covarySplitBool
           thisRowName = tokens{1};
           thisModNames{end+1} = thisRowName;
           thisModVals{end+1} = thisRowVal;
-        else % expand nRows
-          thisNrows = numel(tokens);
+        else % mod affects multiple mechs
           thisModNames(end+1:end+thisNrows) = tokens;
           thisModVals(end+1:end+thisNrows) = repmat({thisRowVal}, 1,thisNrows);
         end
@@ -88,55 +100,47 @@ if ~exist(filePath,'file') || options.overwriteBool
   
   % TODO in case this is useful later:
   %   modNames = cat(2,modNames(:,1), repmat({'_'},size(modNames,1), 1), modNames(:,2));
+
+  % get results struct with fieldnames = analysisFns
+  analysisResults = dsImportResults(src, 'import_scope','allResults', 'simplify2cell_bool',0);
   
-  % NOTE: studyinfo may not have posthoc analysis fn
-  % studyinfo result functions
-  %   studyinfoResultFns = [studyinfo.simulations.result_functions];
-  %   studyinfoResultFns = cellfunu(@func2str, studyinfoResultFns);
-  %   studyinfoResultFns = unique(studyinfoResultFns);
+  % Get analysis functions
+  analysisFnIndStr = fieldnames(analysisResults);
   
-  % results files in data_dir
-  dataList = lscell(fullfile(src, 'data'));
-  savedResultFns = regexpi(dataList, 'analysis.+_(.*)\.mat', 'tokens');
-  savedResultFns = [savedResultFns{:}]; % remove empty
-  savedResultFns = unique([savedResultFns{:}]); % cat and unique
-  
-  % Get result Functions
-  resultFns = savedResultFns; %intersect(studyinfoResultFns, savedResultFns);
+  analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
+  analysisFnNameInd = [analysisFnNameInd{:}];
+  analysisFnNameInd = cat(1, analysisFnNameInd{:});
   
   % Determine classification functions
-  if isempty(options.classifyFn) && ~isempty(savedResultFns)
-    classifyFns = regexpi(savedResultFns, '(.*class.*)', 'tokens');
+  if isempty(options.classifyFn) && ~isempty(analysisFnIndStr)
+    classifyFns = regexpi(analysisFnIndStr, '(.*class.*)', 'tokens');
     classifyFns = [classifyFns{:}]; % remove empty
-    classifyFns = [classifyFns{:}]; % cat
+    if ~isempty(classifyFns)
+      classifyFns = [classifyFns{:}]; % cat
+    end
   elseif ~isempty(options.classifyFn)
     classifyFns = options.classifyFn;
   end
   
-  
-  if ~isempty(resultFns)
-    % convert to fn handles
-    resultFns = cellfunu(@str2func, resultFns);
-    
-    
+  if ~isempty(analysisFnIndStr)
     % Import analysis results
     modelObj.vprintf('gvModel: Importing analysis results...\n')
-    analysisResults = struct();
-    for iFn = 1:numel(resultFns)
-      thisResultFn = resultFns{iFn};
-      analysisResults.(func2str(thisResultFn)) = dsImportResults(src, thisResultFn);
-      
-      if length(analysisResults.(func2str(thisResultFn))) ~= size(variedParamValues,1)
-        wprintf('\tDifferent lengths for number of modifications and %s results.', func2str(thisResultFn))
+
+    for iFn = 1:numel(analysisFnIndStr)
+      thisResultFn = analysisFnIndStr{iFn};
+
+      if length( analysisResults.(thisResultFn) ) ~= size(variedParamValues,1)
+        wprintf('\tDifferent lengths for number of modifications and %s results.', thisResultFn)
       end
     end
+    
     modelObj.vprintf('\tDone importing analysis results\n')
     
     modelObj.vprintf('gvModel: Preparing data to save...\n')
     
     
     % Remove missing data
-    missingClassResultsInd = cellfun(@isempty,analysisResults.(func2str(thisResultFn)));
+    missingClassResultsInd = cellfun(@isempty,analysisResults.(thisResultFn));
     for fld = fieldnames(analysisResults)
       missingClassResultsInd = missingClassResultsInd | cellfun(@isempty,analysisResults.(fld{1}));
     end
@@ -244,7 +248,12 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   
   % Import data table
-  dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
+  try
+    dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
+  catch
+    warning('Attempting to import overlapping entries. Setting overwriteBool=true to overwrite overlapping entries with the last duplicate entry.')
+    dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames], true);
+  end
   
   % Store axisType in axis
   dynasimData.axis(1).axismeta.axisType = 'dataType';
