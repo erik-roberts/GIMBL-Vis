@@ -426,7 +426,7 @@ classdef gv < handle
     % Dev Note: Static methods will be capitalized
     
     %% Loading
-    function gvObj = Load(src, hypercubeName)
+    function gvObj = Load(src, hypercubeName, varargin)
       % Load - load gv, gvArray, or multidimensional object data
       %
       % Usage: obj = gv.Load()
@@ -454,7 +454,7 @@ classdef gv < handle
         gvObj.workingDir = src;
       end
       
-      gvObj.load(src, hypercubeName, true);
+      gvObj.load(src, hypercubeName, varargin{:});
     end
     
     
@@ -523,7 +523,7 @@ classdef gv < handle
         loadPath = pwd;
       end
       
-      gvObj = gv.Load(loadPath);
+      gvObj = gv.Load(loadPath, [], varargin{:});
       
       gvObj.run(varargin{:});
       
