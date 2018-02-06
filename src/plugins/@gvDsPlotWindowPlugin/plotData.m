@@ -7,7 +7,7 @@ try
   cwd = pluginObj.controller.app.workingDir;
   
   modeVal = pluginObj.view.dynamic.dsPlotModeVal;
-  importMode = pluginObj.modes{modeVal};
+  importMode = pluginObj.importModes{modeVal};
   
   % update stored index
   pluginObj.lastIndex = index;

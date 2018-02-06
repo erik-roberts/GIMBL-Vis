@@ -24,7 +24,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     
     windowName = 'DS Plot Window';
     
-    modes = {'manual', 'auto', 'withPlot', 'tempWithPlot'};
+    importModes = {'manual', 'auto', 'withPlot', 'tempWithPlot'};
   end
   
   %% Protected properties %%
@@ -66,6 +66,14 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
         pluginObj.metadata.plotFnOpts = '';
       end
       
+      % pluginObj.metadata.importMode
+      if isfield(pluginObj.controller.app.config, 'defaultDsPlotImportMode')
+        pluginObj.metadata.importMode = pluginObj.controller.app.config.defaultDsPlotImportMode;
+      else
+        wprintf('Set defaultDsPlotImportMode in gvConfig.txt')
+        pluginObj.metadata.importMode = '';
+      end
+      
       pluginObj.addWindowOpenedListenerToPlotPlugin();
       
       pluginObj.initializeControlsDynamicVars();
@@ -84,7 +92,13 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
   methods (Access = protected)
     
     function initializeControlsDynamicVars(pluginObj)
-      pluginObj.view.dynamic.dsPlotModeVal = 1;
+      
+      importModeStr = pluginObj.metadata.importMode;
+      if isempty(importModeStr)
+        pluginObj.view.dynamic.dsPlotModeVal = 1;
+      else
+        pluginObj.view.dynamic.dsPlotModeVal = find(strcmp(importModeStr, pluginObj.importModes));
+      end
     end
     
     
