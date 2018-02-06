@@ -1,4 +1,4 @@
-function load(modelObj, src, fld, staticBool)
+function load(modelObj, src, fld, staticBool, varargin)
 % load - load gv, gvArray, or multidimensional object data
 %
 % Usage: obj.load()
@@ -19,7 +19,7 @@ end
 if nargin < 3
   fld = [];
 end
-if nargin < 4
+if nargin < 4 || isempty(staticBool)
   staticBool = false;
 end
 
@@ -38,7 +38,7 @@ if exist(src, 'dir')
     
     % in case specify dynasim data dir
     if strcmp(matFile{1}, 'studyinfo.mat')
-      modelObj.importDsData(src); % ignore src
+      modelObj.importDsData(src, varargin{:}); % ignore src
       return
     end
   else

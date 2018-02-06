@@ -101,7 +101,7 @@ classdef gvModel < handle
     
     
     %% Loading
-    modelObj = load(modelObj, src, fld, staticBool)
+    modelObj = load(modelObj, src, fld, staticBool, varargin)
     
     %% Importing
     modelObj = importDataFromWorkspace(modelObj, fld, varargin)
