@@ -102,7 +102,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   %   modNames = cat(2,modNames(:,1), repmat({'_'},size(modNames,1), 1), modNames(:,2));
 
   % get results struct with fieldnames = analysisFns
-  analysisResults = dsImportResults(src, 'import_scope','allResults', 'simplify2cell_bool',0);
+  analysisResults = dsImportResults(src, 'import_scope','allResults', 'as_cell',0);
   
   % Get analysis functions
   analysisFnIndStr = fieldnames(analysisResults);
@@ -251,7 +251,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   try
     dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
   catch
-    warning('Attempting to import overlapping entries. Setting overwriteBool=true to overwrite overlapping entries with the last duplicate entry.')
+    wprintf('Attempting to import overlapping entries. Setting overwriteBool=true to overwrite overlapping entries with the last duplicate entry.')
     dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames], true);
   end
   
@@ -269,7 +269,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
   
 else % data file exists
-  warning('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
+  wprintf('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
   modelObj.vprintf('gvModel: Loading dynasim data from: %s\n', filePath)
   
   modelObj.load(filePath);
