@@ -3,7 +3,11 @@ function importDsData(modelObj, src, varargin)
 %
 % src is a path to a dir or a mat file to save to.
 
-% DEV TODO: check classify functions and analysis functions mixture
+%{
+DEV TODO:
+- check classify functions and analysis functions mixture
+- dsCheckCovary
+%}
 
 %% Setup args
 if nargin < 2
@@ -14,7 +18,7 @@ end
 options = checkOptions(varargin,{...
   'classifyFn', [], [],...
   'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
-  'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces
+  'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
   },false);
 
 %% Parse src
@@ -39,11 +43,28 @@ if ~exist(filePath,'file') || options.overwriteBool
   studyinfoParamNames = fieldnames(studyinfoParams);
   
   mods = {studyinfo.simulations.modifications};
-  mods = cellfunu(@expand_simultaneous_modifications, mods); % expand simultaneously affected groups
-  mods = cellfunu(@arrows2underscores, mods); % fix arrow direction and convert to underscores
   nMods = length(mods);
+  nVaryPerMod = size(mods{1}, 1);
+  
+  % standardize and expand modifications
+  for iMod = 1:nMods
+    [mods{iMod}, identLinkedMods] = dsStandardizeModifications(mods{iMod}, studyinfo.base_model.specification);
+  end
+  
+  nLinkedMods = length(identLinkedMods);
+  
+  % check for covary
+  if nVaryPerMod ~= size(mods{1}, 1)
+    % TODO: covary pop or mech that was expanded
+  end
+  
+%   mods = cellfunu(@expand_simultaneous_modifications, mods); % expand simultaneously affected groups
+  mods = cellfunu(@arrows2underscores, mods); % fix arrow direction and convert to underscores
+  
   modVals = cellfunu(@(x) x(:,3), mods);
   modNames = cellfunu(@(x) x(:,1:2), mods);
+  
+  clear mods
   
   % Make names match params
   % and expand mods that share namespace across params
@@ -95,31 +116,61 @@ if ~exist(filePath,'file') || options.overwriteBool
   end
   
   importVariedParamVals();
+  % this switches vars from modNames to variedParamNames and modVals to variedParamValues
+  
+  if ~options.covarySplitBool && nLinkedMods>0
+    for iLinkMod = 1:nLinkedMods
+      thisLinkedRows = identLinkedMods{iLinkMod};
+      
+      thisLinkedModNames = modNames{1}(thisLinkedRows);
+      thisCombName = strjoin(thisLinkedModNames, '-');
+      
+      [~, indVarParName] = intersect(variedParamNames, thisLinkedModNames);
+      
+      % the new index
+      newInd = indVarParName(1);
+      
+      % indices to remove
+      removeInd = indVarParName(2:end);
+      
+      % change name to merged name
+      variedParamNames{newInd} = thisCombName;
+      
+      % remove duplicates
+      variedParamNames(removeInd) = [];
+      variedParamValues(:, removeInd) = [];
+    end
+    
+    nVariedParams = numel(variedParamNames); % update val
+  end
+  
+  clear modNames modVals
   
   simIDs = {studyinfo.simulations.sim_id}';
   
-  % TODO in case this is useful later:
-  %   modNames = cat(2,modNames(:,1), repmat({'_'},size(modNames,1), 1), modNames(:,2));
-
   % get results struct with fieldnames = analysisFns
   analysisResults = dsImportResults(src, 'import_scope','allResults', 'as_cell',0);
   
-  % Get analysis functions
-  analysisFnIndStr = fieldnames(analysisResults);
-  
-  analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
-  analysisFnNameInd = [analysisFnNameInd{:}];
-  analysisFnNameInd = cat(1, analysisFnNameInd{:});
-  
-  % Determine classification functions
-  if isempty(options.classifyFn) && ~isempty(analysisFnIndStr)
-    classifyFns = regexpi(analysisFnIndStr, '(.*class.*)', 'tokens');
-    classifyFns = [classifyFns{:}]; % remove empty
-    if ~isempty(classifyFns)
-      classifyFns = [classifyFns{:}]; % cat
+  if ~isempty(analysisResults)
+    % Get analysis functions
+    analysisFnIndStr = fieldnames(analysisResults);
+    
+    analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
+    analysisFnNameInd = [analysisFnNameInd{:}];
+    analysisFnNameInd = cat(1, analysisFnNameInd{:});
+    
+    % Determine classification functions
+    if isempty(options.classifyFn) && ~isempty(analysisFnIndStr)
+      classifyFns = regexpi(analysisFnIndStr, '(.*class.*)', 'tokens');
+      classifyFns = [classifyFns{:}]; % remove empty
+      if ~isempty(classifyFns)
+        classifyFns = [classifyFns{:}]; % cat
+      end
+    elseif ~isempty(options.classifyFn)
+      classifyFns = options.classifyFn;
     end
-  elseif ~isempty(options.classifyFn)
-    classifyFns = options.classifyFn;
+  else
+    analysisFnIndStr = [];
   end
   
   if ~isempty(analysisFnIndStr)
@@ -310,46 +361,16 @@ end
 
 
   function mods = arrows2underscores(mods)
-    % Purpose: fix arrow direction and convert to underscores
+    % Purpose: change arrow direction to 'target <- source' and convert to underscores
     mods(:,1:2) = cellfun( @fix_arrows, mods(:,1:2),'UniformOutput',0); % fix order of directionality to be L -> R
-    mods(:,1:2) = cellfun( @(x) strrep(x,'->','_'),mods(:,1:2),'UniformOutput',0); % replace modification arrows with _
+    mods(:,1:2) = cellfun( @(x) strrep(x,'<-','_'),mods(:,1:2),'UniformOutput',0); % replace modification arrows with _
     
     function obj = fix_arrows(obj)
-      if any(strfind(obj,'<-'))
-        ind=strfind(obj,'<-');
-        obj=[obj(ind(1)+2:end) '->' obj(1:ind(1)-1)];
+      if any(strfind(obj,'->'))
+        ind=strfind(obj,'->');
+        obj=[obj(ind(1)+2:end) '<-' obj(1:ind(1)-1)];
       end
     end
   end
 
-
-  function modifications = expand_simultaneous_modifications(mods)
-    % Purpose: expand simultaneous modifications into larger list
-    % NOTE: copied from dsSimulate expand_modifications subfunction
-    modifications={};
-    for i=1:size(mods,1)
-      % get object list without grouping symbols: ()[]{}
-      objects=regexp(mods{i,1},'[^\(\)\[\]\{\},]+','match');
-      variables=regexp(mods{i,2},'[^\(\)\[\]\{\},]+','match');
-      
-      for j=1:length(objects)
-        for k=1:length(variables)
-          thisModNames = mods{i,3};
-          
-          if all(size(thisModNames) == [1,1]) %same val for each obj and var
-            modifications(end+1,1:3)={objects{j},variables{k},thisModNames};
-          elseif (size(thisModNames,1) > 1) && (size(thisModNames,2) == 1) %same val for each obj, diff for each var
-            modifications(end+1,1:3)={objects{j},variables{k},thisModNames(k)};
-          elseif (size(thisModNames,1) == 1) && (size(thisModNames,2) > 1) %same val for each var, diff for each obj
-            modifications(end+1,1:3)={objects{j},variables{k},thisModNames(j)};
-          elseif (size(thisModNames,1) > 1) && (size(thisModNames,2) > 1) %diff val for each var and obj
-            modifications(end+1,1:3)={objects{j},variables{k},thisModNames(k,j)};
-          else
-            error('Unknown modification type (likely due to excess dims)')
-          end %if
-        end %k
-      end %j
-    end %i
-  end  %fun
-
-end
+end % main fn
