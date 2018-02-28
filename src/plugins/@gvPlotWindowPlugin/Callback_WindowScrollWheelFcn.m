@@ -26,7 +26,7 @@ sliderURy  = (sliderPos(:,2)+sliderPos(:,4));
 onSliderBool = logical((mousePosPx(1)>=sliderLLx) .* (mousePosPx(1)<=sliderURx) .* (mousePosPx(2)>=sliderLLy) .* (mousePosPx(2)<=sliderURy));
 
 if onSliderBool %if in any slider
-  sliderChange = scrollData.VerticalScrollAmount*scrollData.VerticalScrollCount;
+  sliderChange = 10 * scrollData.VerticalScrollAmount*scrollData.VerticalScrollCount;
 
   if strcmp(sliderObj.Enable, 'on')
     startValue = sliderObj.Value;
