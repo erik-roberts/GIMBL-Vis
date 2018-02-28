@@ -5,7 +5,7 @@ function makePlotMarkerPanelControls(pluginObj, parentHandle)
 
 markerDefaultSize = 16;
 markerMinSize = 2;
-markerMaxSize = 100;
+markerMaxSize = 500;
 
 markerTypes = pluginObj.markerTypes;
 
