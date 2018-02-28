@@ -310,17 +310,17 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_main_menu_file_evalInBase(src, ~)
-      global Callback_main_menu_file_evalInBase_temp__
-      evalin('base', 'global Callback_main_menu_file_evalInBase_temp__');
+    function Callback_main_menu_help_evalInBase(src, ~)
+      global Callback_main_menu_help_evalInBase_temp__
+      evalin('base', 'global Callback_main_menu_help_evalInBase_temp__');
       
       pluginObj = src.UserData.pluginObj;
       
-      Callback_main_menu_file_evalInBase_temp__ = pluginObj.controller.app;
+      Callback_main_menu_help_evalInBase_temp__ = pluginObj.controller.app;
       
-      evalin('base', 'ans = Callback_main_menu_file_evalInBase_temp__');
+      evalin('base', 'ans = Callback_main_menu_help_evalInBase_temp__');
       
-      clear global Callback_main_menu_file_evalInBase_temp__
+      clear global Callback_main_menu_help_evalInBase_temp__
     end
     
     
@@ -360,7 +360,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       hypercubeList(strcmp(pluginObj.controller.activeHypercubeName, hypercubeList)) = [];
       
       if isempty(hypercubeList)
-        warning('No hypercubes to merge');
+        wprintf('No hypercubes to merge');
         return
       end
       
