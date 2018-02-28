@@ -26,13 +26,28 @@ try
           modelObj.activeHypercube.meta.simData = dsImport(cwd, 'as_cell',1);
         else % fill in missing
           missingInds = find(cellfun(@isempty, modelObj.activeHypercube.meta.simData));
-          modelObj.activeHypercube.meta.simData(missingInds) = dsImport(cwd, 'as_cell',1, 'simIDs', missingInds);
+          
+          tempData = dsImport(cwd, 'as_cell',1, 'simIDs', missingInds);
+          
+          if isempty(tempData)
+            wprintf('Data did not load.');
+            return
+          end
+          
+          modelObj.activeHypercube.meta.simData(missingInds) = tempData;
         end
         
         fieldExistBool = true;
       case {'withPlot' 'tempWithPlot'}
         pluginObj.vprintf('gvDsPlotWindowPlugin: Importing sim_id=%i \n', index)
-        modelObj.activeHypercube.meta.simData(index) = dsImport(cwd, 'as_cell',1, 'simIDs', index);
+        tempData = dsImport(cwd, 'as_cell',1, 'simIDs', index);
+        
+        if isempty(tempData)
+          wprintf('Data did not load.');
+          return
+        end
+        
+        modelObj.activeHypercube.meta.simData(index) = tempData;
         
         fieldExistBool = true;
     end
