@@ -72,19 +72,20 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     
     % get image index from slider vals
     sliderVals = num2cell(sliderVals); % convert to cell for indexing
-    imageIndex = hypercubeObj.data(sliderVals{:});
-    if iscell(imageIndex)
-      imageIndex = imageIndex{1};
+    try
+      imageIndex = hypercubeObj.data(sliderVals{:});
+      if iscell(imageIndex)
+        imageIndex = imageIndex{1};
+      end
+      if ischar(imageIndex)
+        imageIndex = str2double(imageIndex);
+      end
+      
+      % show image
+      if ~isempty(imageIndex)
+        imagePluginObj.showImage(imageIndex);
+      end
     end
-    if ischar(imageIndex)
-      imageIndex = str2double(imageIndex);
-    end
-    
-    % show image
-    if ~isempty(imageIndex)
-      imagePluginObj.showImage(imageIndex);
-    end
-    
      % TODO: % check if distance to nearest point is < x% of axis size
   end
 end
