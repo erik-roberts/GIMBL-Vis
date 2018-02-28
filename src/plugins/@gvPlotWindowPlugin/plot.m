@@ -204,7 +204,7 @@ makeAllSubplots();
         return
       end
       if any(nanCells)
-        axValsVector = cellfun(@removeNan, axValsVector);
+        axValsVector = cellfun(@removeNan, axValsVector, 'Uni',0);
         if isnumeric(axValsVector)
           axValsVector = num2cell(axValsVector);
         end
@@ -222,7 +222,7 @@ makeAllSubplots();
       set(hAx,'unit', 'pixels');
       pos = get(hAx,'position');
       axSize = pos(3:4);
-      markerSize = min(axSize) / max(cellfun(@length, axInds));
+      markerSize = 8 * min(axSize) / max(cellfun(@length, axInds));
       set(hAx,'unit', axUnit);
     else %manual size marker
       markerSize = markerSizeSlider.Value;
