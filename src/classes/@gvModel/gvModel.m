@@ -125,7 +125,7 @@ classdef gvModel < handle
         eval([hypercubeName ' = modelObj.data.(''' hypercubeName ''').gv2mdd;']);
         save(filePath, hypercubeName);
       else
-        warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.');
+        wprintf('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.');
       end
     end
     
