@@ -257,7 +257,7 @@ classdef gv < handle
         gvObj.view.closeWindows();
         save(filePath, 'gvObj');
       else
-        warning('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
+        wprintf('File exists and overwriteBool=false. Choose a new file name or set overwriteBool=true.')
       end
     end
     
