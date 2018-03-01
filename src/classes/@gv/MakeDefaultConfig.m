@@ -16,8 +16,7 @@ defaultImagePath = './images/';
 defaultImageRegexp = '^(.+)(\d+)\.\w+$'; % 2 capture groups: 1 for image type, 1 for index
 
 % gvDsPlotWindowPlugin
-defaultDsPlotFn = '@dsPlot';
-defaultDsPlotFnOpts = '''fig_handle'',h';
+defaultDsPlotStack = "#!{'', '', ''}"
 defaultDsPlotImportMode = 'withPlot';
 
 %% Write vars to disk
