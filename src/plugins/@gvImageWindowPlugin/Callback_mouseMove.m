@@ -68,7 +68,11 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     indexAxInd = find(strcmp(plotPluginObj.controller.activeHypercube.axis(dataTypeAxInd).axismeta.dataType, 'index'),1);
     sliderVals = plotPluginObj.view.dynamic.sliderVals;
     sliderVals(dataTypeAxInd) = indexAxInd; % set sliderVals dataType axis number to axis position for hypercube index.
-    sliderVals(plotDims) = mouseAxPosIndScale; % set sliderVals plot dims to closest point to mouse
+    if length(plotDims) > 1
+      sliderVals(plotDims) = mouseAxPosIndScale; % set sliderVals plot dims to closest point to mouse
+    else % 1D
+      sliderVals(plotDims) = mouseAxPosIndScale(1); % set sliderVals plot dims to closest point to mouse
+    end
     
     % get image index from slider vals
     sliderVals = num2cell(sliderVals); % convert to cell for indexing
