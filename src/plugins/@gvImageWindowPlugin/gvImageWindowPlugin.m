@@ -3,6 +3,13 @@
 % Description: An object of this class becomes a property of gvView to provide 
 %              methods for a GIMBL-Vis image window.
 
+% Note:
+%   imageRegexp can be regexp string or cellstring of 2-3 regexp. if string,
+%   needs two groups. first group is imagetype, second group is sim id. if
+%   cellstr, first cell is imagetype, second cell is sim id. if 3rd cell, this
+%   is used as alternate name if the imagetype is matched as 'study', the
+%   default dynasim prefix.
+
 classdef gvImageWindowPlugin < gvWindowPlugin
 
   %% Public properties %%
@@ -125,11 +132,36 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         % Find images in imageDir
         dirList = pluginObj.getImageList();
               
-        % Parse image names
-        imageFiles = regexp(dirList, pluginObj.metadata.imageRegexp, 'tokens');
-        imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
-        imageFiles = cellfunu(@(x) x{1}, imageFiles);
-        imageFiles = cellfunu(@(x) x{1}, imageFiles);
+        imageRegExp = pluginObj.metadata.imageRegexp;
+        
+        if ischar(imageRegExp)
+          % Parse image names
+          imageFiles = regexp(dirList, imageRegExp, 'tokens');
+          imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
+          imageFiles = cellfunu(@(x) x{1}, imageFiles);
+          imageFiles = cellfunu(@(x) x{1}, imageFiles);
+        else % iscell
+          % Parse image names
+          imageFiles = regexp(dirList, imageRegExp{1}, 'tokens');
+          imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
+          imageFiles = cellfunu(@(x) x{1}, imageFiles);
+          imageFiles = cellfunu(@(x) x{1}, imageFiles);
+          
+          % alternate name if 3rd regexp cell
+          if length(imageRegExp) > 2
+            % find alt names
+            altImageFiles = regexp(dirList, imageRegExp{3}, 'tokens');
+            altImageFiles = altImageFiles(~cellfun(@isempty, altImageFiles));
+            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
+            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
+            
+            % find filenames mathcing study
+            studyInds = strcmp(imageFiles, 'study');
+            
+            % replace name wiht alt name
+            imageFiles(studyInds) = altImageFiles(studyInds);
+          end
+        end
         
         if isempty(imageFiles)
           imageTypes = '[ None ]';
@@ -211,7 +243,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj; % window plugin
       
       % update imageRegexp
-      pluginObj.metadata.imageRegexp = src.String;
+      pluginObj.metadata.imageRegexp = shebangParse(src.String);
       
       pluginObj.updateImageTypeListControl();
     end
