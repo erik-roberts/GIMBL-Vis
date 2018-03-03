@@ -281,10 +281,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     
     function Callback_dsPlot_panel_funcTagBox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
-      
-      % update func
-      pluginObj.metadata.plotTagFn = src.String;
-      
+
       notify(pluginObj, 'stackEntryEdited');
     end
   
@@ -292,18 +289,12 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
     function Callback_dsPlot_panel_funcBox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
-      % update func
-      pluginObj.metadata.plotFn = src.String;
-      
       notify(pluginObj, 'stackEntryEdited');
     end
     
     
     function Callback_dsPlot_panel_funcOptsBox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
-      
-      % update func
-      pluginObj.metadata.plotFnOpts = src.String;
       
       notify(pluginObj, 'stackEntryEdited');
     end

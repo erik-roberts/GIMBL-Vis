@@ -78,10 +78,13 @@ try
     th = addTextToBlankAx(plotAxH, sprintf('Plotting index %i...', index) );
     
     % plot
-    plotFn = str2func(pluginObj.metadata.plotFn);
+    fnBox = findobjReTag('dsPlot_panel_funcBox');
+    plotFn = str2func(fnBox.String);
     h = figH; % enable this as alias in gui
     try
-      plotFnOpts = eval(['{' pluginObj.metadata.plotFnOpts ' ''visible'',''off''' '}']);
+      fnOptBox = findobjReTag('dsPlot_panel_funcOptsBox');
+      
+      plotFnOpts = eval(['{' fnOptBox.String ' ''visible'',''off''' '}']);
     catch
       wprintf('gvDsPlotWindowPlugin: Could not evaluate dsPlot "Function Options".')
       

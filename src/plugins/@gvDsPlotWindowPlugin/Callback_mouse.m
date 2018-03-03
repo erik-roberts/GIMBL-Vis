@@ -85,7 +85,7 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     end
     
     % plot data
-    if ~isempty(dataIndex) && (dataIndex ~= dsPlotPluginObj.lastIndex)
+    if ~isempty(dataIndex) %&& (dataIndex ~= dsPlotPluginObj.lastIndex)
       if ~isempty(dsPlotPluginObj.fig2copy)
         return
       end
