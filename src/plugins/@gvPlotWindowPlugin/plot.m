@@ -317,8 +317,9 @@ makeAllSubplots();
     
     hAx.FontSize = fontSize;
     
-    % add plotDims to ax user data
-    hAx.UserData = struct('plotDims', plotDims);
+    % add plotDims and axis labels to ax user data
+    hAx.UserData = struct('plotDims',plotDims);
+    hAx.UserData.axLabels = axisLabels;
     
     
     %% Nested fn

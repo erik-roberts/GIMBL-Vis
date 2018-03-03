@@ -23,7 +23,7 @@ if mainWindowExistBool
 %   addlistener(pluginObj, 'plotEvent', @gvPlotWindowPlugin.plotCallback);
   % TODO check if needed
   
-  % Data cursor
+  % Custom data cursor
   pluginObj.addDataCursor();
   
   % Make Axes/Update Panel

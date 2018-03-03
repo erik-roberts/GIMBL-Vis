@@ -85,9 +85,14 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
         imageIndex = str2double(imageIndex);
       end
       
-      % show image
-      if ~isempty(imageIndex)
-        imagePluginObj.showImage(imageIndex);
+      % store image index
+      plotPluginObj.metadata.imageIndex = imageIndex;
+      
+      try
+        % show image
+        if ~isempty(imageIndex)
+          imagePluginObj.showImage(imageIndex);
+        end
       end
     end
      % TODO: % check if distance to nearest point is < x% of axis size
