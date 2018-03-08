@@ -5,15 +5,8 @@ imageDir = pluginObj.getImageDirPath();
 % Find images in imageDir
 dirList = pluginObj.getImageList();
 
-% Use regexp to parse image type and index
-imageFiles = regexp(dirList, pluginObj.metadata.imageRegexp, 'tokens');
-imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
-imageFiles = cellfunu(@(x) x{1}, imageFiles);
-
-% get tokens
-imageTypes = cellfunu(@(x) x{1}, imageFiles);
-imageInd = cellfunu(@(x) x{2}, imageFiles);
-imageInd = str2double(imageInd);
+% % Use regexp to parse image type and index
+[imageTypes, imageInd] = pluginObj.useImageRegExp();
 
 imageType = pluginObj.getImageTypeFromGUI();
 

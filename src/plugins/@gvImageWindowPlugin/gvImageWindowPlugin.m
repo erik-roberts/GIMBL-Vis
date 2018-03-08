@@ -128,40 +128,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function imageTypes = getImageTypes(pluginObj)
       imageDir = pluginObj.getImageDirPath;
       
-      if exist(imageDir, 'dir')
-        % Find images in imageDir
-        dirList = pluginObj.getImageList();
-              
-        imageRegExp = pluginObj.metadata.imageRegexp;
-        
-        if ischar(imageRegExp)
-          % Parse image names
-          imageFiles = regexp(dirList, imageRegExp, 'tokens');
-          imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
-          imageFiles = cellfunu(@(x) x{1}, imageFiles);
-          imageFiles = cellfunu(@(x) x{1}, imageFiles);
-        else % iscell
-          % Parse image names
-          imageFiles = regexp(dirList, imageRegExp{1}, 'tokens');
-          imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
-          imageFiles = cellfunu(@(x) x{1}, imageFiles);
-          imageFiles = cellfunu(@(x) x{1}, imageFiles);
-          
-          % alternate name if 3rd regexp cell
-          if length(imageRegExp) > 2
-            % find alt names
-            altImageFiles = regexp(dirList, imageRegExp{3}, 'tokens');
-            altImageFiles = altImageFiles(~cellfun(@isempty, altImageFiles));
-            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
-            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
-            
-            % find filenames mathcing study
-            studyInds = strcmp(imageFiles, 'study');
-            
-            % replace name wiht alt name
-            imageFiles(studyInds) = altImageFiles(studyInds);
-          end
-        end
+      if isfolder(imageDir)
+        imageFiles = pluginObj.useImageRegExp();
         
         if isempty(imageFiles)
           imageTypes = '[ None ]';
@@ -173,6 +141,65 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       end
     end
     
+    
+    function [imageTypes, imageInd] = useImageRegExp(pluginObj)
+      % gets cellstr of image types and index for each file in imageDir
+      
+      imageDir = pluginObj.getImageDirPath;
+      
+      if isfolder(imageDir)
+        % Find images in imageDir
+        dirList = pluginObj.getImageList();
+        
+        imageRegExp = pluginObj.metadata.imageRegexp;
+        
+        if ischar(imageRegExp)
+          % Parse image names
+          imageFiles = regexp(dirList, imageRegExp, 'tokens');
+          imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
+          imageFiles = cellfunu(@(x) x{1}, imageFiles);
+          
+          imageTypes = cellfunu(@(x) x{1}, imageFiles);
+          imageInd = cellfunu(@(x) x{2}, imageFiles);
+          imageInd = cellfun(@str2double, imageInd);
+        else % iscell
+          % Parse image names
+          imageTypes = regexp(dirList, imageRegExp{1}, 'tokens');
+          imageTypes = imageTypes(~cellfun(@isempty, imageTypes));
+          imageTypes = cellfunu(@(x) x{1}, imageTypes);
+          imageTypes = cellfunu(@(x) x{1}, imageTypes);
+          
+          % Parse image index
+          imageInd = regexp(dirList, imageRegExp{2}, 'tokens');
+          imageInd = imageInd(~cellfun(@isempty, imageInd));
+          imageInd = cellfunu(@(x) x{1}, imageInd);
+          imageInd = cellfunu(@(x) x{1}, imageInd);
+          imageInd = cellfun(@str2double, imageInd);
+          
+          % alternate name if 3rd regexp cell
+          if length(imageRegExp) > 2
+            % find alt names
+            altImageFiles = regexp(dirList, imageRegExp{3}, 'tokens');
+            altImageFiles = altImageFiles(~cellfun(@isempty, altImageFiles));
+            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
+            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
+            
+            if ~isempty(altImageFiles)
+              % find filenames mathcing study
+              studyInds = strcmp(imageTypes, 'study');
+
+              % replace name wiht alt name
+              imageTypes(studyInds) = altImageFiles(studyInds);
+            end
+          end
+        end
+      else
+        imageTypes = [];
+        imageInd = [];
+      end % if isfolder(imageDir)
+    end
+    
+      
     function imageType = getImageTypeFromGUI(pluginObj)
       % get menu handle
       imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
@@ -186,7 +213,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function dirList = getImageList(pluginObj)
       imageDir = pluginObj.getImageDirPath;
       
-      dirList = lscell(imageDir, true);
+      removePathBool = true;
+      dirList = lscell(imageDir, removePathBool);
     end
     
     
