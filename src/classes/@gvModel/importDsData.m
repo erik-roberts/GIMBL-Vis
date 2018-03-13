@@ -19,6 +19,7 @@ options = checkOptions(varargin,{...
   'classifyFn', [], [],...
   'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
   'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
+  'fillMissingResultsBool', 1, {0,1},... % whether to fill missing results with nan or 'missing' category
   },false);
 
 %% Parse src
@@ -155,9 +156,10 @@ if ~exist(filePath,'file') || options.overwriteBool
     % Get analysis functions
     analysisFnIndStr = fieldnames(analysisResults);
     
-    analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
-    analysisFnNameInd = [analysisFnNameInd{:}];
-    analysisFnNameInd = cat(1, analysisFnNameInd{:});
+%     analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
+%     analysisFnNameInd = [analysisFnNameInd{:}];
+%     analysisFnNameInd = cat(1, analysisFnNameInd{:});
+%     analysisFnName = analysisFnNameInd(:,1);
     
     % Determine classification functions
     if isempty(options.classifyFn) && ~isempty(analysisFnIndStr)
@@ -177,12 +179,18 @@ if ~exist(filePath,'file') || options.overwriteBool
     % Import analysis results
     modelObj.vprintf('gvModel: Importing analysis results...\n')
 
+    resultsUnequal = 0;
+    
     for iFn = 1:numel(analysisFnIndStr)
       thisResultFn = analysisFnIndStr{iFn};
 
       if length( analysisResults.(thisResultFn) ) ~= size(variedParamValues,1)
-        wprintf('\tDifferent lengths for number of modifications and %s results.', thisResultFn)
+        resultsUnequal = resultsUnequal + 1;
       end
+    end
+
+    if resultsUnequal ~= 0
+      wprintf('\tDifferent lengths for number of modifications and %s results.', thisResultFn)
     end
     
     modelObj.vprintf('\tDone importing analysis results\n')
@@ -190,37 +198,94 @@ if ~exist(filePath,'file') || options.overwriteBool
     modelObj.vprintf('gvModel: Preparing data to save...\n')
     
     
-    % Remove missing data
+    % Fill missing data
     missingClassResultsInd = cellfun(@isempty,analysisResults.(thisResultFn));
-    for fld = fieldnames(analysisResults)
+    for fld = fieldnames(analysisResults)'
       missingClassResultsInd = missingClassResultsInd | cellfun(@isempty,analysisResults.(fld{1}));
     end
     
-    for fld = fieldnames(analysisResults)'
-      analysisResults.(fld{1})(missingClassResultsInd) = [];
-    end
-    variedParamValues(missingClassResultsInd,:) = [];
-    simIDs(missingClassResultsInd) = [];
+    if options.fillMissingResultsBool
+      % check against simIDs length
+      if length(simIDs) > length(missingClassResultsInd)
+        % add more missing indicies
+        missingClassResultsInd(end+1: length(simIDs)) = true;
+      end
+
+      for analysisFnName = fieldnames(analysisResults)'
+        analysisFnName = analysisFnName{1};
+
+        if iscellnum(analysisResults.(analysisFnName)(~missingClassResultsInd))
+          % fill missing with nan
+          analysisResults.(analysisFnName)(missingClassResultsInd) = {nan};
+        elseif iscellstr(analysisResults.(analysisFnName)(~missingClassResultsInd))
+          % fill missing with string
+          analysisResults.(analysisFnName)(missingClassResultsInd) = {'missing'};
+
+          % convert to categorical in cells
+          analysisResults.(analysisFnName) = num2cell( categorical(analysisResults.(analysisFnName)) );
+        end
+
+        % TODO: handle categorical
+      end
+    else % ~options.fillMissingResultsBool
+      for analysisFnName = fieldnames(analysisResults)'
+        analysisFnName = analysisFnName{1};
+        
+        analysisResults.(analysisFnName)(missingClassResultsInd) = [];
+        
+        % convert to categorical in cells
+        if iscellstr(analysisResults.(analysisFnName))
+          analysisResults.(analysisFnName) = num2cell( categorical(analysisResults.(analysisFnName)) );
+        end
+      end
+      
+      % check against simIDs length
+      if length(simIDs) > length(missingClassResultsInd)
+        % add more missing indicies
+        missingClassResultsInd(end+1: length(simIDs)) = true;
+      end
+      
+      variedParamValues(missingClassResultsInd,:) = [];
+      simIDs(missingClassResultsInd) = [];
+    end % options.fillMissingResultsBool
     
     % Get class info
     classes = struct();
     for iFn = 1:numel(classifyFns)
+      thisFnStr = classifyFns{iFn};
+      
+      % get name without ind
+      classifyFnNameInd = regexpi(thisFnStr, '(\w+)(\d+)', 'tokens');
+      classifyFnNameInd = [classifyFnNameInd{:}];
+      
+      % rename without index
+      analysisResults.(classifyFnNameInd{1}) = analysisResults.(thisFnStr);
+      analysisResults = rmfield(analysisResults, thisFnStr);
+      thisFnStr = classifyFnNameInd{1};
+      classifyFns{iFn} = thisFnStr;
+      
       if numel(classifyFns) == 1 % rename class fn to 'class'
+        analysisResults.class = analysisResults.(thisFnStr);
+        analysisResults = rmfield(analysisResults, thisFnStr);
+        thisFnHandle = str2func(thisFnStr);
         thisFnStr = 'class';
-        analysisResults.(thisFnStr) = analysisResults.(classifyFns{1});
-        analysisResults = rmfield(analysisResults, classifyFns{1});
-        thisFnHandle = str2func(classifyFns{1});
-        classifyFns{1} = thisFnStr;
       else
         thisFnStr = classifyFns{iFn};
         thisFnHandle = str2func(thisFnStr);
       end
-      
-      uClassNames = unique(analysisResults.(thisFnStr));
+
+      % find unique classes
+      uClassNames = categories([analysisResults.(thisFnStr){:}]);
       
       try % to get info from class fn call
         info = feval(thisFnHandle, 'info');
-        assert(size(info, 1) >= length(uClassNames))
+        
+        if any(missingClassResultsInd) && options.fillMissingResultsBool
+          assert(size(info, 1) >= length(uClassNames)-1, 'More classes than info for classes from classifcation function.');
+        else
+          assert(size(info, 1) >= length(uClassNames), 'More classes than info for classes from classifcation function.');
+        end
+        
         classes.(thisFnStr).labels = info(:,1);
         if size(info, 2) > 1 % if color col
           tempColors = info(:,2); % as cells
@@ -237,8 +302,8 @@ if ~exist(filePath,'file') || options.overwriteBool
       catch
         classes.(thisFnStr).labels = uClassNames;
         classes.(thisFnStr).colors = distinguishable_colors(length(classes.(thisFnStr).labels));
-      end
-    end
+      end % try
+    end % classifyFns
   end
   
   %% prepare data
@@ -266,9 +331,10 @@ if ~exist(filePath,'file') || options.overwriteBool
   allAxisVals = cell(1, length(axisVals)+1);
   dynasimData.axis(1).axismeta.dataType = {};
   dynasimData.axis(1).axismeta.plotInfo = {};
+  
   for analysisFnName = fieldnames(analysisResults)'
     analysisFnName = analysisFnName{1};
-
+    
     allResults = [allResults; analysisResults.(analysisFnName)];
 
     % Add Analysis Fn Name to allAxisVals
@@ -290,13 +356,27 @@ if ~exist(filePath,'file') || options.overwriteBool
       dynasimData.axis(1).axismeta.dataType{end+1} = 'categorical';
       
       % store classes
-      axValInd = length(dynasimData.axis(1).axismeta.dataType);
-      dynasimData.axis(1).axismeta.plotInfo{axValInd} = classes.(analysisFnName);
+      if contains(analysisFnName, 'class')
+        axValInd = length(dynasimData.axis(1).axismeta.dataType);
+        dynasimData.axis(1).axismeta.plotInfo{axValInd} = classes.(analysisFnName);
+      end
+    elseif iscellcategorical(analysisResults.(analysisFnName))
+      dynasimData.axis(1).axismeta.dataType{end+1} = 'categorical';
+      
+      % store classes
+      if contains(analysisFnName, 'class')
+        axValInd = length(dynasimData.axis(1).axismeta.dataType);
+        dynasimData.axis(1).axismeta.plotInfo{axValInd} = classes.(analysisFnName);
+      end
     else
       dynasimData.axis(1).axismeta.dataType{end+1} = 'unknown';
     end
     
-  end
+  end % analysisFnName
+  
+  % check results vs axis values
+  nResults = numel(allResults);
+  assert(all(cellfun(@numel, allAxisVals) == nResults), 'Results must be matched to corresponding parameter values.');
   
   % Import data table
   try

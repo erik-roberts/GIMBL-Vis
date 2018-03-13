@@ -106,7 +106,7 @@ makeAllSubplots();
       anyNumBool = true;
     else
       % check if any numeric in slice
-      numInds = cellfun(@isscalar, plotSlice);
+      numInds = cellfun(@isscalar, plotSlice) & ~cellfun(@iscategorical, plotSlice);
       
       if any(numInds(:))
         anyNumBool = true;
@@ -234,9 +234,28 @@ makeAllSubplots();
       colors = legendInfo.colors;
       markers = legendInfo.markers;
 
-      [~, gInd] = ismember(plotSlice, groups);
+      if iscellstr(plotSlice)
+        [~, gInd] = ismember(plotSlice, groups);
+        missingInd = strcmp(plotSlice, 'missing');
+      elseif iscellcategorical(plotSlice)
+        plotSlice = [plotSlice{:}];
+        [~, gInd] = ismember(plotSlice, groups);
+        missingInd = (plotSlice == 'missing');
+      else
+        error('Unknown data type')
+      end
       clear plotSlice
+      
+      % make missing ones 1 temporarily
+      gInd(missingInd) = 1;
+      
+      % assign colors to plotSlice based on group index
       plotSlice = colors(gInd,:);
+      
+      % make missing nan
+      if any(missingInd)
+        plotSlice(missingInd, :) = nan;
+      end
       
       % for grid
       if ~isvector(gInd)
