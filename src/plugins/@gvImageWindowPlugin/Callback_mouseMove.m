@@ -30,6 +30,7 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     % get mouse position
     mouseAxPosIndScale = get(currAx, 'CurrentPoint'); %in axis scale
       % Dev note: returns the points into and out of the plot volume
+      % to find 3d point, need to use camera angle and ray trace
     mouseAxPosIndScale = mouseAxPosIndScale(1,:);
     if mouseAxPosIndScale(3) ~= 1 %in 3d scale
       return
@@ -45,6 +46,30 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     end
     if nPlotDims > 2 %only 1d or 2d
       return
+      % strategy
+      % filter all points based on range of x, y, z and next point around it
+      % this gives cube of points around line
+      % then find distance by finding e = b - p = b - (a.*b)/a.^2 .* a or make b a
+      % but need to find front point
+      
+      a = diff(mouseAxPosIndScale);
+      
+      objVals = size(hypercubeObj);
+      objVals = objVals(plotDims);
+      objVals = arrayfun(@(x) 1:x, objVals, 'uni',0);
+      [bx, by, bz] = meshgrid(objVals{:});
+      bx = bx(:);
+      by = by(:);
+      bz = bz(:);
+      b = [bx, by, bz];
+      bVec = bsxfun(@minus, b, mouseAxPosIndScale(1,:));
+      
+      proj = bVec - bsxfun(@times, bsxfun(@times, a, bVec)./a.^2, a);
+      proj = sum(proj .* proj, 2);
+      
+      [~, ind] = min(proj);
+      
+      vals = b(ind, :);
     end
     
     
@@ -68,8 +93,10 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
     indexAxInd = find(strcmp(plotPluginObj.controller.activeHypercube.axis(dataTypeAxInd).axismeta.dataType, 'index'),1);
     sliderVals = plotPluginObj.view.dynamic.sliderVals;
     sliderVals(dataTypeAxInd) = indexAxInd; % set sliderVals dataType axis number to axis position for hypercube index.
-    if length(plotDims) > 1
+    if length(plotDims) == 3 % 3D
       sliderVals(plotDims) = mouseAxPosIndScale; % set sliderVals plot dims to closest point to mouse
+    elseif length(plotDims) == 2 % 2D
+      sliderVals(plotDims) = mouseAxPosIndScale(1:2); % set sliderVals plot dims to closest point to mouse
     else % 1D
       sliderVals(plotDims) = mouseAxPosIndScale(1); % set sliderVals plot dims to closest point to mouse
     end
