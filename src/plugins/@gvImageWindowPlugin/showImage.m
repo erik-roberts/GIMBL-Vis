@@ -1,20 +1,14 @@
 function showImage(pluginObj, index)
 
-imageDir = pluginObj.getImageDirPath();
+if isempty(pluginObj.metadata.matchedImageIndList)
+  pluginObj.updateMatchedImageList();
+end
 
-% Find images in imageDir
-dirList = pluginObj.getImageList();
-
-% % Use regexp to parse image type and index
-[imageTypes, imageInd] = pluginObj.useImageRegExp();
-
-imageType = pluginObj.getImageTypeFromGUI();
-
-fileLogicalInd = strcmp(imageTypes, imageType) & (index == imageInd);
+% find file matching index
+fileLogicalInd = (pluginObj.metadata.matchedImageIndList == index);
 
 if any(fileLogicalInd)
-  fullFilename = dirList(fileLogicalInd);
-  fullFilename = fullFilename{1};
+  fullFilename = pluginObj.metadata.matchedImageList{fileLogicalInd};
 else
   fullFilename = [];
 end
@@ -23,6 +17,8 @@ figH = pluginObj.handles.fig;
 imAxH = findobj(figH.Children,'type','axes');
 
 if ~isempty(fullFilename)
+  imageDir = pluginObj.getImageDirPath;
+  
   filePath = fullfile(imageDir, fullFilename);
   if exist(filePath, 'file')
     imshow(filePath, 'Parent', imAxH);

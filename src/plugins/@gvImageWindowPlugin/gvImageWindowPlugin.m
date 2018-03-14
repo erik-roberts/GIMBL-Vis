@@ -47,6 +47,14 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       pluginObj.metadata.imageRegexp = pluginObj.controller.app.config.defaultImageRegexp;
       
+      % image lists
+      pluginObj.metadata.dirList = [];
+      pluginObj.metadata.imageFileTypes = [];
+      pluginObj.metadata.imageFileInd = [];
+      
+      pluginObj.metadata.matchedImageList = [];
+      pluginObj.metadata.matchedImageIndList = [];
+      
       pluginObj.addWindowOpenedListenerToPlotPlugin();
     end
 
@@ -129,12 +137,17 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       imageDir = pluginObj.getImageDirPath;
       
       if isfolder(imageDir)
-        imageFiles = pluginObj.useImageRegExp();
+        if isempty(pluginObj.metadata.imageFileTypes)
+          % usually called with makePanelControls
+          pluginObj.updateAllImageList();
+        end
         
-        if isempty(imageFiles)
+        imageFileTypes = pluginObj.metadata.imageFileTypes;
+        
+        if isempty(imageFileTypes)
           imageTypes = '[ None ]';
         else
-          imageTypes = unique(imageFiles);
+          imageTypes = unique(imageFileTypes);
         end
       else
         imageTypes = '[ None ]';
@@ -149,7 +162,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       if isfolder(imageDir)
         % Find images in imageDir
-        dirList = pluginObj.getImageList();
+        dirList = pluginObj.getAllImageList();
         
         imageRegExp = pluginObj.metadata.imageRegexp;
         
@@ -210,11 +223,22 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
     
     
-    function dirList = getImageList(pluginObj)
+    function dirList = getAllImageList(pluginObj, forceUpdateBool)
+      if nargin < 2
+        forceUpdateBool = false;
+      end
+      
       imageDir = pluginObj.getImageDirPath;
       
-      removePathBool = true;
-      dirList = lscell(imageDir, removePathBool);
+      if isempty(pluginObj.metadata.dirList) || forceUpdateBool
+        removePathBool = true;
+        dirList = lscell(imageDir, removePathBool);
+        
+        % store to metadata to speed up future calls
+        pluginObj.metadata.dirList = dirList;
+      else
+        dirList = pluginObj.metadata.dirList;
+      end
     end
     
     
@@ -224,6 +248,27 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       % update menu string with image types from dir
       imgTypeMenu.String = pluginObj.getImageTypes();
+    end
+    
+    
+    function updateAllImageList(pluginObj)
+      % get list of all images
+      forceUpdateBool = true;
+      getAllImageList(pluginObj, forceUpdateBool);
+      
+      % use regexp
+      [pluginObj.metadata.imageFileTypes, pluginObj.metadata.imageFileInd] = useImageRegExp(pluginObj);
+    end
+    
+    
+    function updateMatchedImageList(pluginObj)
+      % get chosen menu str
+      thisStr = pluginObj.getImageTypeFromGUI();
+      
+      % update matched list
+      matches = contains(pluginObj.metadata.imageFileTypes, thisStr);
+      pluginObj.metadata.matchedImageList = pluginObj.metadata.dirList(matches);
+      pluginObj.metadata.matchedImageIndList = pluginObj.metadata.imageFileInd(matches);
     end
     
   end
@@ -249,13 +294,19 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     
     function Callback_image_panel_imageDirBox(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
+
+      pluginObj.updateAllImageList();
       
       pluginObj.updateImageTypeListControl();
+      
+      pluginObj.updateMatchedImageList();
     end
     
     
     function Callback_image_panel_imageTypeMenu(src, evnt)
-%       pluginObj = src.UserData.pluginObj; % window plugin
+      pluginObj = src.UserData.pluginObj; % window plugin
+
+      pluginObj.updateMatchedImageList();
     end
     
     function Callback_plotWindowOpened(src, evnt)
@@ -274,6 +325,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj.metadata.imageRegexp = shebangParse(src.String);
       
       pluginObj.updateImageTypeListControl();
+      
+      pluginObj.updateMatchedImageList();
     end
     
     Callback_mouseMove(src, evnt)
