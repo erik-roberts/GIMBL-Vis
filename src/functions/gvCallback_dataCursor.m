@@ -11,8 +11,8 @@ hypercubeObj = pluginObj.controller.activeHypercube;
 axUserData = evnt.Target.Parent.UserData;
 axLabels = axUserData.axLabels;
 axDims = axUserData.plotDims;
-axValues = hypercubeObj.axisValues;
-axValues = axValues(axDims);
+allAxValues = hypercubeObj.axisValues;
+axValues = allAxValues(axDims);
 
 if length(axLabels) >= 1
   xLabel = ['X (' strrep(axLabels{1}, '\_', '_') ')'];
@@ -39,13 +39,13 @@ output_txt = {[xLabel ': ',num2str(xVal, 4)]};
 
 
 % If there is a Y-coordinate in the position, display it as well
-if length(pos) > 1
+if length(axDims) > 1
   yVal = axValues{2}(pos(2));
   output_txt{end+1} = [yLabel ': ',num2str(yVal, 4)];
 end
 
 % If there is a Z-coordinate in the position, display it as well
-if length(pos) > 2
+if length(axDims) > 2
   zVal = axValues{3}(pos(3));
   output_txt{end+1} = [zLabel ': ',num2str(zVal, 4)];
 end
@@ -54,6 +54,38 @@ end
 if isfield(pluginObj.metadata, 'imageIndex')
   imageIndex = pluginObj.metadata.imageIndex;
   output_txt{end+1} = ['imageIndex: ', num2str(imageIndex)];
+end
+
+% Value at position
+try
+  axesType = gvGetAxisType(hypercubeObj);
+  
+  % check for axisType = 'dataType'
+  dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+  
+  dataTypeVal = pluginObj.view.dynamic.sliderVals(dataTypeAxInd);
+  
+  dataType = allAxValues{dataTypeAxInd}{dataTypeVal};
+  
+  thisVals = pluginObj.view.dynamic.sliderVals;
+  thisVals(axDims(1)) = pos(1);
+  if length(axDims) > 1
+    thisVals(axDims(2)) = pos(2);
+  end
+  if length(axDims) > 2
+    thisVals(axDims(3)) = pos(3);
+  end
+  thisVals = num2cell(thisVals);
+  
+  dataVal = hypercubeObj{thisVals{:}};
+  
+  if isnumeric(dataVal)
+    dataVal = num2str(dataVal);
+  elseif iscategorical(dataVal)
+    dataVal = char(dataVal);
+  end
+  
+  output_txt{end+1} = [dataType ': ' dataVal];
 end
 
 end
