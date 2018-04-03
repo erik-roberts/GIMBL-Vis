@@ -44,12 +44,12 @@ if ~exist(filePath,'file') || options.overwriteBool
   studyinfoParamNames = fieldnames(studyinfoParams);
   
   mods = {studyinfo.simulations.modifications};
-  nMods = length(mods);
+  nSims = length(mods);
   nVaryPerMod = size(mods{1}, 1);
   
   % standardize and expand modifications
-  for iMod = 1:nMods
-    [mods{iMod}, identLinkedMods] = dsStandardizeModifications(mods{iMod}, studyinfo.base_model.specification);
+  for iSim = 1:nSims
+    [mods{iSim}, identLinkedMods] = dsStandardizeModifications(mods{iSim}, studyinfo.base_model.specification);
   end
   
   nLinkedMods = length(identLinkedMods);
@@ -63,33 +63,37 @@ if ~exist(filePath,'file') || options.overwriteBool
   mods = cellfunu(@arrows2underscores, mods); % fix arrow direction and convert to underscores
   
   modVals = cellfunu(@(x) x(:,3), mods);
-  modNames = cellfunu(@(x) x(:,1:2), mods);
+  modNames = cellfunu(@(x) x(:,1:2), mods); 
+  
+  nMods = numel(modVals{1});
   
   clear mods
   
   % Make names match params
   % and expand mods that share namespace across params
-  for iMod = 1:nMods
-    nRows = size(modNames{iMod}, 1);
+  for iSim = 1:nSims
+    nRows = size(modNames{iSim}, 1);
     
-    % NOTE: these may have diff nRows from modNames{iMod}
+    % NOTE: these may have diff nRows from modNames{iSim}
     thisModNames = {};
     thisModVals = {};
+    
+    missingRows = false(1,nRows); % store which rows are missing
     
     for iRow = 1:nRows
       
       % replace periods with underscore in names
-      modNames{iMod}{iRow,1} = strrep(modNames{iMod}{iRow,1}, '.','_');
-      modNames{iMod}{iRow,2} = strrep(modNames{iMod}{iRow,2}, '.','_');
+      modNames{iSim}{iRow,1} = strrep(modNames{iSim}{iRow,1}, '.','_');
+      modNames{iSim}{iRow,2} = strrep(modNames{iSim}{iRow,2}, '.','_');
       
-      thisRowName = [modNames{iMod}{iRow,1}, '_', modNames{iMod}{iRow,2}]; % get original row names
-      thisRowVal = modVals{iMod}{iRow};% get original row val
+      thisRowName = [modNames{iSim}{iRow,1}, '_', modNames{iSim}{iRow,2}]; % get original row names
+      thisRowVal = modVals{iSim}{iRow};% get original row val
       
       if any(strcmp(thisRowName, studyinfoParamNames)) % if matches studyinfoParamNames
         thisModNames{end+1} = thisRowName;
         thisModVals{end+1} = thisRowVal;
       else % need to get full namespace
-        re = ['(' modNames{iMod}{iRow,1}, '_.+_', modNames{iMod}{iRow,2} ')']; % make re from original row names
+        re = ['(' modNames{iSim}{iRow,1}, '_.+_', modNames{iSim}{iRow,2} ')']; % make re from original row names
         tokens = regexp(studyinfo.base_model.namespaces(:,2), re, 'tokens');
         tokens = [tokens{:}]; % remove empty
         tokens = [tokens{:}];
@@ -98,6 +102,7 @@ if ~exist(filePath,'file') || options.overwriteBool
         
         if thisNrows == 0 % token name not found. likely didn't match so didn't do anything
           % skip it
+          missingRows(iRow) = true;
           continue
         elseif thisNrows == 1 || ~options.covarySplitBool
           thisRowName = tokens{1};
@@ -112,12 +117,31 @@ if ~exist(filePath,'file') || options.overwriteBool
     end
     
     % update cells
-    modNames{iMod} = thisModNames(:); % ensure col array
-    modVals{iMod} = thisModVals(:); % ensure col array
+    modNames{iSim} = thisModNames(:); % ensure col array
+    modVals{iSim} = thisModVals(:); % ensure col array
+  end
+  
+  if any(missingRows)
+    wprintf('Some mechanisms are missing so those modifcations are not imported.');
+    
+    % reindex linked mod numbers
+    for iLinkMod = 1:nLinkedMods
+      thisLinkedRows = identLinkedMods{iLinkMod};
+      
+      tempInds = false(1,nMods);
+      tempInds(thisLinkedRows) = true;
+      tempInds(missingRows) = [];
+      
+      identLinkedMods{iLinkMod} = find(tempInds);
+      
+      clear tempInds
+    end
+    
+    nMods = sum(~missingRows); % update new nMods
   end
   
   importVariedParamVals();
-  % this switches vars from modNames to variedParamNames and modVals to variedParamValues
+    % this switches vars from modNames to variedParamNames and modVals to variedParamValues
   
   if ~options.covarySplitBool && nLinkedMods>0
     for iLinkMod = 1:nLinkedMods
@@ -421,13 +445,13 @@ end
     for iParam = 1:nVariedParams
       thisParam = variedParamNames{iParam};
       thisStudyinfoParamValue = studyinfoParams.(thisParam);
-      for iMod = 1:nMods
-        thisModParams = modNames{iMod};
+      for iSim = 1:nSims
+        thisModParams = modNames{iSim};
         thisModInd = strcmp(thisModParams, thisParam);
         if any(thisModInd)
-          variedParamValues{iMod, iParam} = modVals{iMod}{thisModInd};
+          variedParamValues{iSim, iParam} = modVals{iSim}{thisModInd};
         else  % param missing for this sim, so use the value from studyinfo (for sims with sparse vary, ie non lattice)
-          variedParamValues{iMod, iParam} = thisStudyinfoParamValue;
+          variedParamValues{iSim, iParam} = thisStudyinfoParamValue;
         end
       end
     end
