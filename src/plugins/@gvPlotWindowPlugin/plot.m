@@ -289,16 +289,27 @@ makeAllSubplots();
     end
     
     % Set axes
-    set(hAx,'XTick', axInds{1});
-    set(hAx,'XTicklabel', axVals{1});
-    if length(axInds) > 1
-      set(hAx,'YTick', axInds{2});
-      set(hAx,'YTicklabel', axVals{2});
-      if length(axInds) > 2
-        set(hAx,'ZTick', axInds{3});
-        set(hAx,'ZTicklabel', axVals{3});
-      end
+%     set(hAx,'XTick', axInds{1});
+%     set(hAx,'XTicklabel', axVals{1});
+%     if length(axInds) > 1
+%       set(hAx,'YTick', axInds{2});
+%       set(hAx,'YTicklabel', axVals{2});
+%       if length(axInds) > 2
+%         set(hAx,'ZTick', axInds{3});
+%         set(hAx,'ZTicklabel', axVals{3});
+%       end
+%     end
+    axLetters = {'X','Y','Z'};
+    for axInd = 1:length(axInds)
+      thisAxVals = axVals{axInd};
+      thisAxInds = axInds{axInd};
+      
+      set(hAx,[axLetters{axInd} 'Tick'], thisAxInds);
+      set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals);
     end
+    
+    % check num ticks
+    setMaxTicks();
     
     % Remove 1D y axis
     if length(axInds) == 1
@@ -360,6 +371,27 @@ makeAllSubplots();
     
     function x = removeNan(x)
       x(nanCells) = [];
+    end
+    
+    function setMaxTicks()
+      maxAxVals = 20;
+      
+      axLetters = {'X','Y','Z'};
+      for axInd = 1:length(axInds)
+        thisAxVals = axVals{axInd};
+        
+        nVals = length(thisAxVals);
+        
+        if (nVals > maxAxVals) && isnumeric(thisAxVals) && issorted(thisAxVals, 'monotonic')
+          % monotonic and too many values
+          thisAxInds = axInds{axInd};
+          
+          newInds = round(linspace(1, nVals, maxAxVals));
+          
+          set(hAx,[axLetters{axInd} 'Tick'], thisAxInds(newInds));
+          set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals(newInds));
+        end
+      end
     end
   end
 
