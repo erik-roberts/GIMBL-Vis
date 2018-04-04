@@ -57,6 +57,6 @@ To Use GV with Dynasim:
 - Never call static/class methods (Uppercase methods) on objects--usually there is an equivalent object method (lowercase) that should be used instead. E.g. `gv.Run` and `obj=gv(); obj.run()` are fine. `obj=gv(); obj.Run()` should be avoided.
 
 ## Citation
-If you use GIMBL-Vis for your published research, please cite this poster abstract:
+If you use GIMBL-Vis for your published research, please cite this [poster](https://erik-roberts.github.io/GIMBL-Vis-Docs/poster.html) abstract:
 
 Roberts EA, Kopell NJ. (2017) GIMBL-Vis: A GUI-Based Interactive Multidimensional Visualization Toolbox for Matlab. BMC Neuroscience 2017, 18(Suppl 1):P136.
