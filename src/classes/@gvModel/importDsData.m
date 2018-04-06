@@ -43,12 +43,21 @@ if ~exist(filePath,'file') || options.overwriteBool
   studyinfoParams = studyinfo.base_model.parameters;
   studyinfoParamNames = fieldnames(studyinfoParams);
   
+  % add state var initial conditions
+  initialStateVars = cellfun(@(x) [x '_0_'], studyinfo.base_model.state_variables(:), 'uni',0);
+
+  % vertcat initialStateVars with initialStateVars
+  studyinfoParamNames = [studyinfoParamNames; initialStateVars];
+  
   mods = {studyinfo.simulations.modifications};
   nSims = length(mods);
   nVaryPerMod = size(mods{1}, 1);
   
-  % standardize and expand modifications
   for iSim = 1:nSims
+    %change initial conditions (0) to _0_
+    mods{iSim}(:,2) = strrep(mods{iSim}(:,2), '(0)', '_0_');
+    
+    % standardize and expand modifications
     [mods{iSim}, identLinkedMods] = dsStandardizeModifications(mods{iSim}, studyinfo.base_model.specification);
   end
   
@@ -94,7 +103,8 @@ if ~exist(filePath,'file') || options.overwriteBool
         thisModVals{end+1} = thisRowVal;
       else % need to get full namespace
         re = ['(' modNames{iSim}{iRow,1}, '_.+_', modNames{iSim}{iRow,2} ')']; % make re from original row names
-        tokens = regexp(studyinfo.base_model.namespaces(:,2), re, 'tokens');
+%         tokens = regexp(studyinfo.base_model.namespaces(:,2), re, 'tokens');
+        tokens = regexp(studyinfoParamNames, re, 'tokens');
         tokens = [tokens{:}]; % remove empty
         tokens = [tokens{:}];
         
@@ -444,7 +454,13 @@ end
     variedParamValues = cell(nMods, nVariedParams);
     for iParam = 1:nVariedParams
       thisParam = variedParamNames{iParam};
-      thisStudyinfoParamValue = studyinfoParams.(thisParam);
+      
+      try
+        thisStudyinfoParamValue = studyinfoParams.(thisParam);
+      catch
+        thisStudyinfoParamValue = nan; % if state var initial val
+      end
+      
       for iSim = 1:nSims
         thisModParams = modNames{iSim};
         thisModInd = strcmp(thisModParams, thisParam);
