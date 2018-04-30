@@ -20,6 +20,7 @@ options = checkOptions(varargin,{...
   'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
   'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
   'fillMissingResultsBool', 1, {0,1},... % whether to fill missing results with nan or 'missing' category
+  'includeMissingParam', 0, {0,1},... % whether to include missing parameters as dimensions
   },false);
 
 %% Parse src
@@ -98,7 +99,7 @@ if ~exist(filePath,'file') || options.overwriteBool
       thisRowName = [modNames{iSim}{iRow,1}, '_', modNames{iSim}{iRow,2}]; % get original row names
       thisRowVal = modVals{iSim}{iRow};% get original row val
       
-      if any(strcmp(thisRowName, studyinfoParamNames)) % if matches studyinfoParamNames
+      if any(strcmp(thisRowName, studyinfoParamNames)) || options.includeMissingParam % if matches studyinfoParamNames
         thisModNames{end+1} = thisRowName;
         thisModVals{end+1} = thisRowVal;
       else % need to get full namespace
