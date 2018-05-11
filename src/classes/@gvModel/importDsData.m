@@ -51,6 +51,13 @@ if ~exist(filePath,'file') || options.overwriteBool
   studyinfoParamNames = [studyinfoParamNames; initialStateVars];
   
   mods = {studyinfo.simulations.modifications};
+  
+  if isempty(mods{1})
+    modelObj.vprintf('gvModel: Attempted to import DS data with no vary \n');
+    wprintf('GIMBL-Vis Only Supports DynaSim studies with multiple simulations (using ''vary'').');
+    return
+  end
+  
   nSims = length(mods);
   nVaryPerMod = size(mods{1}, 1);
   
