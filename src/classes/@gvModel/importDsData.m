@@ -21,6 +21,7 @@ options = checkOptions(varargin,{...
   'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
   'fillMissingResultsBool', 1, {0,1},... % whether to fill missing results with nan or 'missing' category
   'includeMissingParam', 0, {0,1},... % whether to include missing parameters as dimensions
+  'saveBool', 1, {0,1},... % whether to save gvArrayData
   },false);
 
 %% Parse src
@@ -438,8 +439,10 @@ if ~exist(filePath,'file') || options.overwriteBool
   modelObj.vprintf('gvModel: Imported multidimensional array object from Dynasim data from: %s\n', filePath)
   
   % Save
-  save(filePath, 'dynasimData') % save gvArray obj
-  modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
+  if options.saveBool
+    save(filePath, 'dynasimData') % save gvArray obj
+    modelObj.vprintf('\tSaved dynasim data as ''gvArray'' object in file ''.\\gvArrayData.m''.\n')
+  end
   
 else % data file exists
   wprintf('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
