@@ -1,3 +1,10 @@
+%% gvDsPowerExample
+%
+% This is an example of plotting simulation vector data in GV, in this case
+% power data from DynaSim.
+%
+% Author: Erik Roberts, 2018
+
 %% params
 eqns='IB';
 vary={
