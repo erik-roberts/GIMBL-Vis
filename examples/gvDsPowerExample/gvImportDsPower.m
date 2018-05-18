@@ -4,7 +4,8 @@ function gvObj = gvImportDsPower
 % hypercube, enabling each simulation point to hold the vector data of
 % frequencies, instead of just a scalar, for each simulation. Importantly, one
 % should keep the power data in a separate folder, so it is not imported with
-% the rest of the data initially.
+% the rest of the data initially. After creation of the gvArrayData.mat object,
+% one can run GV using the normal commands (i.e., gvr, gvRun, gv.Run).
 %
 % Implementation:
 %   1) Add a new axis to the gvArray hypercube for the vector data, in this case  
@@ -108,8 +109,6 @@ dynasimData = gvObj.model.data.dsData;
 filePath = fullfile(pwd, 'gvArrayData.mat');
 save(filePath, 'dynasimData') % save gvArray obj
 
-%% run
-gvObj.run();
 
 %% Nested Fn
   function cellOut = removeFreqCol(cellIn)
