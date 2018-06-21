@@ -359,6 +359,11 @@ makeAllSubplots();
     
     function vals = getValsForAxis(x)
       vals = hypercubeObj.axisValues{x};
+      
+      % convert to string if numeric with proper string format
+      if isnumeric(vals)
+        vals = strsplit( num2str(vals,'%.2g ') );
+      end
     end
     
     function x = linearize(x)
