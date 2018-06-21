@@ -180,6 +180,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           imageTypes = regexp(dirList, imageRegExp{1}, 'tokens');
           imageTypes = imageTypes(~cellfun(@isempty, imageTypes));
           imageTypes = cellfunu(@(x) x{1}, imageTypes);
+          imageTypes = imageTypes(~cellfun(@isempty, imageTypes));
           imageTypes = cellfunu(@(x) x{1}, imageTypes);
           
           % Parse image index
@@ -192,17 +193,21 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           % alternate name if 3rd regexp cell
           if length(imageRegExp) > 2
             % find alt names
-            altImageFiles = regexp(dirList, imageRegExp{3}, 'tokens');
-            altImageFiles = altImageFiles(~cellfun(@isempty, altImageFiles));
-            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
-            altImageFiles = cellfunu(@(x) x{1}, altImageFiles);
+            altImageTypes = regexp(dirList, imageRegExp{3}, 'tokens');
+            altImageTypes = altImageTypes(~cellfun(@isempty, altImageTypes));
+            altImageTypes = cellfunu(@(x) x{1}, altImageTypes);
+            altImageTypes = cellfunu(@(x) x{1}, altImageTypes);
             
-            if ~isempty(altImageFiles)
+            if isempty(imageTypes)
+              imageTypes = altImageTypes;
+            end
+            
+            if ~isempty(altImageTypes)
               % find filenames mathcing study
               studyInds = strcmp(imageTypes, 'study');
 
               % replace name wiht alt name
-              imageTypes(studyInds) = altImageFiles(studyInds);
+              imageTypes(studyInds) = altImageTypes(studyInds);
             end
           end
         end
@@ -323,6 +328,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       % update imageRegexp
       pluginObj.metadata.imageRegexp = shebangParse(src.String);
+      
+      pluginObj.updateAllImageList();
       
       pluginObj.updateImageTypeListControl();
       
