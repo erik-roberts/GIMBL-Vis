@@ -21,7 +21,7 @@ try
     
     switch importMode
       case 'auto' % load all data
-        pluginObj.vprintf('gvDsPlotWindowPlugin: Importing all DS data \n')
+        pluginObj.vprintf('[gvDsPlotWindowPlugin] Importing all DS data \n')
         if ~fieldExistBool
           modelObj.activeHypercube.meta.simData = dsImport(cwd, 'as_cell',1);
         else % fill in missing
@@ -39,7 +39,7 @@ try
         
         fieldExistBool = true;
       case {'withPlot' 'tempWithPlot'}
-        pluginObj.vprintf('gvDsPlotWindowPlugin: Importing sim_id=%i \n', index)
+        pluginObj.vprintf('[gvDsPlotWindowPlugin] Importing sim_id=%i \n', index)
         tempData = dsImport(cwd, 'as_cell',1, 'simIDs', index);
         
         if isempty(tempData)

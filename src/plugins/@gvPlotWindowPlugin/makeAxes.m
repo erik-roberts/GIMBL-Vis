@@ -4,7 +4,7 @@ function makeAxes(pluginObj)
 plotWindowHandle = pluginObj.handles.fig;
 
 if ~pluginObj.checkWindowExists()
-  pluginObj.vprintf('gvPlotWindowPlugin: Skipping axis creation since window not open.\n')
+  pluginObj.vprintf('[gvPlotWindowPlugin] Skipping axis creation since window not open.\n')
   return
 end
 
@@ -56,7 +56,7 @@ switch nViewDims
     %       hspg = subplot_grid(4,7, 'parent',hFig);
     tight_subplot2(4, 7, gap_s, marg_h_s, marg_w_s, plotWindowHandle);
   otherwise
-    pluginObj.vprintf('gvPlotWindowPlugin: Select 1-8 dimensions to plot.\n')
+    pluginObj.vprintf('[gvPlotWindowPlugin] Select 1-8 dimensions to plot.\n')
 end
 
 hAx = plotWindowHandle.Children;

@@ -39,7 +39,7 @@ end
 %% Load or Make gvData
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data
-  modelObj.vprintf('gvModel: Importing studyinfo...\n')
+  modelObj.vprintf('[gvModel] Importing studyinfo...\n')
   studyinfo = dsCheckStudyinfo(src);
   
   studyinfoParams = studyinfo.base_model.parameters;
@@ -54,7 +54,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   mods = {studyinfo.simulations.modifications};
   
   if isempty(mods{1})
-    modelObj.vprintf('gvModel: Attempted to import DS data with no vary \n');
+    modelObj.vprintf('[gvModel] Attempted to import DS data with no vary \n');
     wprintf('GIMBL-Vis Only Supports DynaSim studies with multiple simulations (using ''vary'').');
     return
   end
@@ -220,7 +220,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   
   if ~isempty(analysisFnIndStr)
     % Import analysis results
-    modelObj.vprintf('gvModel: Importing analysis results...\n')
+    modelObj.vprintf('[gvModel] Importing analysis results...\n')
 
     resultsUnequal = 0;
     
@@ -238,7 +238,7 @@ if ~exist(filePath,'file') || options.overwriteBool
     
     modelObj.vprintf('\tDone importing analysis results\n')
     
-    modelObj.vprintf('gvModel: Preparing data to save...\n')
+    modelObj.vprintf('[gvModel] Preparing data to save...\n')
     
     
     % Fill missing data
@@ -436,7 +436,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   hypercubeObj = gvArrayRef(dynasimData);
   modelObj.addHypercube(hypercubeObj);
   
-  modelObj.vprintf('gvModel: Imported multidimensional array object from Dynasim data from: %s\n', filePath)
+  modelObj.vprintf('[gvModel] Imported multidimensional array object from Dynasim data from: %s\n', filePath)
   
   % Save
   if options.saveBool
@@ -446,7 +446,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   
 else % data file exists
   wprintf('File exists and overwriteBool=false. Choose new file name or set overwriteBool=true for new import.')
-  modelObj.vprintf('gvModel: Loading dynasim data from: %s\n', filePath)
+  modelObj.vprintf('[gvModel] Loading dynasim data from: %s\n', filePath)
   
   modelObj.load(filePath);
 end
@@ -454,7 +454,7 @@ end
 
 %% Nested Fns
   function  importVariedParamVals()
-    modelObj.vprintf('gvModel: Importing varied parameter values...\n')
+    modelObj.vprintf('[gvModel] Importing varied parameter values...\n')
     
     % Get varied params
     variedParamNames = vertcat(modNames{:});

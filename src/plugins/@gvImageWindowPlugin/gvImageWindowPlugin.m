@@ -86,7 +86,9 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         'Tag',pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',newPos,...
-        'color','white');
+        'color','white',...
+        'KeyPressFcn',@pluginObj.Callback_image_window_KeyPressFcn,...
+        'UserData',pluginObj.userData);
       
       makeBlankAxes(imageWindowHandle);
       
@@ -105,7 +107,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         
         pluginObj.metadata.plotWindowListener = addlistener(pluginObj.controller.windowPlugins.plot, 'windowOpened', @gvImageWindowPlugin.Callback_plotWindowOpened);
         
-        pluginObj.vprintf('gvImageWindowPlugin: Added window opened listener to plot plugin.\n');
+        pluginObj.vprintf('[gvImageWindowPlugin] Added window opened listener to plot plugin.\n');
       end
     end
     
@@ -115,7 +117,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         plotFigH = pluginObj.controller.windowPlugins.plot.handles.fig;
         set(plotFigH, 'WindowButtonMotionFcn', @gvImageWindowPlugin.Callback_mouseMove);
         
-        pluginObj.vprintf('gvImageWindowPlugin: Added WindowButtonMotionFcn callback to plot plugin figure.\n');
+        pluginObj.vprintf('[gvImageWindowPlugin] Added WindowButtonMotionFcn callback to plot plugin figure.\n');
       end
     end
     
@@ -290,6 +292,25 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     
     
     %% Callbacks %%
+    function Callback_image_window_KeyPressFcn(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      switch evnt.Character
+        case 'i'
+          % get menu handle
+          imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
+          
+          nImageTypes = length(imgTypeMenu.String);
+          
+          imgTypeMenu.Value = max(mod(imgTypeMenu.Value+1, nImageTypes+1),1);
+          
+          pluginObj.vprintf('[gvImageWindowPlugin] ''Image Type'': ''%s''\n', imgTypeMenu.String{imgTypeMenu.Value});
+          
+          pluginObj.updateMatchedImageList();
+      end
+    end
+    
+    
     function Callback_image_panel_openWindowButton(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       

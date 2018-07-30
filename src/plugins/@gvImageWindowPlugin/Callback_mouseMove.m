@@ -81,11 +81,11 @@ if plotPluginObj.checkWindowExists() && plotPluginObj.view.dynamic.nViewDims > 0
       dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
       
       if isempty(dataTypeAxInd)
-        plotPluginObj.vprintf('gvImageWindowPlugin: Cannot find dataType axis.\n');
+        plotPluginObj.vprintf('[gvImageWindowPlugin] Cannot find dataType axis.\n');
         return
       end
     else
-      plotPluginObj.vprintf('gvImageWindowPlugin: Cannot find any axis types.\n');
+      plotPluginObj.vprintf('[gvImageWindowPlugin] Cannot find any axis types.\n');
       return
     end
     

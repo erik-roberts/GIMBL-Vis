@@ -155,7 +155,7 @@ classdef gvView < handle
     function closeWindows(viewObj)
       windows = viewObj.windowPlugins;
       
-      viewObj.vprintf('gvView: Closing All GIMBL-Vis Windows\n')
+      viewObj.vprintf('[gvView] Closing All GIMBL-Vis Windows\n')
       
       for win = fieldnames(windows)'
           viewObj.windowPlugins.(win{1}).closeWindow();

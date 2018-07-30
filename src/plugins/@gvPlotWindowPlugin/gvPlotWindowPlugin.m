@@ -114,6 +114,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         'Tag', pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
+        'KeyPressFcn',@pluginObj.Callback_plot_window_KeyPressFcn,...
         'UserData',pluginObj.userData...
         );
 
@@ -244,7 +245,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
 %         nViewDimsLast = pluginObj.view.dynamic.nViewDimsLast;
 
         if ~(nViewDims > 0)
-          pluginObj.vprintf('gvPlotWindowPlugin: Skipping Plot\n')
+          pluginObj.vprintf('[gvPlotWindowPlugin] Skipping Plot\n')
           return
         end
 
@@ -297,6 +298,22 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     Callback_WindowScrollWheelFcn(src, evnt)
+    
+    
+    function Callback_plot_window_KeyPressFcn(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      switch evnt.Character
+        case 'm' 
+          markerTypeMenuHandle = findobjReTag('plot_panel_markerTypeMenu');
+
+          markerTypeMenuHandle.Value = max(mod(markerTypeMenuHandle.Value+1, 3),1);
+          
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''2D Marker Type'': ''%s''\n', markerTypeMenuHandle.String{markerTypeMenuHandle.Value});
+          
+          pluginObj.Callback_plot_panel_markerTypeMenu(markerTypeMenuHandle, evnt);
+      end
+    end
     
   end
   

@@ -9,7 +9,7 @@ if mainWindowExistBool
   plotWindowExistBool = pluginObj.checkWindowExists();
   
   if plotWindowExistBool
-    pluginObj.vprintf('gvPlotWindowPlugin: Reopening plot window\n')
+    pluginObj.vprintf('[gvPlotWindowPlugin] Reopening plot window\n')
 
     % delete plot window handles
     delete(pluginObj.handles.fig)

@@ -197,7 +197,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       pluginObj.controller.app.workingDir = newWD;
       
-      pluginObj.vprintf('gvMainWindowPlugin: New working directory...\n\t%s \n', newWD);
+      pluginObj.vprintf('[gvMainWindowPlugin] New working directory...\n\t%s \n', newWD);
     end
     
     
@@ -213,7 +213,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       
       pluginObj.controller.app.workingDir = newWD;
       
-      pluginObj.vprintf('gvMainWindowPlugin: New working directory...\n\t%s \n', newWD);
+      pluginObj.vprintf('[gvMainWindowPlugin] New working directory...\n\t%s \n', newWD);
     end
     
     

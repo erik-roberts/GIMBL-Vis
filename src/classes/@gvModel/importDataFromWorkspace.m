@@ -38,7 +38,7 @@ if isa(data, 'gv')
   else
     modelObj.app.replaceApp(data);
   end
-  modelObj.vprintf('gvModel: Loaded gv object data.\n')
+  modelObj.vprintf('[gvModel] Loaded gv object data.\n')
 elseif isa(data, 'MDD') || isa(data, 'MDDRef') || isnumeric(data) || iscell(data)
   % Determine fld/hypercubeName
   if isempty(fld)
@@ -52,7 +52,7 @@ elseif isa(data, 'MDD') || isa(data, 'MDDRef') || isnumeric(data) || iscell(data
   hypercubeName = fld;
   modelObj.addHypercube(hypercubeObj, hypercubeName);
   
-  modelObj.vprintf('gvModel: Loaded multidimensional array object data.\n')
+  modelObj.vprintf('[gvModel] Loaded multidimensional array object data.\n')
 else
   error('Attempting to load non-gv/non-multidimensional data. Use ''obj.importTabularDataFromFile'' instead.')
 end

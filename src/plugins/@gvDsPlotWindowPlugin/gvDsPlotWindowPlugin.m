@@ -228,7 +228,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
         
         pluginObj.metadata.plotWindowListener = addlistener(pluginObj.controller.windowPlugins.plot, 'windowOpened', @gvDsPlotWindowPlugin.Callback_plotWindowOpened);
         
-        pluginObj.vprintf('gvDsPlotWindowPlugin: Added window opened listener to plot plugin.\n');
+        pluginObj.vprintf('[gvDsPlotWindowPlugin] Added window opened listener to plot plugin.\n');
       end
     end
     
@@ -239,7 +239,7 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
 %         set(plotFigH, 'WindowButtonMotionFcn', @gvDsPlotWindowPlugin.Callback_mouse);
         set(plotFigH, 'WindowButtonDownFcn', @gvDsPlotWindowPlugin.Callback_mouse);
         
-        pluginObj.vprintf('gvDsPlotWindowPlugin: Added WindowButtonMotionFcn callback to plot plugin figure.\n');
+        pluginObj.vprintf('[gvDsPlotWindowPlugin] Added WindowButtonMotionFcn callback to plot plugin figure.\n');
       end
     end
     
