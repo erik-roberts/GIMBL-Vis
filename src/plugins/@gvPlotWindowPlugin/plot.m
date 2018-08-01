@@ -387,6 +387,14 @@ makeAllSubplots();
         
         nVals = length(thisAxVals);
         
+        if ~isnumeric(thisAxVals)
+          % check if strings of numbers
+          tempAxVals = str2double(thisAxVals);
+          if ~any(isnan(tempAxVals))
+            thisAxVals = tempAxVals;
+          end
+        end
+        
         if (nVals > maxAxVals) && isnumeric(thisAxVals) && issorted(thisAxVals, 'monotonic')
           % monotonic and too many values
           thisAxInds = axInds{axInd};
