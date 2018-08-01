@@ -362,7 +362,7 @@ makeAllSubplots();
       
       % convert to string if numeric with proper string format
       if isnumeric(vals)
-        vals = strsplit( num2str(vals,'%.2g ') );
+        vals = strsplit( num2str(vals(:)','%.2g ') );
       end
     end
     
