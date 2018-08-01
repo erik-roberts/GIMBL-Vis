@@ -30,6 +30,9 @@ gvObj.importDsData(pwd, 'saveBool', 0);
 % grab the axis metadata which would be discarded
 axismeta = gvObj.model.data.dsData.axis(1).axismeta;
 
+dsDataSize = gvObj.model.data.dsData.size;
+dsDataNdims = gvObj.model.data.dsData.ndims;
+
 %% power data
 % import ds power data separately
 powerResults = dsImportResults(powerResultsPath, 'import_scope','custom', 'func',powerFnName, 'as_cell',1);
@@ -66,6 +69,10 @@ simIDs = sliceAnyDim(gvObj.model.data.dsData.data, simIDind, analysisFnAxInd);
 simIDs = cell2mat(simIDs);
 
 simIDsSize = size(simIDs);
+if length(simIDsSize) < dsDataNdims
+  simIDsSize(end+1:dsDataNdims) = dsDataSize(length(simIDsSize)+1:end);
+end
+
 simIDsSize(end+1) = nFreqs; % for later reshape
 
 simIDs = simIDs(:); % reshape to col vector
