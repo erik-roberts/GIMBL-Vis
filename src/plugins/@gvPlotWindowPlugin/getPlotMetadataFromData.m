@@ -19,7 +19,7 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
     % non numeric data so leave as cell array
     hypercubeObj.meta.onlyNumericDataBool = false;
     
-    numLogical = cellfun(@isnumeric, hypercubeObj.data);
+    numLogical = cellfun(@isscalar, hypercubeObj.data);
   else % no categorical data
     if iscellscalar(hypercubeObj.data)
       % numeric with full lattice so convert cell to mat
@@ -32,7 +32,7 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
       % numeric but sparse with empty cells
       hypercubeObj.meta.onlyNumericDataBool = false;
       
-      numLogical = cellfun(@isnumeric, hypercubeObj.data);
+      numLogical = cellfun(@isscalar, hypercubeObj.data);
     end
   end
   
