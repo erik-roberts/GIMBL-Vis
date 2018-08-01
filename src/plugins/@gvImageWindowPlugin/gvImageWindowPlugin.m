@@ -304,7 +304,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           
           imgTypeMenu.Value = max(mod(imgTypeMenu.Value+1, nImageTypes+1),1);
           
-          pluginObj.vprintf('[gvImageWindowPlugin] ''Image Type'': ''%s''\n', imgTypeMenu.String{imgTypeMenu.Value});
+          pluginObj.vprintf('[gvImageWindowPlugin] ''Image Type'': (%i/%i) ''%s''\n', imgTypeMenu.Value, nImageTypes, imgTypeMenu.String{imgTypeMenu.Value});
           
           pluginObj.updateMatchedImageList();
       end
