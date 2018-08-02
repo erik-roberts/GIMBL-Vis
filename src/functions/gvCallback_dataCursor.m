@@ -77,7 +77,7 @@ try
   end
   thisVals = num2cell(thisVals);
   
-  dataVal = hypercubeObj{thisVals{:}};
+  dataVal = hypercubeObj.data(thisVals{:}); % works for cell and mat
   
   if isnumeric(dataVal)
     dataVal = num2str(dataVal);
