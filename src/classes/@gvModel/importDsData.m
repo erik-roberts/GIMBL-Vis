@@ -197,7 +197,12 @@ if ~exist(filePath,'file') || options.overwriteBool
   
   if ~isempty(analysisResults)
     % Get analysis functions
-    analysisFnIndStr = fieldnames(analysisResults);
+    if isstruct(analysisResults)
+      analysisFnIndStr = fieldnames(analysisResults);
+    else
+      analysisFnIndStr = {char(studyinfo.base_simulator_options.analysis_functions{1})};
+      analysisResults = struct(analysisFnIndStr{1}, {analysisResults});
+    end
     
 %     analysisFnNameInd = regexpi(analysisFnIndStr, '(\w+)(\d+)', 'tokens');
 %     analysisFnNameInd = [analysisFnNameInd{:}];
