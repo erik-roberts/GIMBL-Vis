@@ -19,7 +19,7 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
     % non numeric data so leave as cell array
     hypercubeObj.meta.onlyNumericDataBool = false;
     
-    numLogical = cellfun(@isscalar, hypercubeObj.data);
+    scalarLogical = isTrueScalar(hypercubeObj.data);
   else % no categorical data
     if iscellscalar(hypercubeObj.data)
       % numeric with full lattice so convert cell to mat
@@ -27,12 +27,12 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
       
       hypercubeObj.meta.onlyNumericDataBool = true;
       
-      numLogical = [];
+      scalarLogical = [];
     else
       % numeric but sparse with empty cells
       hypercubeObj.meta.onlyNumericDataBool = false;
       
-      numLogical = cellfun(@isscalar, hypercubeObj.data);
+      scalarLogical = isTrueScalar(hypercubeObj.data);
     end
   end
   
@@ -65,7 +65,7 @@ else
   else
     hypercubeObj.meta.onlyNumericDataBool = false;
     
-    numLogical = cellfun(@isscalar, hypercubeObj.data);
+    scalarLogical = isTrueScalar(hypercubeObj.data);
     
     strLogical = cellfun(@ischar, hypercubeObj.data);
     if any(strLogical(:))
@@ -80,7 +80,7 @@ if hypercubeObj.meta.onlyNumericDataBool
   dataMin = nanmin(hypercubeObj.data(:));
   dataMax = nanmax(hypercubeObj.data(:));
 else
-  numData = cell2mat(hypercubeObj.data(numLogical));
+  numData = cell2mat(hypercubeObj.data(scalarLogical));
   
   dataMin = nanmin(numData(:));
   dataMax = nanmax(numData(:));
@@ -140,5 +140,17 @@ hypercubeObj.meta.numericLimits = [dataMin dataMax];
     hypercubeObj.meta.legend(structInd).colors = colors;
     hypercubeObj.meta.legend(structInd).markers = markers;
   end
+
+end
+
+%% Local Function
+function scals = isTrueScalar(data)
+
+if iscell(data)
+  scals = cellfun(@isscalar, data)...
+       & ~cellfun(@iscategorical, data);
+else
+  scals = isscalar(data) & ~isnan(data) & ~iscategorical(data);
+end
 
 end
