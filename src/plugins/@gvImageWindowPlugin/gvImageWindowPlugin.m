@@ -273,7 +273,10 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       thisStr = pluginObj.getImageTypeFromGUI();
       
       % update matched list
-      matches = contains(pluginObj.metadata.imageFileTypes, thisStr);
+      matches = strcmp(pluginObj.metadata.imageFileTypes, thisStr); % look for exact match
+      if ~any(matches)
+        matches = contains(pluginObj.metadata.imageFileTypes, thisStr); % look for near match
+      end
       pluginObj.metadata.matchedImageList = pluginObj.metadata.dirList(matches);
       pluginObj.metadata.matchedImageIndList = pluginObj.metadata.imageFileInd(matches);
     end
