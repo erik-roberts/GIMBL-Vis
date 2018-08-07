@@ -34,6 +34,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       setup@gvWindowPlugin(pluginObj, cntrlObj);
       
       pluginObj.WindowKeyPressFcns.plot = @pluginObj.Callback_plot_window_KeyPressFcn;
+      pluginObj.WindowButtonDownFcns.plot = @pluginObj.Callback_mouseButton_setSliders;
       
       % Event listeners
       cntrlObj.newListener('activeHypercubeChanged', @gvPlotWindowPlugin.Callback_activeHypercubeChanged);
@@ -301,6 +302,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     
     Callback_WindowScrollWheelFcn(src, evnt)
+    
+    
+    Callback_mouseButton_setSliders(src, evnt)
     
     
     function Callback_plot_window_KeyPressFcn(src, evnt)

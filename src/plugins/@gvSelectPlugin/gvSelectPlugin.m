@@ -16,6 +16,11 @@ classdef gvSelectPlugin < gvGuiPlugin
     
     handles = struct()
   end
+  
+  %% Events %%
+  events
+    dynamicSliderValsChanged
+  end
 
   
   %% Public methods %%
@@ -32,6 +37,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       % Event listeners
       cntrlObj.newListener('activeHypercubeChanged', @gvSelectPlugin.Callback_activeHypercubeChanged);
       addlistener(pluginObj, 'panelControlsMade', @gvSelectPlugin.Callback_panelControlsMade);
+      addlistener(pluginObj, 'dynamicSliderValsChanged', @gvSelectPlugin.Callback_dynamicSliderValsChanged);
     end
 
     
@@ -238,6 +244,28 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.initializeControlsDynamicVars();
       
       pluginObj.makeSliderAncestryMetadata();
+    end
+    
+    
+    function Callback_dynamicSliderValsChanged(src, evnt)
+      pluginObj = src;
+      
+      sliderHandles = pluginObj.sliderHandles;
+      
+      nSliders = length(sliderHandles);
+      for sliderInd = 1:nSliders
+        thisSlider = sliderHandles(sliderInd);
+        
+        % get current value in view.dynamic
+        curVal = pluginObj.view.dynamic.sliderVals(sliderInd);
+        
+        % update slider pos
+        thisSlider.Value = curVal;
+        
+        % update label
+        pluginObj.updateEditFromSlider(thisSlider);
+      end
+      
     end
     
     

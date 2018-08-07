@@ -1,5 +1,5 @@
 function Callback_WindowScrollWheelFcn(src, evnt)
-% Permits scrolling of select panel sliders in main window
+% Permits scrolling of panel sliders in main window
 
 mainPluginObj = src.UserData.pluginObj;
 guiPluginObj = mainPluginObj.controller.guiPlugins.select;
