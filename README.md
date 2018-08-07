@@ -29,28 +29,33 @@ To install and setup GV:
 
 To Use GV:
 - Plotting
-  - In the Select panel, check the view boxes corresponding to dimensions to be viewed
-  - At any time, the "Open Plot Window" button in the Plot panel restores the plot window
-  - The sliders in the Select panel enable slicing through the remaining dimensions
-  - All sliders can be moved with a mouse scroll wheel
-  - With 1 or 2 variables being viewed, the sliders and value edit boxes are disabled since all of the correponding data is viewed, so slicing would not achieve anything.
-  - Click "Make Legend" in the Plot panel to see a legend
-  - Values can be locked by checking the corresponding lock box
-  - GV will automatically iterate through non-disabled sliders by clicking the iterate button
-  - Time between iterations in seconds is set in the delay box
-  - The plot markers can be manually resized by unchecking the autosize box and using the slider
-  - The data cursor will display the exact values and SimID of a given selected marker
+  - Select panel
+    - In the Select panel, check the view boxes corresponding to dimensions to be viewed
+    - The sliders in the Select panel enable slicing through the remaining dimensions
+    - All sliders can be moved with a mouse scroll wheel
+    - With 1 or 2 variables being viewed, slicing will not change the current visualization since all of the correponding data is being viewed. However, it would affect the vis when more dimensions are added to the view
+    - Values can be locked by checking the corresponding lock box
+    - GV will automatically iterate through non-disabled sliders by clicking the iterate button
+      - Time between iterations in seconds is set in the delay box
+  - Plot panel
+    - At any time, the "Open Plot Window" button in the Plot panel restores the plot window
+    - Click "Make Legend" in the Plot panel to see a legend
+    - The plot markers can be manually resized by unchecking the autosize box and using the slider
+  - Plot Window
+    - The data cursor will display the exact values and SimID of a given selected marker
+    - With the focus on the plot window, option + left click on a point to set the corresponding sliders to that point
 - Images
   - Dynasim images may be viewed by clicking the "Open Image Window" button
-  - Enter the image directory, the DS default is "./plots"
+  - Enter the image directory (e.g., the DynaSim default is "./plots")
   - The available types of images will populate the dropdown menu
-  - Use a regular expression to capture image prefixes and the sim ID as an index
+  - Use a regular expression to capture image prefixes and the simulation ID as an index
     - Try: `^([^_]*)_sim(\d+)__`
   - To view images, simply move the mouse over the plot markers in the plot window. The corresponding image will be shown in the image window.
+  - To step through the types of images using the keyboard, make the image window the focus and click the "i" key. The image will update when the mouse moves over the plot window points again.
 
 To Use GV with Dynasim:
  - Import DS data
-   - Navigate to Dynasim output directory and call `gv.Run`, or call `gv.Run(output_dir_path)`.
+   - Navigate to Dynasim output directory and call `gvr`, or call `gvr(output_dir_path)`. `gvr()` is an alias for `gv.Run()`.
    - Use the GV gui, click on "File > Import Multidimensional Data", and select the studyinfo.mat file
 
 ## Warnings to User

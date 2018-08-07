@@ -16,6 +16,8 @@ end
 figH = pluginObj.handles.fig;
 imAxH = findobj(figH.Children,'type','axes');
 
+imageType = getImageTypeFromGUI(pluginObj);
+
 if ~isempty(fullFilename)
   imageDir = pluginObj.getImageDirPath;
   
@@ -37,7 +39,7 @@ else
   cla(imAxH);
   xlim(imAxH, [0,1])
   ylim(imAxH, [0,1])
-  text(imAxH, 0.1,0.5,sprintf('No %s image found for index %i', imageType, index),...
+  text(imAxH, 0.1,0.5,sprintf('No ''%s'' image found for index %i', imageType, index),...
     'FontUnits','normalized', 'FontSize',0.06)
 end
 

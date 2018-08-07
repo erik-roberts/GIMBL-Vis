@@ -11,7 +11,7 @@ if mainWindowExistBool && ~pluginObj.checkWindowExists()
     end
     
     pluginObj.addWindowOpenedListenerToPlotPlugin();
-    pluginObj.addMouseMoveCallbackToPlotFig();
+    pluginObj.addMouseButtonCallbackToPlotFig();
     
     % reset fig2copy
     pluginObj.fig2copy = [];

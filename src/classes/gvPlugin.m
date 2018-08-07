@@ -7,7 +7,7 @@ classdef (Abstract) gvPlugin < handle
 
   %% Abstract Properties %%
   properties (Abstract)
-    metadata 
+    metadata
   end
   
   properties (Abstract, Constant)

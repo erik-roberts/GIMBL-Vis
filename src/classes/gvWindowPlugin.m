@@ -10,6 +10,11 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     windowName
   end
   
+  properties
+    WindowKeyPressFcns = struct()
+    WindowButtonDownFcns = struct()
+  end
+  
   %% Events %%
   events
     windowOpened
@@ -65,6 +70,22 @@ classdef (Abstract) gvWindowPlugin < gvGuiPlugin
     function Callback_resetWindow(src, evnt)
       pluginObj = src.UserData.pluginObj;
       pluginObj.openWindow(); % reopen window
+    end
+    
+    function Callback_WindowKeyPressFcn(src, evnt)
+      % loop over all WindowKeyPressFcn functions
+      
+      pluginObj = src.UserData.pluginObj;
+      
+      structfun(@(x) feval(x, src, evnt), pluginObj.WindowKeyPressFcns);
+    end
+    
+    function Callback_WindowButtonDownFcn(src, evnt)
+      % loop over all WindowButtonDownFcn functions (mouse click)
+      
+      pluginObj = src.UserData.pluginObj;
+      
+      structfun(@(x) feval(x, src, evnt), pluginObj.WindowButtonDownFcns);
     end
     
   end

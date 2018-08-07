@@ -326,19 +326,33 @@ classdef gvSelectPlugin < gvGuiPlugin
       controlInd = getNumSuffix(editObj.Tag);
       axVals = pluginObj.controller.activeHypercube.axis(controlInd).values;
       
-      if isnumeric(axVals)
-        editVal = str2double(editObj.String);
-        [~, sliderVal] = min(abs(axVals - editVal));
-        finalString = num2str(sliderVal);
-      else
-        try
-           sliderVal = gvArrayAxis.regex_lookup(axVals, editObj.String);
-        catch
-          wprintf('Coudln''t find regexp match to entered string.\n         Defaulting to first value.\n')
-          editObj.String = axVals{1};
-          return
+      % check for # notation
+      reToken = regexp(editObj.String, '^#(\d+)$', 'tokens');
+      if ~isempty(reToken)
+        reToken = reToken{:};
+        reToken = reToken{:};
+        sliderVal = str2double(reToken);
+        if isnumeric(axVals)
+          finalString = num2str(axVals(sliderVal));
+        else
+          finalString = axVals{sliderVal};
         end
-        finalString = axVals{sliderVal};
+        
+      else % entered value, not # notation
+        if isnumeric(axVals)
+          editVal = str2double(editObj.String);
+          [~, sliderVal] = min(abs(axVals - editVal));
+          finalString = num2str(axVals(sliderVal));
+        else
+          try
+            sliderVal = gvArrayAxis.regex_lookup(axVals, editObj.String);
+          catch
+            wprintf('Coudln''t find regexp match to entered string.\n         Defaulting to first value.\n')
+            editObj.String = axVals{1};
+            return
+          end
+          finalString = axVals{sliderVal};
+        end
       end
       
       % update edit box with chosen value from axis

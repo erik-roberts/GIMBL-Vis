@@ -1,6 +1,12 @@
-function Callback_mouse(src, evnt)
+function Callback_ImageWindowMousePress(src, evnt)
 
-if ~strcmp(evnt.EventName, 'WindowMousePress') % not mouse click
+% if ~strcmp(evnt.EventName, 'WindowMousePress') % not mouse click
+%   return
+% end
+
+% not left mouse click + command modifier
+if isempty(src.CurrentModifier) || ~strcmp(src.SelectionType, 'normal')...
+    || ~all(strcmp(src.CurrentModifier, 'command'))
   return
 end
 

@@ -57,6 +57,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj.metadata.matchedImageIndList = [];
       
       pluginObj.addWindowOpenedListenerToPlotPlugin();
+      
+      pluginObj.WindowKeyPressFcns.image = @pluginObj.Callback_image_window_KeyPressFcn;
     end
 
     openWindow(pluginObj)
@@ -88,7 +90,8 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         'NumberTitle','off',...
         'Position',newPos,...
         'color','white',...
-        'KeyPressFcn',@pluginObj.Callback_image_window_KeyPressFcn,...
+        'WindowKeyPressFcn',@pluginObj.Callback_WindowKeyPressFcn,...
+        'WindowButtonDownFcn',@pluginObj.Callback_WindowButtonDownFcn,...
         'UserData',pluginObj.userData);
       
       makeBlankAxes(imageWindowHandle);
@@ -98,6 +101,9 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       status = 0;
     end
+    
+    
+    showImage(pluginObj, index)
     
     
     function addWindowOpenedListenerToPlotPlugin(pluginObj)
