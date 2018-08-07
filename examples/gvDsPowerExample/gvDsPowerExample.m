@@ -34,5 +34,5 @@ end
 
 %% run ds
 cd(study_dir);
-gvImportDsPower();
+
 gvRun();
