@@ -82,7 +82,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj.view.dynamic.nViewDimsLast = 0;
       pluginObj.updateViewDims();
       pluginObj.updateLockDims();
-      pluginObj.updateDisabledDims();
+%       pluginObj.updateDisabledDims();
     end
     
     
@@ -169,11 +169,11 @@ classdef gvSelectPlugin < gvGuiPlugin
       nViewDims = pluginObj.view.dynamic.nViewDims;
 
       % Disable sliders when all data is shown (dim < 3)
-      if any(nViewDims == [1,2])
-        disabledDims = logical(lockDims + viewDims);
-      else
+%       if any(nViewDims == [1,2])
+%         disabledDims = logical(lockDims + viewDims);
+%       else
         disabledDims = logical(lockDims);
-      end
+%       end
       
       % update disabledDims
       pluginObj.view.dynamic.disabledDims = disabledDims;
@@ -290,7 +290,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.updateViewDims();
-      pluginObj.updateDisabledDims()
+%       pluginObj.updateDisabledDims()
     end
     
     
@@ -298,7 +298,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj = src.UserData.pluginObj;
       
       pluginObj.updateLockDims();
-      pluginObj.updateDisabledDims()
+%       pluginObj.updateDisabledDims()
     end
     
     
