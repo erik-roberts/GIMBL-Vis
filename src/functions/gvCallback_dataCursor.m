@@ -79,6 +79,10 @@ try
   
   dataVal = hypercubeObj.data(thisVals{:}); % works for cell and mat
   
+  if iscell(dataVal)
+    dataVal = dataVal{1};
+  end
+  
   if isnumeric(dataVal)
     dataVal = num2str(dataVal);
   elseif iscategorical(dataVal)
