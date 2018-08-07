@@ -49,6 +49,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       % image lists
       pluginObj.metadata.dirList = [];
+      pluginObj.metadata.dirImageList = [];
       pluginObj.metadata.imageFileTypes = [];
       pluginObj.metadata.imageFileInd = [];
       
@@ -157,20 +158,23 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
     
     
-    function [imageTypes, imageInd] = useImageRegExp(pluginObj)
+    function [dirImageList, imageTypes, imageInd] = useImageRegExp(pluginObj)
       % gets cellstr of image types and index for each file in imageDir
       
       imageDir = pluginObj.getImageDirPath;
       
       if isfolder(imageDir)
         % Find images in imageDir
-        dirList = pluginObj.getAllImageList();
+        dirList = pluginObj.getAllFileList();
         
         imageRegExp = pluginObj.metadata.imageRegexp;
         
         if ischar(imageRegExp)
-          % Parse image names
+          % Parse image paths
           imageFiles = regexp(dirList, imageRegExp, 'tokens');
+          dirImageList = dirList(~cellfun(@isempty, imageFiles));
+          
+          % Parse image names
           imageFiles = imageFiles(~cellfun(@isempty, imageFiles));
           imageFiles = cellfunu(@(x) x{1}, imageFiles);
           
@@ -178,15 +182,18 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           imageInd = cellfunu(@(x) x{2}, imageFiles);
           imageInd = cellfun(@str2double, imageInd);
         else % iscell
-          % Parse image names
+          % Parse image paths
           imageTypes = regexp(dirList, imageRegExp{1}, 'tokens');
+          dirImageList = dirList(~cellfun(@isempty, imageTypes));
+          
+          % Parse image names
           imageTypes = imageTypes(~cellfun(@isempty, imageTypes));
           imageTypes = cellfunu(@(x) x{1}, imageTypes);
           imageTypes = imageTypes(~cellfun(@isempty, imageTypes));
           imageTypes = cellfunu(@(x) x{1}, imageTypes);
           
           % Parse image index
-          imageInd = regexp(dirList, imageRegExp{2}, 'tokens');
+          imageInd = regexp(dirImageList, imageRegExp{2}, 'tokens');
           imageInd = imageInd(~cellfun(@isempty, imageInd));
           imageInd = cellfunu(@(x) x{1}, imageInd);
           imageInd = cellfunu(@(x) x{1}, imageInd);
@@ -195,7 +202,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           % alternate name if 3rd regexp cell
           if length(imageRegExp) > 2
             % find alt names
-            altImageTypes = regexp(dirList, imageRegExp{3}, 'tokens');
+            altImageTypes = regexp(dirImageList, imageRegExp{3}, 'tokens');
             altImageTypes = altImageTypes(~cellfun(@isempty, altImageTypes));
             altImageTypes = cellfunu(@(x) x{1}, altImageTypes);
             altImageTypes = cellfunu(@(x) x{1}, altImageTypes);
@@ -230,7 +237,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
     
     
-    function dirList = getAllImageList(pluginObj, forceUpdateBool)
+    function dirList = getAllFileList(pluginObj, forceUpdateBool)
       if nargin < 2
         forceUpdateBool = false;
       end
@@ -239,6 +246,12 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       
       if isempty(pluginObj.metadata.dirList) || forceUpdateBool
         removePathBool = true;
+        
+        % remove .dsStore
+        if isfile(fullfile(imageDir, '.DS_Store'))
+          delete(fullfile(imageDir, '.DS_Store'));
+        end
+        
         dirList = lscell(imageDir, removePathBool);
         
         % store to metadata to speed up future calls
@@ -261,10 +274,12 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function updateAllImageList(pluginObj)
       % get list of all images
       forceUpdateBool = true;
-      getAllImageList(pluginObj, forceUpdateBool);
+      getAllFileList(pluginObj, forceUpdateBool);
       
       % use regexp
-      [pluginObj.metadata.imageFileTypes, pluginObj.metadata.imageFileInd] = useImageRegExp(pluginObj);
+      [pluginObj.metadata.dirImageList,...
+        pluginObj.metadata.imageFileTypes,...
+          pluginObj.metadata.imageFileInd] = useImageRegExp(pluginObj);
     end
     
     
@@ -277,7 +292,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       if ~any(matches)
         matches = contains(pluginObj.metadata.imageFileTypes, thisStr); % look for near match
       end
-      pluginObj.metadata.matchedImageList = pluginObj.metadata.dirList(matches);
+      pluginObj.metadata.matchedImageList = pluginObj.metadata.dirImageList(matches);
       pluginObj.metadata.matchedImageIndList = pluginObj.metadata.imageFileInd(matches);
     end
     
