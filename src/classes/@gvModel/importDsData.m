@@ -11,18 +11,23 @@ DEV TODO:
 
 %% Setup args
 if nargin < 2
-  src = pwd;
+  src = modelObj.app.workingDir;
 end
 
 %% Check Options
 options = checkOptions(varargin,{...
   'classifyFn', [], [],...
+  'powerFn', @gvCalcPower, [],... % the function used to calculate the power
   'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
   'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
   'fillMissingResultsBool', 1, {0,1},... % whether to fill missing results with nan or 'missing' category
   'includeMissingParam', 0, {0,1},... % whether to include missing parameters as dimensions
   'saveBool', 1, {0,1},... % whether to save gvArrayData
   },false);
+
+if ischar(options.powerFn)
+  options.powerFn = str2func(options.powerFn);
+end
 
 %% Parse src
 [parentDir,filename, ext] = fileparts(src);
@@ -221,6 +226,17 @@ if ~exist(filePath,'file') || options.overwriteBool
     end
   else
     analysisFnIndStr = [];
+  end
+  
+  % remove power results
+  powerResultInd = contains(analysisFnIndStr, func2str(options.powerFn) );
+  if any(powerResultInd)
+    analysisResults = rmfield(analysisResults, analysisFnIndStr{powerResultInd});
+    analysisFnIndStr(powerResultInd) = [];
+    
+    powerFnBool = true;
+  else
+    powerFnBool = false;
   end
   
   if ~isempty(analysisFnIndStr)
@@ -442,6 +458,12 @@ if ~exist(filePath,'file') || options.overwriteBool
   modelObj.addHypercube(hypercubeObj);
   
   modelObj.vprintf('[gvModel] Imported multidimensional array object from Dynasim data from: %s\n', filePath)
+  
+  % Check for power
+  if powerFnBool
+    opts = struct2KeyValueCell(options);
+    modelObj.importDsPower(varargin{:}, opts{:});
+  end
   
   % Save
   if options.saveBool
