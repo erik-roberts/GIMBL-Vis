@@ -18,7 +18,9 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     windowName = 'Plot Window';
     
-    markerTypes = {'scatter', 'grid'};
+    plot2dTypes = {'scatter', 'grid'};
+    
+    plot3dTypes = {'scatter', 'slices'};
   end
   
   
@@ -98,7 +100,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   methods (Access = protected)
     
     function initializeControlsDynamicVars(pluginObj)
-      pluginObj.view.dynamic.markerVal = 1;
+      pluginObj.view.dynamic.plot2dTypeVal = 1;
+      pluginObj.view.dynamic.plot3dTypeVal = 1;
     end
     
     makePlotMarkerPanelControls(pluginObj, parentHandle)
@@ -288,12 +291,25 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_plot_panel_markerTypeMenu(src, evnt)
+    function Callback_plot_panel_plot2dTypeMenu(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
       % update and plot if changed value
-      if pluginObj.view.dynamic.markerVal ~= src.Value
-        pluginObj.view.dynamic.markerVal = src.Value;
+      if pluginObj.view.dynamic.plot2dTypeVal ~= src.Value
+        pluginObj.view.dynamic.plot2dTypeVal = src.Value;
+
+        cntrlObj = pluginObj.controller;
+        notify(cntrlObj, 'doPlot');
+      end
+    end
+    
+    
+    function Callback_plot_panel_plot3dTypeMenu(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % update and plot if changed value
+      if pluginObj.view.dynamic.plot3dTypeVal ~= src.Value
+        pluginObj.view.dynamic.plot3dTypeVal = src.Value;
 
         cntrlObj = pluginObj.controller;
         notify(cntrlObj, 'doPlot');
@@ -311,14 +327,22 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj; % window plugin
       
       switch evnt.Character
-        case 'm' 
-          markerTypeMenuHandle = findobjReTag('plot_panel_markerTypeMenu');
+        case '2' 
+          plot2dTypeMenuHandle = findobjReTag('plot_panel_plot2dTypeMenu');
 
-          markerTypeMenuHandle.Value = max(mod(markerTypeMenuHandle.Value+1, 3),1);
+          plot2dTypeMenuHandle.Value = max(mod(plot2dTypeMenuHandle.Value+1, 3),1);
           
-          pluginObj.vprintf('[gvPlotWindowPlugin] ''2D Marker Type'': ''%s''\n', markerTypeMenuHandle.String{markerTypeMenuHandle.Value});
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''2D Plot Type'': ''%s''\n', plot2dTypeMenuHandle.String{plot2dTypeMenuHandle.Value});
           
-          pluginObj.Callback_plot_panel_markerTypeMenu(markerTypeMenuHandle, evnt);
+          pluginObj.Callback_plot_panel_plot2dTypeMenu(plot2dTypeMenuHandle, evnt);
+        case '3'
+          plot3dTypeMenuHandle = findobjReTag('plot_panel_plot3dTypeMenu');
+          
+          plot3dTypeMenuHandle.Value = max(mod(plot3dTypeMenuHandle.Value+1, 3),1);
+          
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''3D Plot Type'': ''%s''\n', plot3dTypeMenuHandle.String{plot3dTypeMenuHandle.Value});
+          
+          pluginObj.Callback_plot_panel_plot3dTypeMenu(plot3dTypeMenuHandle, evnt);
       end
     end
     

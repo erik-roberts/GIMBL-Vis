@@ -45,8 +45,8 @@ pluginObj.makePlotPanelControls(plotPanel);
 pluginObj.makePlotMarkerPanelControls(plotMarkerPanel);
 
 %% Set layout sizes
-panelHeight = fontHeight*5 + spacing + padding;
-set(mainVbox, 'Heights',[panelHeight*.75 panelHeight])
+panelHeight = fontHeight*7 + spacing + padding;
+set(mainVbox, 'Heights',[panelHeight*.5 panelHeight])
 
 %% argout
 panelHandle = uiControlsHandles;

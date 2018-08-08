@@ -155,12 +155,15 @@ makeAllSubplots();
     axInds = arrayfun(@makeAxInd, plotDims,'Uni',0); % for ticks
     axVals = arrayfun(@getValsForAxis, plotDims,'Uni',0); % for tick labels
     
-    markerType = pluginObj.markerTypes{pluginObj.view.dynamic.markerVal};
-    if length(axInds) ~= 2
-      markerType = 'scatter';
+    if length(axInds) == 1
+      plotType = 'scatter';
+    elseif length(axInds) == 2
+      plotType = pluginObj.plot2dTypes{pluginObj.view.dynamic.plot2dTypeVal};
+    elseif length(axInds) == 3
+      plotType = pluginObj.plot3dTypes{pluginObj.view.dynamic.plot3dTypeVal};
     end
     
-    switch markerType
+    switch plotType
       case 'scatter'
         % turn ax vals into mesh grids
         if length(axInds) == 3
@@ -191,8 +194,10 @@ makeAllSubplots();
         axValsVector = axInds;
         
         plotSlice = plotSlice'; % since 'image' plots x/dim1 on y
+      case 'slices'
+        plotSliceFull = plotSlice;
       otherwise
-        wprintf('Unknown Marker Type')
+        wprintf('Unknown Plot Type')
         return
     end
     
@@ -265,7 +270,7 @@ makeAllSubplots();
     
     % make plot
     if length(axInds) < 3
-      switch markerType
+      switch plotType
         case 'scatter'
           scatter(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
         case 'grid'
@@ -278,11 +283,22 @@ makeAllSubplots();
           
           axis xy
         otherwise
-          wprintf('Unknown Marker Type')
+          wprintf('Unknown Plot Type')
           return
       end
     else
-      scatter3(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+      switch plotType
+        case 'scatter'
+          scatter3(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
+        case 'slices'
+          plotSliderVals = sliderVals(plotDims);
+          sliceH = slice(axInds{:}, permute(plotSliceFull, [2 1 3]), plotSliderVals(1), plotSliderVals(2), plotSliderVals(3));
+          [sliceH(:).FaceAlpha] = deal(.7);
+          [sliceH(:).EdgeAlpha] = deal(.7);
+        otherwise
+          wprintf('Unknown Plot Type')
+          return
+      end
     end
     
     if isempty(legendInfo)
@@ -290,27 +306,9 @@ makeAllSubplots();
     end
     
     % add slider slice lines/planes
-    sliderSliceLineWidth = 5;
-    sliderSliceLineAlpha = 0.3;
-    
-    hold(hAx, 'on');
-    plotSliderVals = sliderVals(plotDims);
     if length(axInds) == 2
-      thisAxInd = 0;
-      
-      % vertical slice line
-      thisAxInd = thisAxInd + 1;
-      plot(hAx, [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)], ylim(hAx),...
-        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
-      
-      % horizontal slice line
-      thisAxInd = thisAxInd + 1;
-      plot(hAx, xlim(hAx), [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)],...
-        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
-    elseif length(axInds) == 3
-      % TODO
+      add2dSliderSlices()
     end
-    hold(hAx, 'off');
     
     % Set ticks
     setTicks();
@@ -350,6 +348,29 @@ makeAllSubplots();
     
     function x = removeNan(x)
       x(nanCells) = [];
+    end
+    
+    function add2dSliderSlices()
+      sliderSliceLineWidth = max(3, markerSize / 40);
+      sliderSliceLineAlpha = 0.3;
+      
+      plotSliderVals = sliderVals(plotDims);
+      
+      hold(hAx, 'on');
+      
+      thisAxInd = 0;
+      
+      % vertical slice line
+      thisAxInd = thisAxInd + 1;
+      plot(hAx, [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)], ylim(hAx),...
+        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
+      
+      % horizontal slice line
+      thisAxInd = thisAxInd + 1;
+      plot(hAx, xlim(hAx), [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)],...
+        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
+      
+      hold(hAx, 'off');
     end
     
     function setTicks()
@@ -429,46 +450,6 @@ makeAllSubplots();
           zlabel(axisLabels{3})
         end
       end
-    end
-  end
-
-
-  function scatter3dPlot(plotData)
-    %     [uniqueGroups, uga, ugc] = unique(group);
-    %     colors = colormap;
-    %     markersize = 20;
-    %     scatter3(x(:), y(:), z(:), markersize, colors(ugc,:));
-    
-    try
-      [~, ~, groupInd4color] = unique(plotData.g);
-      
-%       plotData.sym
-
-      scatter3(plotData.x, plotData.y, plotData.z, plotData.siz, plotData.clr(groupInd4color,:), '.');
-      
-      xlabel(plotData.xlabel)
-      ylabel(plotData.ylabel)
-      zlabel(plotData.zlabel)
-      
-%       if handles.MainWindow.legendBool
-%         uG = unique(plotData.g);
-%         [lH,icons] = legend(uG); % TODO: hide legend before making changes   
-% 
-%         % Increase legend width
-%     %     lPos = lH.Position;
-%     %     lPos(3) = lPos(3) * 1.05; % increase width of legend
-%     %     lH.Position = lPos;
-% 
-%         [icons(1:length(uG)).FontSize] = deal(lFontSize);
-%         [icons(1:length(uG)).FontUnits] = deal('normalized');
-% 
-%         shrinkText2Fit(icons(1:length(uG)))
-% 
-%         [icons(length(uG)+2:2:end).MarkerSize] = deal(lMarkerSize);
-%         
-% %         legend(hFig,'boxoff')
-% %         legend(hFig,'Location','SouthEast')
-%       end
     end
   end
 
