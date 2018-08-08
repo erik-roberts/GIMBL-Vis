@@ -41,13 +41,9 @@ if exist(src, 'dir')
       modelObj.importDsData(src, varargin{:}); % ignore src
       return
     end
-  else
-    if ~staticBool
-      error('No mat files found in dir for loading.')
-    else % called gv.Run() in directory without mat files
-      modelObj.vprintf('[gvModel] No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
-      return
-    end
+  else % called gv.Run() in directory without mat files
+    modelObj.vprintf('[gvModel] No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
+    return
   end
 elseif ~exist(src, 'file')
   error('Load source not found. Use ''obj.importTabularDataFromFile'' instead for non-mat files.')
