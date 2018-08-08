@@ -266,6 +266,7 @@ classdef gvSelectPlugin < gvGuiPlugin
         pluginObj.updateEditFromSlider(thisSlider);
       end
       
+      notify(pluginObj.controller, 'activeHypercubeSliceChanged');
     end
     
     

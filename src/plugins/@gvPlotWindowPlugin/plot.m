@@ -190,7 +190,7 @@ makeAllSubplots();
       case 'grid'
         axValsVector = axInds;
         
-        plotSlice = plotSlice'; % since 'image' plots x on y
+        plotSlice = plotSlice'; % since 'image' plots x/dim1 on y
       otherwise
         wprintf('Unknown Marker Type')
         return
@@ -284,32 +284,36 @@ makeAllSubplots();
     else
       scatter3(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
     end
+    
     if isempty(legendInfo)
       colorbar
     end
     
-    % Set axes
-%     set(hAx,'XTick', axInds{1});
-%     set(hAx,'XTicklabel', axVals{1});
-%     if length(axInds) > 1
-%       set(hAx,'YTick', axInds{2});
-%       set(hAx,'YTicklabel', axVals{2});
-%       if length(axInds) > 2
-%         set(hAx,'ZTick', axInds{3});
-%         set(hAx,'ZTicklabel', axVals{3});
-%       end
-%     end
-    axLetters = {'X','Y','Z'};
-    for axInd = 1:length(axInds)
-      thisAxVals = axVals{axInd};
-      thisAxInds = axInds{axInd};
-      
-      set(hAx,[axLetters{axInd} 'Tick'], thisAxInds);
-      set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals);
-    end
+    % add slider slice lines/planes
+    sliderSliceLineWidth = 5;
+    sliderSliceLineAlpha = 0.3;
     
-    % check num ticks
-    setMaxTicks();
+    hold(hAx, 'on');
+    plotSliderVals = sliderVals(plotDims);
+    if length(axInds) == 2
+      thisAxInd = 0;
+      
+      % vertical slice line
+      thisAxInd = thisAxInd + 1;
+      plot(hAx, [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)], ylim(hAx),...
+        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
+      
+      % horizontal slice line
+      thisAxInd = thisAxInd + 1;
+      plot(hAx, xlim(hAx), [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)],...
+        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
+    elseif length(axInds) == 3
+      % TODO
+    end
+    hold(hAx, 'off');
+    
+    % Set ticks
+    setTicks();
     
     % Remove 1D y axis
     if length(axInds) == 1
@@ -317,33 +321,7 @@ makeAllSubplots();
     end
     
     % lims
-    xlim([axInds{1}(1), axInds{1}(end)]);
-    try
-      % Rescale xlim
-      xlims = get(hAx,'xlim');
-      set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
-    end
-    xlabel(axisLabels{1})
-    
-    if length(axInds) > 1
-      ylim([axInds{2}(1), axInds{2}(end)]);
-      try
-        % Rescale ylim
-        ylims = get(hAx,'ylim');
-        set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
-      end
-      ylabel(axisLabels{2})
-      
-      if length(axInds) > 2
-        zlim([axInds{3}(1), axInds{3}(end)]);
-        try    
-          % Rescale zlim
-          zlims = get(hAx,'zlim');
-          set(hAx, 'zlim', [zlims(1)- 0.05*range(zlims) zlims(2)+0.05*range(zlims)]);
-        end
-        zlabel(axisLabels{3})
-      end
-    end
+    setLims();
     
     hAx.FontSize = fontSize;
     
@@ -366,10 +344,6 @@ makeAllSubplots();
       end
     end
     
-    function x = linearize(x)
-      x = x(:);
-    end
-    
     function x = removeEmpty(x)
       x(emptyCells) = [];
     end
@@ -378,10 +352,30 @@ makeAllSubplots();
       x(nanCells) = [];
     end
     
-    function setMaxTicks()
+    function setTicks()
       maxAxVals = 20;
-      
       axLetters = {'X','Y','Z'};
+      
+      %     set(hAx,'XTick', axInds{1});
+      %     set(hAx,'XTicklabel', axVals{1});
+      %     if length(axInds) > 1
+      %       set(hAx,'YTick', axInds{2});
+      %       set(hAx,'YTicklabel', axVals{2});
+      %       if length(axInds) > 2
+      %         set(hAx,'ZTick', axInds{3});
+      %         set(hAx,'ZTicklabel', axVals{3});
+      %       end
+      %     end
+      
+      for axInd = 1:length(axInds)
+        thisAxVals = axVals{axInd};
+        thisAxInds = axInds{axInd};
+        
+        set(hAx,[axLetters{axInd} 'Tick'], thisAxInds);
+        set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals);
+      end
+      
+      % check max ticks
       for axInd = 1:length(axInds)
         thisAxVals = axVals{axInd};
         
@@ -403,6 +397,36 @@ makeAllSubplots();
           
           set(hAx,[axLetters{axInd} 'Tick'], thisAxInds(newInds));
           set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals(newInds));
+        end
+      end
+    end
+    
+    function setLims()
+      xlim([axInds{1}(1), axInds{1}(end)]);
+      try
+        % Rescale xlim
+        xlims = get(hAx,'xlim');
+        set(hAx, 'xlim', [xlims(1)- 0.05*range(xlims) xlims(2)+0.05*range(xlims)]);
+      end
+      xlabel(axisLabels{1})
+      
+      if length(axInds) > 1
+        ylim([axInds{2}(1), axInds{2}(end)]);
+        try
+          % Rescale ylim
+          ylims = get(hAx,'ylim');
+          set(hAx, 'ylim', [ylims(1)- 0.05*range(ylims) ylims(2)+0.05*range(ylims)]);
+        end
+        ylabel(axisLabels{2})
+        
+        if length(axInds) > 2
+          zlim([axInds{3}(1), axInds{3}(end)]);
+          try
+            % Rescale zlim
+            zlims = get(hAx,'zlim');
+            set(hAx, 'zlim', [zlims(1)- 0.05*range(zlims) zlims(2)+0.05*range(zlims)]);
+          end
+          zlabel(axisLabels{3})
         end
       end
     end
