@@ -227,10 +227,16 @@ makeAllSubplots();
       set(hAx,'unit', 'pixels');
       pos = get(hAx,'position');
       axSize = pos(3:4);
-      markerSize = 8 * min(axSize) / max(cellfun(@length, axInds));
+      
+      if length(axInds) < 3
+        markerSize = 0.4 * min(axSize ./ cellfun(@length, axInds) )^2;
+      else
+        markerSize = 0.2 * ( min(axSize) ./ max(cellfun(@length, axInds)) )^2;
+      end
+      
       set(hAx,'unit', axUnit);
     else %manual size marker
-      markerSize = markerSizeSlider.Value;
+      markerSize = markerSizeSlider.Value^2; % square so slider is radius, not area
     end
     
     % get slice ready
@@ -387,7 +393,7 @@ makeAllSubplots();
     function addSliderSlices()
       switch plotType
         case {'scatter', 'line'}
-          sliderSliceLineWidth = max(3, markerSize / 40);
+          sliderSliceLineWidth = max(3, sqrt(markerSize) / 2.5);
           sliderSliceLineAlpha = 0.3;
         case 'grid'
           sliderSliceLineWidth = max(3, 50/max(size(plotSlice)) );
