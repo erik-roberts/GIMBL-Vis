@@ -124,22 +124,28 @@ classdef gvMainWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj;
       closeMainWindowSaveDialogBool = pluginObj.controller.app.config.closeMainWindowSaveDialogBool;
       
-      if ~closeMainWindowSaveDialogBool
-        delete(pluginObj.handles.fig)
-        return % if config turns off this dialog win
+      if closeMainWindowSaveDialogBool
+        selection = questdlg('Save GIMBL-Vis object before closing?',...
+          'GIMBL-Vis',...
+          'Cancel','Yes','No', 'No');
+        switch selection
+%           case 'No'
+          case 'Yes'
+            status = pluginObj.Callback_main_menu_file_saveGV(src, []);
+            
+            if status
+              return
+            end
+          case 'Cancel'
+            return
+        end
       end
       
-      selection = questdlg('Save GIMBL-Vis object before closing?',...
-        'GIMBL-Vis',...
-        'Cancel','Yes','No', 'No');
-      switch selection
-        case 'No'
-          delete(pluginObj.handles.fig)
-        case 'Yes'
-          % TODO
-          error('Not implemented yet');
-        case 'Cancel'
-          return
+      % close windows
+      structfun(@closeFig, pluginObj.controller.view.windowPlugins);
+      
+      function closeFig(x)
+        delete(x.handles.fig)
       end
     end
     
@@ -280,18 +286,21 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     end
     
     
-    function Callback_main_menu_file_saveGV(src, ~)
+    function status = Callback_main_menu_file_saveGV(src, ~)
       pluginObj = src.UserData.pluginObj;
       
       [fileName, pathName] = uiputfile('*.mat', 'Save GIMBL-Vis Object');
       
       if isequal(fileName,0)
+        status = 1;
         return
       end
       
       filePath = fullfile(pathName, fileName);
       
       pluginObj.controller.app.save(filePath);
+      
+      status = 0;
     end
     
     
