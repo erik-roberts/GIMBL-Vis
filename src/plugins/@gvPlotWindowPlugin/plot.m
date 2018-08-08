@@ -385,8 +385,14 @@ makeAllSubplots();
     end
     
     function addSliderSlices()
-      sliderSliceLineWidth = max(3, markerSize / 40);
-      sliderSliceLineAlpha = 0.3;
+      switch plotType
+        case {'scatter', 'line'}
+          sliderSliceLineWidth = max(3, markerSize / 40);
+          sliderSliceLineAlpha = 0.3;
+        case 'grid'
+          sliderSliceLineWidth = max(3, 50/max(size(plotSlice)) );
+          sliderSliceLineAlpha = 0.5;
+      end
       
       plotSliderVals = sliderVals(plotDims);
       
