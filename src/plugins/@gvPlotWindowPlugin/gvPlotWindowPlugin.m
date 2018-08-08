@@ -18,8 +18,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     
     windowName = 'Plot Window';
     
+    plot1dTypes = {'scatter', 'line'};
     plot2dTypes = {'scatter', 'grid'};
-    
     plot3dTypes = {'scatter', 'slices'};
   end
   
@@ -100,6 +100,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
   methods (Access = protected)
     
     function initializeControlsDynamicVars(pluginObj)
+      pluginObj.view.dynamic.plot1dTypeVal = 1;
       pluginObj.view.dynamic.plot2dTypeVal = 1;
       pluginObj.view.dynamic.plot3dTypeVal = 1;
     end
@@ -291,6 +292,19 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
     end
     
     
+    function Callback_plot_panel_plot1dTypeMenu(src, evnt)
+      pluginObj = src.UserData.pluginObj; % window plugin
+      
+      % update and plot if changed value
+      if pluginObj.view.dynamic.plot1dTypeVal ~= src.Value
+        pluginObj.view.dynamic.plot1dTypeVal = src.Value;
+
+        cntrlObj = pluginObj.controller;
+        notify(cntrlObj, 'doPlot');
+      end
+    end
+    
+    
     function Callback_plot_panel_plot2dTypeMenu(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
@@ -327,22 +341,30 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       pluginObj = src.UserData.pluginObj; % window plugin
       
       switch evnt.Character
-        case '2' 
-          plot2dTypeMenuHandle = findobjReTag('plot_panel_plot2dTypeMenu');
+        case '1' 
+          plotTypeMenuHandle = findobjReTag('plot_panel_plot1dTypeMenu');
 
-          plot2dTypeMenuHandle.Value = max(mod(plot2dTypeMenuHandle.Value+1, 3),1);
+          plotTypeMenuHandle.Value = max(mod(plotTypeMenuHandle.Value+1, 3),1);
           
-          pluginObj.vprintf('[gvPlotWindowPlugin] ''2D Plot Type'': ''%s''\n', plot2dTypeMenuHandle.String{plot2dTypeMenuHandle.Value});
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''1D Plot Type'': ''%s''\n', plotTypeMenuHandle.String{plotTypeMenuHandle.Value});
           
-          pluginObj.Callback_plot_panel_plot2dTypeMenu(plot2dTypeMenuHandle, evnt);
+          pluginObj.Callback_plot_panel_plot1dTypeMenu(plotTypeMenuHandle, evnt);
+        case '2' 
+          plotTypeMenuHandle = findobjReTag('plot_panel_plot2dTypeMenu');
+
+          plotTypeMenuHandle.Value = max(mod(plotTypeMenuHandle.Value+1, 3),1);
+          
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''2D Plot Type'': ''%s''\n', plotTypeMenuHandle.String{plotTypeMenuHandle.Value});
+          
+          pluginObj.Callback_plot_panel_plot2dTypeMenu(plotTypeMenuHandle, evnt);
         case '3'
-          plot3dTypeMenuHandle = findobjReTag('plot_panel_plot3dTypeMenu');
+          plotTypeMenuHandle = findobjReTag('plot_panel_plot3dTypeMenu');
           
-          plot3dTypeMenuHandle.Value = max(mod(plot3dTypeMenuHandle.Value+1, 3),1);
+          plotTypeMenuHandle.Value = max(mod(plotTypeMenuHandle.Value+1, 3),1);
           
-          pluginObj.vprintf('[gvPlotWindowPlugin] ''3D Plot Type'': ''%s''\n', plot3dTypeMenuHandle.String{plot3dTypeMenuHandle.Value});
+          pluginObj.vprintf('[gvPlotWindowPlugin] ''3D Plot Type'': ''%s''\n', plotTypeMenuHandle.String{plotTypeMenuHandle.Value});
           
-          pluginObj.Callback_plot_panel_plot3dTypeMenu(plot3dTypeMenuHandle, evnt);
+          pluginObj.Callback_plot_panel_plot3dTypeMenu(plotTypeMenuHandle, evnt);
       end
     end
     

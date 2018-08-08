@@ -156,7 +156,7 @@ makeAllSubplots();
     axVals = arrayfun(@getValsForAxis, plotDims,'Uni',0); % for tick labels
     
     if length(axInds) == 1
-      plotType = 'scatter';
+      plotType = pluginObj.plot1dTypes{pluginObj.view.dynamic.plot1dTypeVal};
     elseif length(axInds) == 2
       plotType = pluginObj.plot2dTypes{pluginObj.view.dynamic.plot2dTypeVal};
     elseif length(axInds) == 3
@@ -164,7 +164,7 @@ makeAllSubplots();
     end
     
     switch plotType
-      case 'scatter'
+      case {'scatter', 'line'}
         % turn ax vals into mesh grids
         if length(axInds) == 3
           axValsVector = cell(1, length(axInds));
@@ -242,38 +242,59 @@ makeAllSubplots();
       if iscellstr(plotSlice)
         [~, gInd] = ismember(plotSlice, groups);
         missingInd = strcmp(plotSlice, 'missing');
+        
+        catDataBool = false;
       elseif iscellcategorical(plotSlice)
         plotSlice = [plotSlice{:}];
         [~, gInd] = ismember(plotSlice, groups);
         missingInd = (plotSlice == 'missing');
+        
+        catDataBool = true;
       else
         error('Unknown data type')
       end
-      clear plotSlice
       
-      % make missing ones 1 temporarily
-      gInd(missingInd) = 1;
-      
-      % assign colors to plotSlice based on group index
-      plotSlice = colors(gInd,:);
-      
-      % make missing nan
-      if any(missingInd)
-        plotSlice(missingInd, :) = nan;
+      if ~strcmp(plotType, 'line')
+        clear plotSlice
+        
+        % make missing ones 1 temporarily
+        gInd(missingInd) = 1;
+        
+        % assign colors to plotSlice based on group index
+        plotSlice = colors(gInd,:);
+        
+        % make missing nan
+        if any(missingInd)
+          plotSlice(missingInd, :) = nan;
+        end
+        
+        % for grid
+        if ~isvector(gInd)
+          plotSlice = reshape(plotSlice, [size(gInd), 3]);
+        end
+      else
+        plotColors = colors(gInd,:);
       end
-      
-      % for grid
-      if ~isvector(gInd)
-        plotSlice = reshape(plotSlice, [size(gInd), 3]);
-      end
+    else
+      catDataBool = false;
     end
     
     % make plot
     if length(axInds) < 3
       switch plotType
-        case 'scatter'
+        case 'line' % only 1d
+          plot(hAx, axInds{1}, plotSlice);
+          
+          hold(hAx, 'on')
+          if ~catDataBool
+            scatter(hAx, axInds{1}, plotSlice, markerSize, 'b', 'filled');
+          else
+            scatter(hAx, axInds{1}, plotSlice, markerSize, plotColors, 'filled');
+          end
+          hold(hAx, 'off')
+        case 'scatter' % 1d or 2d (3d below)
           scatter(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
-        case 'grid'
+        case 'grid' % only 2d
           figure(hFig); % make hFig gcf % TODO find way to remove this
           if isempty(legendInfo)
             image(axValsVector{:}, plotSlice, 'CDataMapping','scaled'); % slice specific colormap
@@ -301,25 +322,25 @@ makeAllSubplots();
       end
     end
     
-    if isempty(legendInfo)
+    if isempty(legendInfo) && ~strcmp(plotType, 'line')
       colorbar
-    end
-    
-    % add slider slice lines/planes
-    if length(axInds) == 2
-      add2dSliderSlices()
     end
     
     % Set ticks
     setTicks();
     
     % Remove 1D y axis
-    if length(axInds) == 1
+    if length(axInds) == 1 && ~strcmp(plotType, 'line')
       set(hAx,'YTick', []);
     end
     
     % lims
     setLims();
+    
+    % add slider slice lines/planes
+    if length(axInds) <= 2
+      addSliderSlices()
+    end
     
     hAx.FontSize = fontSize;
     
@@ -350,7 +371,7 @@ makeAllSubplots();
       x(nanCells) = [];
     end
     
-    function add2dSliderSlices()
+    function addSliderSlices()
       sliderSliceLineWidth = max(3, markerSize / 40);
       sliderSliceLineAlpha = 0.3;
       
@@ -365,11 +386,13 @@ makeAllSubplots();
       plot(hAx, [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)], ylim(hAx),...
         'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
       
-      % horizontal slice line
-      thisAxInd = thisAxInd + 1;
-      plot(hAx, xlim(hAx), [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)],...
-        'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
-      
+      if length(axInds) > 1
+        % horizontal slice line
+        thisAxInd = thisAxInd + 1;
+        plot(hAx, xlim(hAx), [plotSliderVals(thisAxInd) plotSliderVals(thisAxInd)],...
+          'k-', 'LineWidth',sliderSliceLineWidth, 'Color',[0 0 0 sliderSliceLineAlpha]);
+      end
+        
       hold(hAx, 'off');
     end
     

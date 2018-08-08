@@ -7,8 +7,8 @@ markerDefaultSize = 16;
 markerMinSize = 2;
 markerMaxSize = 500;
 
+plot1dTypes = pluginObj.plot1dTypes;
 plot2dTypes = pluginObj.plot2dTypes;
-
 plot3dTypes = pluginObj.plot3dTypes;
 
 fontSize = pluginObj.fontSize;
@@ -21,20 +21,23 @@ uiControlsHandles = struct();
 vBox = uix.VBox('Parent',parentHandle, 'Spacing',spacing, 'Padding',padding);
 
 % Row 1
-makeRow1hBox(vBox);
+makeRow1_hBox(vBox);
 
 % Row 2
-makeRow2hBox(vBox);
+makeRow1d_hBox(vBox);
 
 % Row 3
-makeRow3hBox(vBox);
+makeRow2d_hBox(vBox);
+
+% Row 4
+makeRow_3dhBox(vBox);
 
 % Set vBox Heights
-set(vBox, 'Heights',[-1.2 -1 -1]);
+set(vBox, 'Heights',[-1.2 -1 -1 -1]);
 
 
 %% Nested fn
-  function makeRow1hBox(parentHandle)
+  function makeRow1_hBox(parentHandle)
     thisHbox = uix.HBox('Parent', parentHandle, 'Spacing', spacing);
     
     % autoSizeToggle
@@ -73,7 +76,44 @@ set(vBox, 'Heights',[-1.2 -1 -1]);
   end
 
 
-  function makeRow2hBox(parentHandle)
+  function makeRow1d_hBox(parentHandle)
+    thisHbox = uix.HBox( 'Parent', parentHandle, 'Spacing', spacing);
+    
+    tooltipStr = 'Hint: change 1D Plot Type by pressing the "1" key';
+    
+    % plot1dTypeLabel
+    thisTag = pluginObj.panelTag('plot1dTypeLabel');
+    uiControlsHandles.plot1dTypeLabel = uicontrol(...
+      'Tag',thisTag,...
+      'Style','text',...    
+      'FontUnits','points',...
+      'FontSize',fontSize,...
+      'String','1D Plot Type:',...
+      'TooltipString', tooltipStr,...
+      'Parent',thisHbox);
+    
+    
+    % plot1dTypeMenu
+    markerVal = pluginObj.view.dynamic.plot1dTypeVal;
+    thisTag = pluginObj.panelTag('plot1dTypeMenu');
+    uiControlsHandles.plot1dTypeMenu = uicontrol(...
+      'Tag',thisTag,...
+      'Style','popupmenu',...  
+      'FontUnits','points',...
+      'FontSize',fontSize,...
+      'String',plot1dTypes,...
+      'Value',markerVal,...
+      'TooltipString', tooltipStr,...
+      'UserData',pluginObj.userData,...
+      'Callback',pluginObj.callbackHandle(thisTag),...
+      'Parent',thisHbox);
+    
+    % Set row2hBox Widths
+    set(thisHbox, 'Widths',[-2 -3]);
+  end
+
+
+  function makeRow2d_hBox(parentHandle)
     thisHbox = uix.HBox( 'Parent', parentHandle, 'Spacing', spacing);
     
     tooltipStr = 'Hint: change 2D Plot Type by pressing the "2" key';
@@ -110,7 +150,7 @@ set(vBox, 'Heights',[-1.2 -1 -1]);
   end
 
 
-  function makeRow3hBox(parentHandle)
+  function makeRow_3dhBox(parentHandle)
     thisHbox = uix.HBox( 'Parent', parentHandle, 'Spacing', spacing);
     
     tooltipStr = 'Hint: change 3D Plot Type by pressing the "3" key';
