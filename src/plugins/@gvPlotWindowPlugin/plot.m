@@ -329,9 +329,22 @@ makeAllSubplots();
     % Set ticks
     setTicks();
     
-    % Remove 1D y axis
-    if length(axInds) == 1 && ~strcmp(plotType, 'line')
-      set(hAx,'YTick', []);
+    % special 1d settings
+    if length(axInds) == 1
+      if ~strcmp(plotType, 'line')
+        % Remove 1D y axis
+        set(hAx,'YTick', []);
+      else
+        % Add 1d axis label from dataTypeAx if exists
+        axesType = gvGetAxisType(hypercubeObj);
+        dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+        
+        % check that dataTypeAx exists
+        if ~isempty(dataTypeAxInd)
+          allAxVals = getValsForAxis(dataTypeAxInd);
+          hAx.YLabel.String = allAxVals{sliderVals(dataTypeAxInd)};
+        end
+      end
     end
     
     % lims
