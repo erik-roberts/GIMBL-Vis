@@ -52,6 +52,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
       pluginObj.metadata.dirImageList = [];
       pluginObj.metadata.imageFileTypes = [];
       pluginObj.metadata.imageFileInd = [];
+      pluginObj.metadata.imageDirs = [];
       
       pluginObj.metadata.matchedImageList = [];
       pluginObj.metadata.matchedImageIndList = [];
@@ -129,23 +130,72 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     end
     
     
-    function pathStr = getImageDirPath(pluginObj)
-      boxObj = findobjReTag('image_panel_imageDirBox');
-      pathStr = boxObj.String;
+    function imageDirs = getImageDirPaths(pluginObj, forceUpdateBool)
+      % returns cell array of dirs that exist
       
-      cwd = pluginObj.controller.app.workingDir;
-      if isempty(pathStr) % if blank
-        pathStr = cwd;
-      elseif pathStr(1) == '.' % if rel path
-        pathStr = fullfile(cwd, pathStr);
+      if nargin < 2
+        forceUpdateBool = false;
+      end
+      
+      imageDirCell = pluginObj.metadata.imageDirs;
+      
+      if isempty(imageDirCell) || forceUpdateBool
+        boxObj = findobjReTag('image_panel_imageDirBox');
+        imageDirStr = boxObj.String;
+        
+        imageDirCell = shebangParse(imageDirStr);
+        if ~iscell(imageDirCell)
+          imageDirCell = {imageDirCell};
+        end
+        
+        cwd = pluginObj.controller.app.workingDir;
+        
+        % parse paths
+        imageDirs = {};
+        for thisCell = imageDirCell(:)'
+          imageDirs = [imageDirs; parsePath(thisCell{1})];
+        end
+        
+        imageDirs = unique(imageDirs);
+      end
+      
+      
+      %% Nested fn
+      function thisPath = parsePath(thisPath)
+        % Note: if doesn't exist, returns empty
+        
+        if isempty(thisPath) % if blank
+          thisPath = cwd;
+        end
+        
+        % convert to abs
+        thisPath = getAbsolutePath(thisPath);
+        
+        % try regexp if path doesnt exist
+        if ~isfolder(thisPath)
+          % remove trailing filesep
+          if thisPath(end) == filesep
+            thisPath(end) = [];
+          end
+          
+          outerPath = fileparts(thisPath);
+          
+          outerContents = lscell(outerPath, 0);
+          
+          % seach with wildcards
+          matchingDirs = regexpi(outerContents, regexptranslate('wildcard',thisPath));
+          matchingDirs = outerContents(~cellfun(@isempty, matchingDirs));
+          
+          thisPath = matchingDirs(:);
+        end
       end
     end
 
     
     function imageTypes = getImageTypes(pluginObj)
-      imageDir = pluginObj.getImageDirPath;
+      imageDirs = pluginObj.getImageDirPaths;
       
-      if isfolder(imageDir)
+      if any(isfolder(imageDirs))
         if isempty(pluginObj.metadata.imageFileTypes)
           % usually called with makePanelControls
           pluginObj.updateAllImageList();
@@ -167,17 +217,20 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function [dirImageList, imageTypes, imageInd] = useImageRegExp(pluginObj)
       % gets cellstr of image types and index for each file in imageDir
       
-      imageDir = pluginObj.getImageDirPath;
+      imageDirs = pluginObj.getImageDirPaths;
       
-      if isfolder(imageDir)
+      if any(isfolder(imageDirs))
         % Find images in imageDir
         dirList = pluginObj.getAllFileList();
         
+        % Remove paths
+        fileList = cellfun(@getFilenameFromPath, dirList, 'unif',0);
+
         imageRegExp = pluginObj.metadata.imageRegexp;
         
         if ischar(imageRegExp)
           % Parse image paths
-          imageFiles = regexp(dirList, imageRegExp, 'tokens');
+          imageFiles = regexp(fileList, imageRegExp, 'tokens');
           dirImageList = dirList(~cellfun(@isempty, imageFiles));
           
           % Parse image names
@@ -189,7 +242,7 @@ classdef gvImageWindowPlugin < gvWindowPlugin
           imageInd = cellfun(@str2double, imageInd);
         else % iscell
           % Parse image paths
-          imageTypes = regexp(dirList, imageRegExp{1}, 'tokens');
+          imageTypes = regexp(fileList, imageRegExp{1}, 'tokens');
           dirImageList = dirList(~cellfun(@isempty, imageTypes));
           
           % Parse image names
@@ -230,6 +283,12 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         imageTypes = [];
         imageInd = [];
       end % if isfolder(imageDir)
+      
+      %% Nested fn
+      function filename = getFilenameFromPath(x)
+        [~, file, ext] = fileparts(x);
+        filename = [file, ext];
+      end
     end
     
       
@@ -248,17 +307,25 @@ classdef gvImageWindowPlugin < gvWindowPlugin
         forceUpdateBool = false;
       end
       
-      imageDir = pluginObj.getImageDirPath;
-      
       if isempty(pluginObj.metadata.dirList) || forceUpdateBool
-        removePathBool = true;
+        imageDirs = pluginObj.getImageDirPaths(forceUpdateBool);
         
-        % remove .dsStore
-        if isfile(fullfile(imageDir, '.DS_Store'))
-          delete(fullfile(imageDir, '.DS_Store'));
+        dirList = {};
+        removePathBool = false;
+        for imageDir = imageDirs(:)'
+          imageDir = imageDir{1}; %#ok<FXSET>
+          
+          % remove .dsStore
+          if isfile(fullfile(imageDir, '.DS_Store'))
+            delete(fullfile(imageDir, '.DS_Store'));
+          end
+          
+          if isfolder(imageDir)
+            dirList = [dirList; lscell(imageDir, removePathBool)]; %#ok<AGROW>
+          else
+            wprintf('Image folder missing: %s', imageDir);
+          end
         end
-        
-        dirList = lscell(imageDir, removePathBool);
         
         % store to metadata to speed up future calls
         pluginObj.metadata.dirList = dirList;

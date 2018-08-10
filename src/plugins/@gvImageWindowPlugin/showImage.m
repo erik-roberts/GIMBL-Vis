@@ -8,9 +8,9 @@ end
 fileLogicalInd = (pluginObj.metadata.matchedImageIndList == index);
 
 if any(fileLogicalInd)
-  fullFilename = pluginObj.metadata.matchedImageList{fileLogicalInd};
+  filePath = pluginObj.metadata.matchedImageList{fileLogicalInd};
 else
-  fullFilename = [];
+  filePath = [];
 end
 
 figH = pluginObj.handles.fig;
@@ -18,22 +18,17 @@ imAxH = findobj(figH.Children,'type','axes');
 
 imageType = getImageTypeFromGUI(pluginObj);
 
-if ~isempty(fullFilename)
-  imageDir = pluginObj.getImageDirPath;
+if ~isempty(filePath) && exist(filePath, 'file')
+  imshow(filePath, 'Parent', imAxH);
   
-  filePath = fullfile(imageDir, fullFilename);
-  if exist(filePath, 'file')
-    imshow(filePath, 'Parent', imAxH);
-    
-    % parse filename
-    [~, filename] = fileparts(fullFilename);
-    filename = strrep(filename, '_','\_'); % replace '_' with '\_' to avoid subscript
-    
-    try
-      title(imAxH, filename);
-    catch
-      title(imAxH, sprintf('%s %i', imageType, index));
-    end
+  % parse filename
+  [~, filename] = fileparts(fullFilename);
+  filename = strrep(filename, '_','\_'); % replace '_' with '\_' to avoid subscript
+  
+  try
+    title(imAxH, filename);
+  catch
+    title(imAxH, sprintf('%s %i', imageType, index));
   end
 else
   cla(imAxH);

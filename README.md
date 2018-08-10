@@ -47,6 +47,8 @@ To Use GV:
 - Images
   - Dynasim images may be viewed by clicking the "Open Image Window" button
   - Enter the image directory (e.g., the DynaSim default is "./plots")
+    - This can be a relative path, absolute path, or a path with Matlab wildcards (e.g. '*') in the final directory, e.g. './\*plots\*/' (Note: if viewing off the web, the \ are to escape the asterisks in markdown and should be ignored)
+    - This can also be a cell string of paths (including wildcard paths), using the GV shebang parse notation of starting with #!, e.g. `#!{'./\*plots\*', './\*images\*'}` (Note: if viewing off the web, the \ are to escape the asterisks in markdown and should be ignored)
   - The available types of images will populate the dropdown menu
   - Use a regular expression to capture image prefixes and the simulation ID as an index
     - Try: `^([^_]*)_sim(\d+)__`
