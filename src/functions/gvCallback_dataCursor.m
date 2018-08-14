@@ -53,7 +53,14 @@ end
 % Output imageIndex if stored
 if isfield(pluginObj.metadata, 'imageIndex')
   imageIndex = pluginObj.metadata.imageIndex;
-  output_txt{end+1} = ['imageIndex: ', num2str(imageIndex)];
+  
+  indexName = gvDataIndexName(pluginObj.controller.activeHypercube);
+  
+  if ~isempty(indexName)
+    output_txt{end+1} = sprintf('%s: %i', indexName, imageIndex);
+  else
+    output_txt{end+1} = ['imageIndex: ', num2str(imageIndex)];
+  end
 end
 
 % Value at position
