@@ -212,6 +212,8 @@ if ~exist(filePath,'file') || options.overwriteBool
     else
       analysisFlds = {char(studyinfo.base_simulator_options.analysis_functions{1})};
       analysisResults = struct(analysisFlds{1}, {analysisResults});
+      funNamesS = struct(analysisFlds{1}, {funNamesS});
+      prefixesS = struct(analysisFlds{1}, {prefixesS});
     end
     
     % convert structs to cell
