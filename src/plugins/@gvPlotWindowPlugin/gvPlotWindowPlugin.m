@@ -117,7 +117,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       mainWindowPos = pluginObj.controller.windowPlugins.main.handles.fig.Position;
     
       plotWindowHandle = figure(...
-        'Name',['GIMBL-VIS: ' pluginObj.windowName],...
+        'Name',['GIMBL-Vis: ' pluginObj.windowName],...
         'Tag', pluginObj.figTag(),...
         'NumberTitle','off',...
         'Position',[mainWindowPos(1)+mainWindowPos(3)+50, mainWindowPos(2), 600,500],...
@@ -125,6 +125,11 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         'WindowButtonDownFcn',@pluginObj.Callback_WindowButtonDownFcn,...
         'UserData',pluginObj.userData...
         );
+      
+      
+      brushH = brush( plotWindowHandle);
+      
+      set(brushH, 'ActionPostCallback', @pluginObj.Callback_brushActionPost);
 
       % set plot handle
       pluginObj.handles.fig = plotWindowHandle;
@@ -366,6 +371,70 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
           
           pluginObj.Callback_plot_panel_plot3dTypeMenu(plotTypeMenuHandle, evnt);
       end
+    end
+    
+    function Callback_brushActionPost(src, evnt)
+      pluginObj = src.UserData.pluginObj;
+      
+      % get pt inds
+      axH = evnt.Axes;
+      
+      scatterH = findobj(axH.Children,'type','Scatter');
+      
+      brushInd = logical(scatterH.BrushData);
+      
+      xInds = scatterH.XData(brushInd);
+      yInds = scatterH.YData(brushInd);
+      
+      % get ax vals
+      hypercubeObj = pluginObj.controller.activeHypercube;
+      plotDims = axH.UserData.plotDims;
+      hypercubeAxes = hypercubeObj.axis(plotDims);
+      
+      axValues = {hypercubeAxes.values};
+      axNames = {hypercubeAxes.name};
+      
+      xVals = axValues{1}(xInds);
+      yVals = axValues{2}(yInds);
+      xVals = xVals(:);
+      yVals = yVals(:);
+      
+      if isnumeric(xVals)
+        [xVals, iSorted] = sort(xVals);
+        
+        yVals = yVals(iSorted);
+        
+        xVals = num2str(xVals);
+      end
+      if isnumeric(yVals)
+        yVals = num2str(yVals);
+      end
+      
+      axStr = strjoin(axNames, ' | ');
+      
+      
+      disp('Brush Data:')
+      disp(axStr);
+      dataStr = strcat(xVals, ' | ', yVals);
+      
+      if length(plotDims) > 2
+        zInds = scatterH.ZData(brushInd);
+        
+        zVals = axValues{2}(zInds);
+        zVals = zVals(:);
+        
+        if exist('iSorted', 'var')
+          zVals = zVals(iSorted);
+        end
+        
+        if isnumeric(zVals)
+          zVals = num2str(zVals);
+        end
+        
+        dataStr = strjoin(dataStr, ' | ', zVals);
+      end
+      
+      disp(dataStr);
     end
     
   end
