@@ -22,6 +22,12 @@ end
 if nargin < 4 || isempty(staticBool)
   staticBool = false;
 end
+if nargin > 4 && ischar(staticBool)
+  % passed args from gvr call
+  varargin = [{staticBool}, varargin];
+  
+  staticBool = false;
+end
 
 % parse src
 if exist(src, 'dir')
