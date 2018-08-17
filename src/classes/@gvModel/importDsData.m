@@ -2,12 +2,13 @@ function importDsData(modelObj, src, varargin)
 % importDsData - import dynasim data
 %
 % src is a path to a dir or a mat file to save to.
+%
+% To pass arguments from top level run call:
+%   gvr([], 'key',val)
+%   gvRun([], 'key',val)
+%   gv.Run([], 'key',val)
+%   gvObj.load([], [], 'key',val) % Do not forget extra [] with load method!
 
-%{
-DEV TODO:
-- check classify functions and analysis functions mixture
-- dsCheckCovary?
-%}
 
 %% Setup args
 if nargin < 2
@@ -96,9 +97,12 @@ if ~exist(filePath,'file') || options.overwriteBool
   %   variedParamValues: a cell array for each mod, containing cells of the values of modVals
   
   
-  % combine names of all ident rows, replacing the single row name from before
+  % check/combine names of all ident rows, replacing the single row name from before
   [variedParamNames, variedParamValues] = identVarCombine(variedParamNames, variedParamValues);
   
+  
+  % check/combine names of all non lattice rows, replacing the single row name from before
+  [variedParamNames, variedParamValues] = nonLatticeVarCombine(variedParamNames, variedParamValues);
   
   clear modNames modVals
   
@@ -201,6 +205,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   % Store axisType in axis
   dynasimData.axis(1).axismeta.axisType = 'dataType';
   
+  %% modelObj and hypercubeObj
   % Store data
   hypercubeObj = gvArrayRef(dynasimData);
   modelObj.addHypercube(hypercubeObj);
@@ -390,7 +395,7 @@ end
 
 
   function [variedParamNames, variedParamValues] = identVarCombine(variedParamNames, variedParamValues)
-    % combine names of all ident rows, replacing the single row name from before
+    % check/combine names of all ident rows, replacing the single row name left from before
     
     if options.identVarCombineBool && (nIdentVarGroups > 0)
       for iLinkMod = 1:nIdentVarGroups
@@ -399,13 +404,71 @@ end
         thisLinkedModNames = modNames{1}(thisLinkedRows);
         thisCombName = strjoin(thisLinkedModNames, '-');
         
-        [~, indVarParName] = intersect(variedParamNames, thisLinkedModNames);
+        [~, indVariedParamName] = intersect(variedParamNames, thisLinkedModNames);
         
         % the new index
-        newInd = indVarParName(1);
+        newInd = indVariedParamName(1);
+        
+        % indices to removex (to replace all others)
+        removeInd = indVariedParamName(2:end);
+        
+        % change name to merged name
+        variedParamNames{newInd} = thisCombName;
+        
+        % remove duplicates
+        variedParamNames(removeInd) = [];
+        variedParamValues(:, removeInd) = [];
+      end
+      
+      % update val
+      nVariedParams = numel(variedParamNames);
+    end
+  end % fn identVarCombine
+
+
+  function [variedParamNames, variedParamValues] = nonLatticeVarCombine(variedParamNames, variedParamValues)
+    % check/combine names and vals of all non lattice rows, replacing the single row name left from before
+    % this is diff from identVarCombine fn since need to combine vals and
+    % convert to string if they were numeric
+    
+    % variedParamValues = cell(nSims, nVariedParams);
+    
+    if options.nonLatticeVarCombineBool && (nIdentVarGroups > 0)
+      for iLinkMod = 1:nNonLatticeVarGroups
+        thisLinkedRows = nonLatticeMods{iLinkMod};
+        
+        thisLinkedModNames = modNames{1}(thisLinkedRows);
+        thisCombName = strjoin(thisLinkedModNames, '-');
+        
+        [~, indVariedParamName] = intersect(variedParamNames, thisLinkedModNames);
+        
+        if length(indVariedParamName) < 2
+          % was already combined in identVarCombineBool
+          continue
+        end
+        
+        % the new index (to replace all others)
+        newInd = indVariedParamName(1);
         
         % indices to remove
-        removeInd = indVarParName(2:end);
+        removeInd = indVariedParamName(2:end);
+        
+        % unique vals to combine
+        vals2combine = variedParamValues(:, removeInd);
+
+        % if multiple values, convert to char and cat
+        if size(unique(cell2mat(vals2combine)','rows')', 2) > 1
+          % cat rows as string representation and store in first column
+          for iRow = 1:size(vals2combine,1)
+            vals2combine{iRow,1} = sprintf('%g_', vals2combine{1,:});
+            vals2combine{iRow,1}(end) = [];
+          end
+          
+          % only keep first column
+          vals2combine = vals2combine(:,1);
+          
+          variedParamValues(:, newInd) = vals2combine;
+        end
         
         % change name to merged name
         variedParamNames{newInd} = thisCombName;
