@@ -433,7 +433,7 @@ end
     
     % variedParamValues = cell(nSims, nVariedParams);
     
-    if options.nonLatticeVarCombineBool && (nIdentVarGroups > 0)
+    if options.nonLatticeVarCombineBool && (nNonLatticeVarGroups > 0)
       for iLinkMod = 1:nNonLatticeVarGroups
         thisLinkedRows = nonLatticeMods{iLinkMod};
         
