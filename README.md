@@ -57,7 +57,7 @@ To Use GV:
 
 To Use GV with Dynasim:
  - Import DS data
-   - Navigate to Dynasim output directory and call `gvr`, or call `gvr(output_dir_path)`. `gvr()` is an alias for `gv.Run()`.
+   - Navigate to Dynasim study directory (the folder containing "studyinfo.mat") and call `gvr`, or call `gvr(output_dir_path)`. `gvr()` is an alias for `gv.Run()`.
    - Use the GV gui, click on "File > Import Multidimensional Data", and select the studyinfo.mat file
 
 ## Warnings to User
