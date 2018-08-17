@@ -386,18 +386,26 @@ classdef gvImageWindowPlugin < gvWindowPlugin
     function Callback_image_window_KeyPressFcn(src, evnt)
       pluginObj = src.UserData.pluginObj; % window plugin
       
-      switch evnt.Character
-        case 'i'
-          % get menu handle
-          imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
-          
-          nImageTypes = length(imgTypeMenu.String);
-          
-          imgTypeMenu.Value = max(mod(imgTypeMenu.Value+1, nImageTypes+1),1);
-          
-          pluginObj.vprintf('[gvImageWindowPlugin] ''Image Type'': (%i/%i) ''%s''\n', imgTypeMenu.Value, nImageTypes, imgTypeMenu.String{imgTypeMenu.Value});
-          
-          pluginObj.updateMatchedImageList();
+      if evnt.Key == 'i'
+        % get menu handle
+        imgTypeMenu = findobjReTag('image_panel_imageTypeMenu');
+        
+        nImageTypes = length(imgTypeMenu.String);
+        
+        switch evnt.Character
+          case 'i'
+            imgTypeMenu.Value = max(mod(imgTypeMenu.Value+1, nImageTypes+1),1); % increment
+          case 'I'
+            if imgTypeMenu.Value-1 ~= 0
+              imgTypeMenu.Value = imgTypeMenu.Value-1; % decrement
+            else
+              imgTypeMenu.Value = nImageTypes; % reset to max
+            end
+        end
+        
+        pluginObj.vprintf('[gvImageWindowPlugin] ''Image Type'': (%i/%i) ''%s''\n', imgTypeMenu.Value, nImageTypes, imgTypeMenu.String{imgTypeMenu.Value});
+        
+        pluginObj.updateMatchedImageList();
       end
     end
     
