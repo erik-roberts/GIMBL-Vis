@@ -6,7 +6,7 @@ function importDsData(modelObj, src, varargin)
 %{
 DEV TODO:
 - check classify functions and analysis functions mixture
-- dsCheckCovary
+- dsCheckCovary?
 %}
 
 %% Setup args
@@ -19,7 +19,8 @@ options = checkOptions(varargin,{...
   'classifyFn', [], [],...
   'powerFn', @gvCalcPower, [],... % the function used to calculate the power
   'overwriteBool', 0, {0,1},... % whether overlapping table entries should be overwritten
-  'covarySplitBool', 0, {0,1},... % whether to split varied parameters that affect multiple namespaces, if not probably cannot merge new sims later
+  'identVarCombineBool', 1, {0,1},... % whether to combine varied parameters that are identically varied. If do so, probably cannot merge new sims later.
+  'nonLatticeVarCombineBool', 0, {0,1},... % whether to combine varied parameters that are non-lattice. If do so, probably cannot merge new sims later.
   'fillMissingResultsBool', 1, {0,1},... % whether to fill missing results with nan or 'missing' category
   'includeMissingParam', 0, {0,1},... % whether to include missing parameters as dimensions
   'saveBool', 1, {0,1},... % whether to save gvArrayData
@@ -45,14 +46,16 @@ elseif ~isempty(ext) && ~strcmp(ext, '.mat')
   % else % given valid mat filename
 end
 
-%% Load or Make gvData
+%% -- Load or Make gvData --
 if ~exist(filePath,'file') || options.overwriteBool
   % Import studyinfo data
   modelObj.vprintf('[gvModel] Importing studyinfo...\n')
   studyinfo = dsCheckStudyinfo(src);
   
+  %% Varied Params
   studyinfoParams = studyinfo.base_model.parameters;
   studyinfoParamNames = fieldnames(studyinfoParams);
+  
   
   % add state var initial conditions
   initialStateVars = cellfun(@(x) [x '_0_'], studyinfo.base_model.state_variables(:), 'uni',0);
@@ -60,345 +63,49 @@ if ~exist(filePath,'file') || options.overwriteBool
   % vertcat initialStateVars with initialStateVars
   studyinfoParamNames = [studyinfoParamNames; initialStateVars];
   
+  % collect modifications
   mods = {studyinfo.simulations.modifications};
   
   if isempty(mods{1})
     modelObj.vprintf('[gvModel] Attempted to import DS data with no vary \n');
-    wprintf('GIMBL-Vis Only Supports DynaSim studies with multiple simulations (using ''vary'').');
+    wprintf('\tGIMBL-Vis Only Supports DynaSim studies with multiple simulations (using ''vary'').');
     return
   end
   
   nSims = length(mods);
-  nVaryPerMod = size(mods{1}, 1);
   
-  for iSim = 1:nSims
-    %change initial conditions (0) to _0_
-    mods{iSim}(:,2) = strrep(mods{iSim}(:,2), '(0)', '_0_');
-    
-    % standardize and expand modifications
-    [mods{iSim}, identLinkedMods] = dsStandardizeModifications(mods{iSim}, studyinfo.base_model.specification);
-  end
+  % Standardize Modifications
+  [mods, identicalMods, nonLatticeMods] = standardizeAllMods(mods);
   
-  nLinkedMods = length(identLinkedMods);
+  nIdentVarGroups = length(identicalMods);
+  % strategy: merge var names
   
-  % check for covary
-  if nVaryPerMod ~= size(mods{1}, 1)
-    % TODO: covary pop or mech that was expanded
-  end
+  nNonLatticeVarGroups = length(nonLatticeMods);
+  % strategy: merge var names and var values, making the latter a string
   
-%   mods = cellfunu(@expand_simultaneous_modifications, mods); % expand simultaneously affected groups
-  mods = cellfunu(@arrows2underscores, mods); % fix arrow direction and convert to underscores
   
-  modVals = cellfunu(@(x) x(:,3), mods);
-  modNames = cellfunu(@(x) x(:,1:2), mods); 
-  
-  nMods = numel(modVals{1});
-  
+  % Make names match params and expand mods that share namespace across params
+  [modNames, modVals, missingRows] = expandModNamesVals(mods);
+  nMods = sum(~missingRows); % update new nMods
   clear mods
   
-  % Make names match params
-  % and expand mods that share namespace across params
-  for iSim = 1:nSims
-    nRows = size(modNames{iSim}, 1);
-    
-    % NOTE: these may have diff nRows from modNames{iSim}
-    thisModNames = {};
-    thisModVals = {};
-    
-    missingRows = false(1,nRows); % store which rows are missing
-    
-    for iRow = 1:nRows
-      
-      % replace periods with underscore in names
-      modNames{iSim}{iRow,1} = strrep(modNames{iSim}{iRow,1}, '.','_');
-      modNames{iSim}{iRow,2} = strrep(modNames{iSim}{iRow,2}, '.','_');
-      
-      thisRowName = [modNames{iSim}{iRow,1}, '_', modNames{iSim}{iRow,2}]; % get original row names
-      thisRowVal = modVals{iSim}{iRow};% get original row val
-      
-      if any(strcmp(thisRowName, studyinfoParamNames)) || options.includeMissingParam % if matches studyinfoParamNames
-        thisModNames{end+1} = thisRowName;
-        thisModVals{end+1} = thisRowVal;
-      else % need to get full namespace
-        re = ['(' modNames{iSim}{iRow,1}, '_.+_', modNames{iSim}{iRow,2} ')']; % make re from original row names
-%         tokens = regexp(studyinfo.base_model.namespaces(:,2), re, 'tokens');
-        tokens = regexp(studyinfoParamNames, re, 'tokens');
-        tokens = [tokens{:}]; % remove empty
-        tokens = [tokens{:}];
-        
-        thisNrows = numel(tokens);
-        
-        if thisNrows == 0 % token name not found. likely didn't match so didn't do anything
-          % skip it
-          missingRows(iRow) = true;
-          continue
-        elseif thisNrows == 1 || ~options.covarySplitBool
-          thisRowName = tokens{1};
-          thisModNames{end+1} = thisRowName;
-          thisModVals{end+1} = thisRowVal;
-        else % mod affects multiple mechs
-          thisModNames(end+1:end+thisNrows) = tokens;
-          thisModVals(end+1:end+thisNrows) = repmat({thisRowVal}, 1,thisNrows);
-        end
-      end
-      
-    end
-    
-    % update cells
-    modNames{iSim} = thisModNames(:); % ensure col array
-    modVals{iSim} = thisModVals(:); % ensure col array
-  end
   
-  if any(missingRows)
-    wprintf('Some mechanisms are missing so those modifcations are not imported.');
-    
-    % reindex linked mod numbers
-    for iLinkMod = 1:nLinkedMods
-      thisLinkedRows = identLinkedMods{iLinkMod};
-      
-      tempInds = false(1,nMods);
-      tempInds(thisLinkedRows) = true;
-      tempInds(missingRows) = [];
-      
-      identLinkedMods{iLinkMod} = find(tempInds);
-      
-      clear tempInds
-    end
-    
-    nMods = sum(~missingRows); % update new nMods
-  end
+  % make variedParamNames uniform accross mods and add values from studyinfo if missing for any sims
+  [variedParamNames, variedParamValues] = importVariedParamVals(modNames, modVals);
+  %   variedParamNames: a cellstring of just the unique modNames
+  %   variedParamValues: a cell array for each mod, containing cells of the values of modVals
   
-  importVariedParamVals();
-    % this switches vars from modNames to variedParamNames and modVals to variedParamValues
   
-  if ~options.covarySplitBool && nLinkedMods>0
-    for iLinkMod = 1:nLinkedMods
-      thisLinkedRows = identLinkedMods{iLinkMod};
-      
-      thisLinkedModNames = modNames{1}(thisLinkedRows);
-      thisCombName = strjoin(thisLinkedModNames, '-');
-      
-      [~, indVarParName] = intersect(variedParamNames, thisLinkedModNames);
-      
-      % the new index
-      newInd = indVarParName(1);
-      
-      % indices to remove
-      removeInd = indVarParName(2:end);
-      
-      % change name to merged name
-      variedParamNames{newInd} = thisCombName;
-      
-      % remove duplicates
-      variedParamNames(removeInd) = [];
-      variedParamValues(:, removeInd) = [];
-    end
-    
-    nVariedParams = numel(variedParamNames); % update val
-  end
+  % combine names of all ident rows, replacing the single row name from before
+  [variedParamNames, variedParamValues] = identVarCombine(variedParamNames, variedParamValues);
+  
   
   clear modNames modVals
   
-  simIDs = {studyinfo.simulations.sim_id}';
   
-  % get results struct with fieldnames = analysisFns
-  [analysisResults, ~, ~, funNamesS, prefixesS] = dsImportResults(src, 'import_scope','allResults', 'as_cell',0);
-  % Note: analysisResults will have empty spots in cell array for missing sims
+  %% Results
+  [analysisResults, analysisFlds, gvAnalysisLabels, classes] = importAnalysisResults();
   
-  if ~isempty(analysisResults)
-    % Get analysis functions
-    if isstruct(analysisResults)
-      analysisFlds = fieldnames(analysisResults);
-    else
-      analysisFlds = {char(studyinfo.base_simulator_options.analysis_functions{1})};
-      analysisResults = struct(analysisFlds{1}, {analysisResults});
-      funNamesS = struct(analysisFlds{1}, {funNamesS});
-      prefixesS = struct(analysisFlds{1}, {prefixesS});
-    end
-    
-    % convert structs to cell
-    funNames = struct2cell(funNamesS);
-    prefixes = struct2cell(prefixesS);
-    gvAnalysisLabels = analysisFlds;
-    
-    % make prefixes valid names
-    prefixes = matlab.lang.makeValidName(prefixes);
-
-    % replace result field name with prefixes that are not 'study' (i.e., the ds default)
-    fieldInd2change = ~strcmp(prefixes, 'study');
-    if any(fieldInd2change)
-      nUniquePref = length(unique(prefixes(fieldInd2change)));
-      if nUniquePref == sum(fieldInd2change) % only change if prefixes are unique
-        gvAnalysisLabels(fieldInd2change) = prefixes(fieldInd2change);
-      end
-    end
-    
-    % remove 'dsResult_' prefix
-    if ~all(fieldInd2change)
-      gvAnalysisLabels = strrep(gvAnalysisLabels, 'dsResult_', '');
-    end
-    
-    % Determine classification functions
-    if ~isempty(options.classifyFn)
-      classifyFns = options.classifyFn;
-    elseif isempty(options.classifyFn) && ~isempty(analysisFlds)
-      classifyFns = regexpi(funNames, '(.*class.*)', 'tokens');
-      classifyFnInds = find(~cellfun(@isempty, classifyFns));
-      classifyFns = [classifyFns{:}]; % remove empty
-      if ~isempty(classifyFns)
-        classifyFns = [classifyFns{:}]; % cat
-      end
-    end
-  else
-    analysisFlds = [];
-    gvAnalysisLabels = [];
-    funNames = [];
-  end
-  
-  % remove power results
-  powerResultInd = contains(funNames, func2str(options.powerFn) );
-  if any(powerResultInd)
-    analysisResults = rmfield(analysisResults, analysisFlds{powerResultInd});
-    
-    analysisFlds(powerResultInd) = [];
-    gvAnalysisLabels(powerResultInd) = [];
-    funNames(powerResultInd) = [];
-    
-    powerFnBool = true;
-  else
-    powerFnBool = false;
-  end
-  
-  if ~isempty(analysisFlds)
-    % Import analysis results
-    modelObj.vprintf('[gvModel] Importing analysis results...\n')
-
-    resultsUnequal = 0;
-    
-    for iFn = 1:numel(analysisFlds)
-      thisFld = analysisFlds{iFn};
-
-      if length( analysisResults.(thisFld) ) ~= size(variedParamValues,1)
-        resultsUnequal = resultsUnequal + 1;
-      end
-    end
-
-    if resultsUnequal ~= 0
-      wprintf('\tDifferent lengths for number of modifications and %i results.', resultsUnequal)
-    end
-    
-    modelObj.vprintf('\tDone importing analysis results\n')
-    
-    modelObj.vprintf('[gvModel] Preparing data to save...\n')
-    
-    
-    % Fill missing data
-    missingAnyResultInd = cellfun(@isempty,analysisResults.(thisFld)); % instantiate size
-    for fld = fieldnames(analysisResults)'
-      missingAnyResultInd = missingAnyResultInd | cellfun(@isempty,analysisResults.(fld{1}));
-    end
-    
-    if options.fillMissingResultsBool
-      for analysisFld = fieldnames(analysisResults)'
-        analysisFld = analysisFld{1};
-        
-        missingThisResultInd = cellfun(@isempty,analysisResults.(analysisFld));
-        
-        % check against simIDs length (in case missing )
-        if length(simIDs) > length(missingThisResultInd)
-          % add more missing indicies
-          missingThisResultInd(end+1: length(simIDs)) = true;
-        end
-
-        if any(missingThisResultInd)
-          if iscellnum(analysisResults.(analysisFld)(~missingThisResultInd))
-            % fill missing with nan
-            analysisResults.(analysisFld)(missingThisResultInd) = {nan};
-          elseif iscellstr(analysisResults.(analysisFld)(~missingThisResultInd))
-            % fill missing with string
-            analysisResults.(analysisFld)(missingThisResultInd) = {'missing'};
-            
-%             % convert to categorical in cells
-%             analysisResults.(analysisFld) = num2cell( categorical(analysisResults.(analysisFld)) );
-          elseif all( cellfun(@iscategorical, analysisResults.(analysisFld)(~missingThisResultInd)) )
-            % fill missing with string
-            analysisResults.(analysisFld)(missingThisResultInd) = {categorical(cellstr('missing'))};
-          end
-        end
-      end
-    else % ~options.fillMissingResultsBool
-      for analysisFld = fieldnames(analysisResults)'
-        analysisFld = analysisFld{1};
-        
-        analysisResults.(analysisFld)(missingAnyResultInd) = [];
-      end
-      
-      % check against simIDs length
-      if length(simIDs) > length(missingAnyResultInd)
-        % add more missing indicies
-        missingAnyResultInd(end+1: length(simIDs)) = true;
-      end
-      
-      variedParamValues(missingAnyResultInd,:) = [];
-      simIDs(missingAnyResultInd) = [];
-    end % options.fillMissingResultsBool
-    
-    % convert strings to categorical in cells
-    for analysisFld = fieldnames(analysisResults)'
-      analysisFld = analysisFld{1};
-      
-      if iscellstr(analysisResults.(analysisFld))
-        analysisResults.(analysisFld) = num2cell( categorical(analysisResults.(analysisFld)) );
-      end
-    end
-    
-    % Get class info
-    classes = struct();
-    for iFn = 1:numel(classifyFns)
-      thisFnNum = classifyFnInds(iFn);
-      thisFn = funNames{thisFnNum};
-      thisFnFld = analysisFlds{thisFnNum};
-      thisFnLabel = gvAnalysisLabels{thisFnNum};
-
-      if numel(classifyFns) == 1 % rename class fn label to 'class'
-        thisFnLabel = 'class';
-        gvAnalysisLabels{thisFnNum} = thisFnLabel;
-        thisFnHandle = str2func(thisFn);
-      else
-        thisFnHandle = str2func(thisFn);
-      end
-
-      % find unique classes
-      uClassNames = categories([analysisResults.(thisFnFld){:}]);
-      
-      try % to get info from class fn call
-        info = feval(thisFnHandle, 'info');
-        
-        if any(missingAnyResultInd) && options.fillMissingResultsBool
-          assert(size(info, 1) >= length(uClassNames)-1, 'More classes than info for classes from classifcation function.');
-        else
-          assert(size(info, 1) >= length(uClassNames), 'More classes than info for classes from classifcation function.');
-        end
-        
-        classes.(thisFnLabel).labels = info(:,1);
-        if size(info, 2) > 1 % if color col
-          tempColors = info(:,2); % as cells
-          tempColors = vertcat(tempColors{:}); % convert cell 2 mat
-          classes.(thisFnLabel).colors = tempColors; % store mat
-          clear tempColors
-        else
-          classes.(thisFnLabel).colors = distinguishable_colors(length(classes.(thisFnLabel).labels));
-        end
-        
-        if size(info, 2) > 2 % if marker col
-          classes.(thisFnLabel).markers = info(:,3);
-        end
-      catch
-        classes.(thisFnLabel).labels = uClassNames;
-        classes.(thisFnLabel).colors = distinguishable_colors(length(classes.(thisFnLabel).labels));
-      end % try
-    end % classifyFns
-  end % if analysis results
   
   %% prepare data
   %   simIDstr = cellfunu(@num2str, simIDs);
@@ -412,6 +119,7 @@ if ~exist(filePath,'file') || options.overwriteBool
     axisVals{iParam} = thisParamValues;
     %     end
   end
+  
   
   %% gvArray
   dynasimData = gvArray;
@@ -480,6 +188,7 @@ if ~exist(filePath,'file') || options.overwriteBool
   nResults = numel(allResults);
   assert(all(cellfun(@numel, allAxisVals) == nResults), 'Results must be matched to corresponding parameter values.');
   
+  
   % Import data table
   try
     dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames]);
@@ -487,6 +196,7 @@ if ~exist(filePath,'file') || options.overwriteBool
     wprintf('Attempting to import overlapping entries. Setting overwriteBool=true to overwrite overlapping entries with the last duplicate entry.')
     dynasimData = dynasimData.importDataTable(allResults, allAxisVals, [{'analysisFn'} axisNames], true);
   end
+  
   
   % Store axisType in axis
   dynasimData.axis(1).axismeta.axisType = 'dataType';
@@ -518,7 +228,130 @@ end
 
 
 %% Nested Fns
-  function  importVariedParamVals()
+  function [mods, identicalMods, nonLatticeMods] = standardizeAllMods(mods)
+    for iSim = 1:nSims
+      %change initial conditions (0) to _0_
+      mods{iSim}(:,2) = strrep(mods{iSim}(:,2), '(0)', '_0_');
+      
+      % standardize and expand modifications
+      [mods{iSim}, identicalMods, nonLatticeMods] = dsStandardizeModifications(mods{iSim}, studyinfo.base_model.specification);
+      %   mods: standardized (right arrow if conn), expanded modifications. one var per line in cell array.
+      %   identicalMods: cell array of indicies of which mods are identically
+      %                  linked/covaried, where each cell is a diff linked set
+      %                  2 ways to get this: either param matches multiple mechs,
+      %                  or specified multiple mechs for 1 param
+      %   nonLatticeMods: cell array of indicies of which mods are not identically
+      %                   linked/covaried, where each cell is a diff linked set.
+      %                   i.e., for non-lattice/non-Cartesian product.
+    end % iSim
+    
+    % convert arrows2underscores
+    mods = cellfunu(@arrows2underscores, mods); % fix arrow direction and convert to underscores  
+  end % fn standardizeAllMods
+  
+
+  function [modNames, modVals, missingRows] = expandModNamesVals(mods)
+    % expands vars that match multiple parameters if ~identVarCombineBool and removes missing vars
+    
+    % split mods cell array
+    modVals = cellfunu(@(x) x(:,3), mods);
+    modNames = cellfunu(@(x) x(:,1:2), mods);
+    
+    nMods = size(mods{1}, 1);
+    
+    for iSim = 1:nSims
+      nRows = size(modNames{iSim}, 1);
+      
+      thisSimModNames = modNames{iSim};
+      
+      % NOTE: these may have diff nRows from thisSimModNames if not combining
+      % covaried vars
+      thisSimExpandedModNames = {};
+      thisSimExpandedModVals = {};
+      
+      missingRows = false(1,nRows); % store which rows are missing
+      
+      for iRow = 1:nRows
+        
+        thisRowName = [thisSimModNames{iRow,1}, '_', thisSimModNames{iRow,2}]; % get original row names
+        
+        % replace periods with underscore in names
+        thisRowName = strrep(thisRowName, '.','_');
+        
+        thisRowVal = modVals{iSim}{iRow};% get original row val
+        
+        if any(strcmp(thisRowName, studyinfoParamNames)) || options.includeMissingParam % if matches studyinfoParamNames
+          thisSimExpandedModNames{end+1} = thisRowName;
+          thisSimExpandedModVals{end+1} = thisRowVal;
+        else % need to get full namespace
+          regex = ['(' thisSimModNames{iRow,1}, '_.+_', thisSimModNames{iRow,2} ')']; % make re from original row names
+          %         tokens = regexp(studyinfo.base_model.namespaces(:,2), re, 'tokens');
+          tokens = regexp(studyinfoParamNames, regex, 'tokens');
+          tokens = [tokens{:}]; % remove empty
+          tokens = [tokens{:}];
+          
+          thisNrows = numel(tokens);
+          
+          if thisNrows == 0 % token name not found. likely didn't match so didn't do anything
+            % skip it
+            missingRows(iRow) = true;
+            continue
+          
+          elseif thisNrows == 1 || options.identVarCombineBool % single token found or take first and combine names later
+            thisRowName = tokens{1};
+            thisSimExpandedModNames{end+1} = thisRowName;
+            thisSimExpandedModVals{end+1} = thisRowVal;
+            
+            % Note: if thisNrows > 1 & options.identVarCombineBool, identVarCombine
+            % will later combine all the var names and replace thisRowName with
+            % that concat name
+            
+          else % mod affects multiple mechs and they are expanded here
+            thisSimExpandedModNames(end+1:end+thisNrows) = tokens;
+            thisSimExpandedModVals(end+1:end+thisNrows) = repmat({thisRowVal}, 1,thisNrows);
+          end
+        end
+        
+      end
+      
+      % update cells
+      modNames{iSim} = thisSimExpandedModNames(:); % ensure col array
+      modVals{iSim} = thisSimExpandedModVals(:); % ensure col array
+    end
+    
+    if any(missingRows)
+      wprintf('\tSome mechanisms are missing so those modifcations are not imported.');
+      
+      % reindex ident mod numbers since removing missing rows
+      for iLinkMod = 1:nIdentVarGroups
+        thisLinkedRows = identicalMods{iLinkMod};
+        
+        tempInds = false(1,nMods);
+        tempInds(thisLinkedRows) = true;
+        tempInds(missingRows) = [];
+        
+        identicalMods{iLinkMod} = find(tempInds);
+        
+        clear tempInds iLinkMod thisLinkedRows
+      end
+      
+      % reindex nonLattice mod numbers since removing missing rows
+      for iLinkMod = 1:nNonLatticeVarGroups
+        thisLinkedRows = nonLatticeMods{iLinkMod};
+        
+        tempInds = false(1,nMods);
+        tempInds(thisLinkedRows) = true;
+        tempInds(missingRows) = [];
+        
+        nonLatticeMods{iLinkMod} = find(tempInds);
+        
+        clear tempInds iLinkMod thisLinkedRows
+      end
+    end % any(missingRows)
+  end % fn expandModNamesVals
+
+
+  function  [variedParamNames, variedParamValues] = importVariedParamVals(modNames, modVals)
     modelObj.vprintf('[gvModel] Importing varied parameter values...\n')
     
     % Get varied params
@@ -553,7 +386,262 @@ end
     %   end
     
     modelObj.vprintf('\tDone importing varied parameter values.\n')
-  end
+  end % fn importVariedParamVals
+
+
+  function [variedParamNames, variedParamValues] = identVarCombine(variedParamNames, variedParamValues)
+    % combine names of all ident rows, replacing the single row name from before
+    
+    if options.identVarCombineBool && (nIdentVarGroups > 0)
+      for iLinkMod = 1:nIdentVarGroups
+        thisLinkedRows = identicalMods{iLinkMod};
+        
+        thisLinkedModNames = modNames{1}(thisLinkedRows);
+        thisCombName = strjoin(thisLinkedModNames, '-');
+        
+        [~, indVarParName] = intersect(variedParamNames, thisLinkedModNames);
+        
+        % the new index
+        newInd = indVarParName(1);
+        
+        % indices to remove
+        removeInd = indVarParName(2:end);
+        
+        % change name to merged name
+        variedParamNames{newInd} = thisCombName;
+        
+        % remove duplicates
+        variedParamNames(removeInd) = [];
+        variedParamValues(:, removeInd) = [];
+      end
+      
+      % update val
+      nVariedParams = numel(variedParamNames);
+    end
+  end % fn identVarCombine
+
+
+  function [analysisResults, analysisFlds, gvAnalysisLabels, classes] = importAnalysisResults()
+    % get results struct with fieldnames = analysisFns
+    [analysisResults, ~, ~, funNamesS, prefixesS] = dsImportResults(src, 'import_scope','allResults', 'as_cell',0);
+    % Note: analysisResults will have empty spots in cell array for missing sims
+    
+    if ~isempty(analysisResults)
+      % Get analysis functions
+      if isstruct(analysisResults)
+        analysisFlds = fieldnames(analysisResults);
+      else
+        analysisFlds = {char(studyinfo.base_simulator_options.analysis_functions{1})};
+        analysisResults = struct(analysisFlds{1}, {analysisResults});
+        funNamesS = struct(analysisFlds{1}, {funNamesS});
+        prefixesS = struct(analysisFlds{1}, {prefixesS});
+      end
+      
+      % convert structs to cell
+      funNames = struct2cell(funNamesS);
+      prefixes = struct2cell(prefixesS);
+      gvAnalysisLabels = analysisFlds;
+      
+      % make prefixes valid names
+      prefixes = matlab.lang.makeValidName(prefixes);
+      
+      % replace result field name with prefixes that are not 'study' (i.e., the ds default)
+      fieldInd2change = ~strcmp(prefixes, 'study');
+      if any(fieldInd2change)
+        nUniquePref = length(unique(prefixes(fieldInd2change)));
+        if nUniquePref == sum(fieldInd2change) % only change if prefixes are unique
+          gvAnalysisLabels(fieldInd2change) = prefixes(fieldInd2change);
+        end
+      end
+      
+      % remove 'dsResult_' prefix
+      if ~all(fieldInd2change)
+        gvAnalysisLabels = strrep(gvAnalysisLabels, 'dsResult_', '');
+      end
+      
+      % Determine classification functions
+      if ~isempty(options.classifyFn)
+        classifyFns = options.classifyFn;
+      elseif isempty(options.classifyFn) && ~isempty(analysisFlds)
+        classifyFns = regexpi(funNames, '(.*class.*)', 'tokens');
+        classifyFnInds = find(~cellfun(@isempty, classifyFns));
+        classifyFns = [classifyFns{:}]; % remove empty
+        if ~isempty(classifyFns)
+          classifyFns = [classifyFns{:}]; % cat
+        end
+      end
+    else
+      analysisFlds = [];
+      gvAnalysisLabels = [];
+      funNames = [];
+    end
+    
+    % remove power results
+    powerResultInd = contains(funNames, func2str(options.powerFn) );
+    if any(powerResultInd)
+      analysisResults = rmfield(analysisResults, analysisFlds{powerResultInd});
+      
+      analysisFlds(powerResultInd) = [];
+      gvAnalysisLabels(powerResultInd) = [];
+      funNames(powerResultInd) = [];
+      
+      powerFnBool = true;
+    else
+      powerFnBool = false;
+    end
+    
+    
+    simIDs = {studyinfo.simulations.sim_id}';
+    
+    if ~isempty(analysisFlds)
+      % Import analysis results
+      modelObj.vprintf('[gvModel] Importing analysis results...\n')
+      
+      resultsUnequal = 0;
+      
+      for iFn = 1:numel(analysisFlds)
+        thisFld = analysisFlds{iFn};
+        
+        if length( analysisResults.(thisFld) ) ~= size(variedParamValues,1)
+          resultsUnequal = resultsUnequal + 1;
+        end
+      end
+      
+      if resultsUnequal ~= 0
+        wprintf('\tDifferent lengths for number of modifications and %i results.', resultsUnequal)
+      end
+      
+      modelObj.vprintf('\tDone importing analysis results\n')
+      
+      modelObj.vprintf('[gvModel] Preparing data to save...\n')
+      
+      
+      % Deal with missing results
+      analysisResults = reconcileMissingResults(analysisResults);
+      
+      
+      % convert strings to categorical in cells
+      for analysisFld = fieldnames(analysisResults)'
+        analysisFld = analysisFld{1};
+        
+        if iscellstr(analysisResults.(analysisFld))
+          analysisResults.(analysisFld) = num2cell( categorical(analysisResults.(analysisFld)) );
+        end
+      end
+      
+      
+      % Get classifyFns info
+      classes = getClassifyFnInfo();
+    end % if analysis results
+    
+    
+    %% "importAnalysisResults" Nested Fns
+    function analysisResults = reconcileMissingResults(analysisResults)
+      % deal with missing results either by filling or removing
+      
+      % find result inds missing data
+      missingAnyResultInd = cellfun(@isempty,analysisResults.(thisFld)); % instantiate size
+      for fld = fieldnames(analysisResults)'
+        missingAnyResultInd = missingAnyResultInd | cellfun(@isempty,analysisResults.(fld{1}));
+      end
+      
+      if options.fillMissingResultsBool
+        for analysisFld = fieldnames(analysisResults)'
+          analysisFld = analysisFld{1};
+          
+          missingThisResultInd = cellfun(@isempty,analysisResults.(analysisFld));
+          
+          % check against simIDs length (in case missing )
+          if length(simIDs) > length(missingThisResultInd)
+            % add more missing indicies
+            missingThisResultInd(end+1: length(simIDs)) = true;
+          end
+          
+          if any(missingThisResultInd)
+            if iscellnum(analysisResults.(analysisFld)(~missingThisResultInd))
+              % fill missing with nan
+              analysisResults.(analysisFld)(missingThisResultInd) = {nan};
+            elseif iscellstr(analysisResults.(analysisFld)(~missingThisResultInd))
+              % fill missing with string
+              analysisResults.(analysisFld)(missingThisResultInd) = {'missing'};
+              
+              %             % convert to categorical in cells
+              %             analysisResults.(analysisFld) = num2cell( categorical(analysisResults.(analysisFld)) );
+            elseif all( cellfun(@iscategorical, analysisResults.(analysisFld)(~missingThisResultInd)) )
+              % fill missing with string
+              analysisResults.(analysisFld)(missingThisResultInd) = {categorical(cellstr('missing'))};
+            end
+          end
+        end
+        
+      else
+        % ~options.fillMissingResultsBool so remove missing results
+        
+        for analysisFld = fieldnames(analysisResults)'
+          analysisResults.(analysisFld{1})(missingAnyResultInd) = [];
+        end
+        
+        % check against simIDs length
+        if length(simIDs) > length(missingAnyResultInd)
+          % add more missing indicies
+          missingAnyResultInd(end+1: length(simIDs)) = true;
+        end
+        
+        variedParamValues(missingAnyResultInd,:) = [];
+        simIDs(missingAnyResultInd) = [];
+      end % options.fillMissingResultsBool
+    end % fn handleMissingData
+    
+    
+    function classes = getClassifyFnInfo()
+      classes = struct();
+      
+      for iClassifyFn = 1:numel(classifyFns)
+        thisFnNum = classifyFnInds(iClassifyFn);
+        thisFn = funNames{thisFnNum};
+        thisFnFld = analysisFlds{thisFnNum};
+        thisFnLabel = gvAnalysisLabels{thisFnNum};
+        
+        if numel(classifyFns) == 1 % rename class fn label to 'class'
+          thisFnLabel = 'class';
+          gvAnalysisLabels{thisFnNum} = thisFnLabel;
+          thisFnHandle = str2func(thisFn);
+        else
+          thisFnHandle = str2func(thisFn);
+        end
+        
+        % find unique classes
+        uClassNames = categories([analysisResults.(thisFnFld){:}]);
+        
+        try % to get info from class fn call
+          info = feval(thisFnHandle, 'info');
+          
+          if any(missingAnyResultInd) && options.fillMissingResultsBool
+            assert(size(info, 1) >= length(uClassNames)-1, 'More classes than info for classes from classifcation function.');
+          else
+            assert(size(info, 1) >= length(uClassNames), 'More classes than info for classes from classifcation function.');
+          end
+          
+          classes.(thisFnLabel).labels = info(:,1);
+          if size(info, 2) > 1 % if color col
+            tempColors = info(:,2); % as cells
+            tempColors = vertcat(tempColors{:}); % convert cell 2 mat
+            classes.(thisFnLabel).colors = tempColors; % store mat
+            clear tempColors
+          else
+            classes.(thisFnLabel).colors = distinguishable_colors(length(classes.(thisFnLabel).labels));
+          end
+          
+          if size(info, 2) > 2 % if marker col
+            classes.(thisFnLabel).markers = info(:,3);
+          end
+        catch
+          classes.(thisFnLabel).labels = uClassNames;
+          classes.(thisFnLabel).colors = distinguishable_colors(length(classes.(thisFnLabel).labels));
+        end % try
+      end % classifyFns
+    end
+  end % fn importAnalysisResults
 
 
   function mods = arrows2underscores(mods)
@@ -567,6 +655,6 @@ end
         obj = [obj(ind(1)+2:end) '<-' obj(1:ind(1)-1)];
       end
     end
-  end
+  end % fn arrows2underscores
 
 end % main fn
