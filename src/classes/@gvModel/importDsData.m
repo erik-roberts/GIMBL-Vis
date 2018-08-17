@@ -460,7 +460,7 @@ end
         if size(unique(cell2mat(vals2combine)','rows')', 2) > 1
           % cat rows as string representation and store in first column
           for iRow = 1:size(vals2combine,1)
-            vals2combine{iRow,1} = sprintf('%g_', vals2combine{1,:});
+            vals2combine{iRow,1} = sprintf('%g_', vals2combine{iRow, :});
             vals2combine{iRow,1}(end) = [];
           end
           
