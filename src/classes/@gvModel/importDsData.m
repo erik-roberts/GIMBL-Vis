@@ -360,7 +360,7 @@ end
     nVariedParams = numel(variedParamNames);
     
     % Get param values for each sim
-    variedParamValues = cell(nMods, nVariedParams);
+    variedParamValues = cell(nSims, nVariedParams);
     for iParam = 1:nVariedParams
       thisParam = variedParamNames{iParam};
       
@@ -477,17 +477,19 @@ end
     end
     
     % remove power results
-    powerResultInd = contains(funNames, func2str(options.powerFn) );
-    if any(powerResultInd)
-      analysisResults = rmfield(analysisResults, analysisFlds{powerResultInd});
-      
-      analysisFlds(powerResultInd) = [];
-      gvAnalysisLabels(powerResultInd) = [];
-      funNames(powerResultInd) = [];
-      
-      powerFnBool = true;
-    else
-      powerFnBool = false;
+    if ~isempty(funNames)
+      powerResultInd = contains(funNames, func2str(options.powerFn) );
+      if any(powerResultInd)
+        analysisResults = rmfield(analysisResults, analysisFlds{powerResultInd});
+        
+        analysisFlds(powerResultInd) = [];
+        gvAnalysisLabels(powerResultInd) = [];
+        funNames(powerResultInd) = [];
+        
+        powerFnBool = true;
+      else
+        powerFnBool = false;
+      end
     end
     
     
@@ -532,6 +534,9 @@ end
       
       % Get classifyFns info
       classes = getClassifyFnInfo();
+    else
+      classes = [];
+      powerFnBool = false;
     end % if analysis results
     
     
