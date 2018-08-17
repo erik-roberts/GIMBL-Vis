@@ -420,7 +420,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       if length(plotDims) > 2
         zInds = scatterH.ZData(brushInd);
         
-        zVals = axValues{2}(zInds);
+        zVals = axValues{3}(zInds);
         zVals = zVals(:);
         
         if exist('iSorted', 'var')
@@ -431,7 +431,7 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
           zVals = num2str(zVals);
         end
         
-        dataStr = strjoin(dataStr, ' | ', zVals);
+        dataStr = strcat(dataStr, ' | ', zVals);
       end
       
       disp(dataStr);
