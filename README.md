@@ -53,7 +53,7 @@ To Use GV:
   - Use a regular expression to capture image prefixes and the simulation ID as an index
     - Try: `^([^_]*)_sim(\d+)__`
   - To view images, simply move the mouse over the plot markers in the plot window. The corresponding image will be shown in the image window.
-  - To step through the types of images using the keyboard, make the image window the focus and click the "i" key. The image will update when the mouse moves over the plot window points again.
+  - To step forward through the types of images using the keyboard, make the image window the focus and enter the "i" key. The image will update when the mouse moves over the plot window points again. To step backward, press the "shift" + "i" keys.
 
 To Use GV with Dynasim:
  - Import DS data
