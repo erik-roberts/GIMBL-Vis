@@ -5,6 +5,8 @@ function getPlotMetadataFromData(pluginObj, hypercubeObj)
 % TODO: permit function applied to non-numeric data to get labels (eg
 % isnonempty)
 
+fillNansBool = true; % whether to enable filling empty numeric data cell with nans in order to convert to mat
+
 axesType = gvGetAxisType(hypercubeObj);
 
 if ~isempty(axesType)
@@ -21,7 +23,22 @@ if ~isempty(axesType) && ~isempty(dataTypeAxInd) % then exists dataType axis
     
     scalarLogical = isTrueScalar(hypercubeObj.data);
   else % no categorical data
-    if iscellscalar(hypercubeObj.data)
+    emptyInds = cellfun(@isempty, hypercubeObj.data(:));
+    
+    if all( cellfun(@isscalar,hypercubeObj.data(:))... % is iscellscalar or empty
+        & ~cellfun(@iscategorical, hypercubeObj.data(:))...
+        | emptyInds) && fillNansBool
+      
+      % fill empty with nan
+      hypercubeObj.data(emptyInds) = {nan};
+      
+      % numeric with full lattice so convert cell to mat
+      hypercubeObj.data = cell2mat(hypercubeObj.data);
+      
+      hypercubeObj.meta.onlyNumericDataBool = true;
+      
+      scalarLogical = [];
+    elseif iscellscalar(hypercubeObj.data(:))
       % numeric with full lattice so convert cell to mat
       hypercubeObj.data = cell2mat(hypercubeObj.data);
       
