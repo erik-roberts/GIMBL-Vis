@@ -20,6 +20,12 @@
         
         hypercubeObj = pluginObj.controller.activeHypercube;
         
+        if ~isfield(hypercubeObj.meta, 'legend')
+          % no legend information
+          wprintf('No legend information.');
+          return
+        end
+        
         if length(hypercubeObj.meta.legend) > 1
           axesType = gvGetAxisType(hypercubeObj);
           dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
