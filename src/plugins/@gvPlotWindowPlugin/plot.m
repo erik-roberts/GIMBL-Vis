@@ -28,6 +28,17 @@ dimNames = hypercubeObj.axisNames;
 dimNames = strrep(dimNames, '_', '\_'); % replace '_' with '\_' to avoid subscript
 sliderVals = pluginObj.view.dynamic.sliderVals;
 
+axesType = gvGetAxisType(hypercubeObj);
+dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+
+if ~isempty(dataTypeAxInd)
+  allAxVals = getValsForAxis(dataTypeAxInd);
+  dataType = allAxVals{sliderVals(dataTypeAxInd)};
+  dataType = strrep(dataType, '_', '\_');
+else
+  dataType = [];
+end
+
 makeAllSubplots();
 
 
@@ -123,9 +134,6 @@ makeAllSubplots();
         anyNumBool = false;
         
         if length(hypercubeObj.meta.legend) > 1
-          axesType = gvGetAxisType(hypercubeObj);
-          dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
-          
           legendInfo = hypercubeObj.meta.legend(sliderVals(dataTypeAxInd));
         else
           legendInfo = hypercubeObj.meta.legend(1);
@@ -341,14 +349,9 @@ makeAllSubplots();
         % Remove 1D y axis
         set(hAx,'YTick', []);
       else
-        % Add 1d axis label from dataTypeAx if exists
-        axesType = gvGetAxisType(hypercubeObj);
-        dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
-        
-        % check that dataTypeAx exists
-        if ~isempty(dataTypeAxInd)
-          allAxVals = getValsForAxis(dataTypeAxInd);
-          hAx.YLabel.String = allAxVals{sliderVals(dataTypeAxInd)};
+        % Add 1d axis label for dataType if exists
+        if ~isempty(dataType)
+          hAx.YLabel.String = dataType;
         end
       end
     end
@@ -361,7 +364,11 @@ makeAllSubplots();
       addSliderSlices()
     end
     
+    % set font size
     hAx.FontSize = fontSize;
+    
+    % add title
+    addTitle();
     
     % add plotDims and axis labels to ax user data
     hAx.UserData = struct('plotDims',plotDims);
@@ -369,19 +376,6 @@ makeAllSubplots();
     
     
     %% Nested fn
-    function out = makeAxInd(x)
-      out = 1:length(hypercubeObj.axisValues{x});
-    end
-    
-    function vals = getValsForAxis(x)
-      vals = hypercubeObj.axisValues{x};
-      
-      % convert to string if numeric with proper string format
-      if isnumeric(vals)
-        vals = strsplit( num2str(vals(:)','%.2g ') );
-      end
-    end
-    
     function x = removeEmpty(x)
       x(emptyCells) = [];
     end
@@ -389,6 +383,15 @@ makeAllSubplots();
     function x = removeNan(x)
       x(nanCells) = [];
     end
+    
+    function addTitle()
+      % title is dataType if that exists
+      
+      if ~isempty(dataType)
+        hAx.Title.String = dataType;
+      end
+    end
+    
     
     function addSliderSlices()
       switch plotType
@@ -420,6 +423,7 @@ makeAllSubplots();
         
       hold(hAx, 'off');
     end
+    
     
     function setTicks()
       maxAxVals = 20;
@@ -470,6 +474,7 @@ makeAllSubplots();
       end
     end
     
+    
     function setLims()
       xlim([axInds{1}(1), axInds{1}(end)]);
       try
@@ -499,8 +504,20 @@ makeAllSubplots();
         end
       end
     end
+  end % fn makePlot
+
+  function out = makeAxInd(x)
+    out = 1:length(hypercubeObj.axisValues{x});
   end
 
+  function vals = getValsForAxis(x)
+    vals = hypercubeObj.axisValues{x};
+    
+    % convert to string if numeric with proper string format
+    if isnumeric(vals)
+      vals = strsplit( num2str(vals(:)','%.2g ') );
+    end
+  end
 
   function shrinkText2Fit(txtH)
     for iTxt=1:length(txtH)
@@ -515,4 +532,4 @@ makeAllSubplots();
     end
   end
 
-end
+end % main fn
