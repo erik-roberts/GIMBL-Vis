@@ -125,8 +125,14 @@ classdef gvSelectPlugin < gvGuiPlugin
       %
       % Input: src can be index of slider or the slider object
       
-      if isobject(src)
+      
+      
+      if isobject(src) && strcmp(src.Style, 'slider')
         sliderObj = src;
+        sliderInd = getNumSuffix(sliderObj.Tag);
+      elseif isobject(src) && strcmp(src.Style, 'edit')
+        editObj = src;
+        sliderObj = findobjReTag(editObj.UserData.siblingTag);
         sliderInd = getNumSuffix(sliderObj.Tag);
       elseif isscalar(src)
         sliderInd = src;
@@ -389,6 +395,9 @@ classdef gvSelectPlugin < gvGuiPlugin
       
       % update sibling slider value
       pluginObj.updateSliderFromEdit(editObj, sliderVal);
+      
+      % update slider ind in view.dynamic
+      pluginObj.updateSliderInd(editObj);
       
       notify(pluginObj.controller, 'activeHypercubeSliceChanged')
     end
