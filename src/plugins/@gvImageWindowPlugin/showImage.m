@@ -17,18 +17,19 @@ figH = pluginObj.handles.fig;
 imAxH = findobj(figH.Children,'type','axes');
 
 imageType = getImageTypeFromGUI(pluginObj);
+imageType = strrep(imageType, '_','\_'); % replace '_' with '\_' to avoid subscript
 
 if ~isempty(filePath) && exist(filePath, 'file')
   imshow(filePath, 'Parent', imAxH);
   
   % parse filename
-  [~, filename] = fileparts(fullFilename);
+  [~, filename] = fileparts(filePath);
   filename = strrep(filename, '_','\_'); % replace '_' with '\_' to avoid subscript
   
   try
     title(imAxH, filename);
   catch
-    title(imAxH, sprintf('%s %i', imageType, index));
+    title(imAxH, sprintf('%s ? %i', imageType, index));
   end
 else
   cla(imAxH);
