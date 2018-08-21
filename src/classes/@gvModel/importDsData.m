@@ -454,7 +454,7 @@ end
         removeInd = indVariedParamName(2:end);
         
         % unique vals to combine
-        vals2combine = variedParamValues(:, removeInd);
+        vals2combine = variedParamValues(:, [newInd(:); removeInd(:)]);
 
         % if multiple values, convert to char and cat
         if size(unique(cell2mat(vals2combine)','rows')', 2) > 1
