@@ -325,7 +325,7 @@ end
     end
     
     if any(missingRows)
-      wprintf('\tSome mechanisms are missing so those modifcations are not imported.');
+      wprintf('\tSome mechanisms are missing so those modifications are not imported.');
       
       % reindex ident mod numbers since removing missing rows
       for iLinkMod = 1:nIdentVarGroups
@@ -494,7 +494,11 @@ end
       if isstruct(analysisResults)
         analysisFlds = fieldnames(analysisResults);
       else
-        analysisFlds = {char(studyinfo.base_simulator_options.analysis_functions{1})};
+        if ~isempty(studyinfo.base_simulator_options.analysis_functions)
+          analysisFlds = {char(studyinfo.base_simulator_options.analysis_functions{1})};
+        else % only post hoc
+          analysisFlds = {funNamesS};
+        end
         analysisResults = struct(analysisFlds{1}, {analysisResults});
         funNamesS = struct(analysisFlds{1}, {funNamesS});
         prefixesS = struct(analysisFlds{1}, {prefixesS});
