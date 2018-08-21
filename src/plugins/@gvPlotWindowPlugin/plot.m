@@ -34,7 +34,6 @@ dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
 if ~isempty(dataTypeAxInd)
   allAxVals = getValsForAxis(dataTypeAxInd);
   dataType = allAxVals{sliderVals(dataTypeAxInd)};
-  dataType = strrep(dataType, '_', '\_');
 else
   dataType = [];
 end
@@ -441,8 +440,8 @@ makeAllSubplots();
       %     end
       
       for axInd = 1:length(axInds)
-        thisAxVals = axVals{axInd};
         thisAxInds = axInds{axInd};
+        thisAxVals = axVals{axInd};
         
         set(hAx,[axLetters{axInd} 'Tick'], thisAxInds);
         set(hAx,[axLetters{axInd} 'Ticklabel'], thisAxVals);
@@ -516,6 +515,8 @@ makeAllSubplots();
     % convert to string if numeric with proper string format
     if isnumeric(vals)
       vals = strsplit( num2str(vals(:)','%.2g ') );
+    elseif iscellstr(vals)
+      vals = strrep(vals, '_', '\_');
     end
   end
 
