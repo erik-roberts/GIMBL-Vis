@@ -35,18 +35,27 @@ end
 pos = get(evnt,'Position');
 
 xVal = axValues{1}(pos(1));
+if iscell(xVal)
+  xVal = xVal{1};
+end
 output_txt = {[xLabel ': ',num2str(xVal, 4)]};
 
 
 % If there is a Y-coordinate in the position, display it as well
 if length(axDims) > 1
   yVal = axValues{2}(pos(2));
+  if iscell(yVal)
+    yVal = yVal{1};
+  end
   output_txt{end+1} = [yLabel ': ',num2str(yVal, 4)];
 end
 
 % If there is a Z-coordinate in the position, display it as well
 if length(axDims) > 2
   zVal = axValues{3}(pos(3));
+  if iscell(zVal)
+    zVal = zVal{1};
+  end
   output_txt{end+1} = [zLabel ': ',num2str(zVal, 4)];
 end
 
