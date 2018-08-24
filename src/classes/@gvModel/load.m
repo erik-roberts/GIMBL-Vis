@@ -6,7 +6,7 @@ function load(modelObj, src, fld, staticBool, varargin)
 %        obj.load(src, hypercubeName)
 %
 % Inputs:
-%   src: is a dir or a file to load.
+%   src: is a dir, file to load, or data object.
 %   hypercubeName: is a hypercubeName to store loaded data in. If empty
 %                  will use default indexing.
 %
@@ -30,33 +30,39 @@ if nargin > 4 && ischar(staticBool)
 end
 
 % parse src
-if exist(src, 'dir')
-  matFile = lscell(fullfile(src, '*.mat'));
-  if ~isempty(matFile)
-    if any(strcmp(matFile, 'gvArrayData.mat'))
-      src = fullfile(src, 'gvArrayData.mat');
-    else
-      if length(matFile) > 1
-        error('Found multiple mat files in dir. Please specify path to which mat file to load.')
+if isa(src, 'MDD') || isa(src, 'MDDRef') || isa(src, 'gv')
+  data = src;
+elseif ischar(src)
+  if exist(src, 'dir')
+    matFile = lscell(fullfile(src, '*.mat'));
+    if ~isempty(matFile)
+      if any(strcmp(matFile, 'gvArrayData.mat'))
+        src = fullfile(src, 'gvArrayData.mat');
+      else
+        if length(matFile) > 1
+          error('Found multiple mat files in dir. Please specify path to which mat file to load.')
+        end
+        src = fullfile(src, matFile{1});
       end
-      src = fullfile(src, matFile{1});
-    end
-    
-    % in case specify dynasim data dir
-    if strcmp(matFile{1}, 'studyinfo.mat')
-      modelObj.importDsData(src, varargin{:}); % ignore src
+      
+      % in case specify dynasim data dir
+      if strcmp(matFile{1}, 'studyinfo.mat')
+        modelObj.importDsData(src, varargin{:}); % ignore src
+        return
+      end
+    else % called gv.Run() in directory without mat files
+      modelObj.vprintf('[gvModel] No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
       return
     end
-  else % called gv.Run() in directory without mat files
-    modelObj.vprintf('[gvModel] No mat files found in dir for loading. Opening GIMBL-Vis with empty model.\n');
-    return
+  elseif ~exist(src, 'file')
+    error('Load source not found. Use ''obj.importTabularDataFromFile'' instead for non-mat files.')
   end
-elseif ~exist(src, 'file')
-  error('Load source not found. Use ''obj.importTabularDataFromFile'' instead for non-mat files.')
+  
+  % import data
+  data = importdata(src);
+else
+  error('Unknown load src data type.')
 end
-
-% import data
-data = importdata(src);
 
 modelObj.importDataFromWorkspace(data, fld, staticBool)
 
