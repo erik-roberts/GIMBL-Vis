@@ -486,7 +486,7 @@ end
 
   function [analysisResults, analysisFlds, gvAnalysisLabels, classes] = importAnalysisResults()
     % get results struct with fieldnames = analysisFns
-    [analysisResults, ~, ~, funNamesS, prefixesS] = dsImportResults(src, 'import_scope','allResults', 'as_cell',0);
+    [analysisResults, ~, ~, funNamesS, prefixesS] = dsImportResults(src, 'import_scope','allResults', 'as_cell',0, 'simplify2cell_bool',0);
     % Note: analysisResults will have empty spots in cell array for missing sims
     
     if ~isempty(analysisResults)
@@ -505,9 +505,24 @@ end
       end
       
       % convert structs to cell
-      funNames = struct2cell(funNamesS);
-      prefixes = struct2cell(prefixesS);
-      gvAnalysisLabels = analysisFlds;
+      if ~isempty(funNamesS) && ~isempty(prefixesS)
+        funNames = struct2cell(funNamesS);
+        prefixes = struct2cell(prefixesS);
+        gvAnalysisLabels = analysisFlds;
+      else
+        % check if using merged
+        prefixes = regexp(analysisFlds, '^(.+)__.+__\d+$', 'tokens');
+        prefixes = [prefixes{:}];
+        if ~isempty(prefixes)
+          prefixes = [prefixes{:}];
+        end
+        
+        funNames = regexp(analysisFlds, '__(.+)__', 'tokens');
+        funNames = [funNames{:}];
+        if ~isempty(funNames)
+          funNames = [funNames{:}];
+        end
+      end
       
       % make prefixes valid names
       prefixes = matlab.lang.makeValidName(prefixes);
