@@ -289,7 +289,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function status = Callback_main_menu_file_saveGV(src, ~)
       pluginObj = src.UserData.pluginObj;
       
-      [fileName, pathName] = uiputfile('*.mat', 'Save GIMBL-Vis Object');
+      [fileName, pathName] = uiputfile('*.mat', 'Save GIMBL-Vis Object', 'gv.mat');
       
       if isequal(fileName,0)
         status = 1;
@@ -307,7 +307,7 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     function Callback_main_menu_file_saveHC(src, ~)
       pluginObj = src.UserData.pluginObj;
       
-      [fileName, pathName] = uiputfile('*.mat', 'Save Hypercube as MDD Object');
+      [fileName, pathName] = uiputfile('*.mat', 'Save Hypercube as MDD Object', 'mddArrayData.mat');
       
       if isequal(fileName,0)
         return

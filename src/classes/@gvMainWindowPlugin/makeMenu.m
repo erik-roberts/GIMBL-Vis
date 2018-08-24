@@ -29,7 +29,7 @@ menuLabel = 'Load Object from File';
 makeMenuRow();
 
 handleStr = 'loadCwd';
-menuLabel = 'Load Object from Working Directory';
+menuLabel = 'Auto Load Object from Working Directory';
 makeMenuRow();
 
 handleStr = 'importMdData';
@@ -41,7 +41,7 @@ menuLabel = 'Import Tabular Data from File';
 makeMenuRow();
 
 handleStr = 'importCwd';
-menuLabel = 'Import Data from Working Directory';
+menuLabel = 'Auto Import Data from Working Directory';
 makeMenuRow();
 
 handleStr = 'saveGV';

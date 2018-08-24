@@ -733,7 +733,7 @@ end
 
   function mods = arrows2underscores(mods)
     % Purpose: change arrow direction to 'target <- source' and convert to underscores
-    mods(:,1:2) = cellfun( @fix_arrows, mods(:,1:2),'UniformOutput',0); % fix order of directionality to be L -> R
+    mods(:,1:2) = cellfun( @fix_arrows, mods(:,1:2),'UniformOutput',0); % fix order of directionality to be 'target <- source'
     mods(:,1:2) = cellfun( @(x) strrep(x,'<-','_'),mods(:,1:2),'UniformOutput',0); % replace modification arrows with _
     
     function obj = fix_arrows(obj)
