@@ -386,6 +386,14 @@ classdef gvSelectPlugin < gvGuiPlugin
             editObj.String = axVals{1};
             return
           end
+          
+          if length(sliderVal) > 1
+            pluginObj.vprintf('[gvSelectPlugin] Found multiple matching values for slider and using first match. \n');
+          end
+          
+          % take first sliderVal
+          sliderVal = sliderVal(1);
+          
           finalString = axVals{sliderVal};
         end
       end
