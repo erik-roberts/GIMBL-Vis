@@ -100,6 +100,26 @@ classdef gvView < handle
       fprintf('    Loaded Window Plugins:\n        %s\n', strjoin(fieldnames(viewObj.windowPlugins),'\n        ') );
     end
     
+    
+    function printWindowPositions(gvObj)
+      % printWindowPositions - print positions of windows
+      
+      fprintf('Window Positions:\n');
+      
+      structfun(@printPluginWinPos, gvObj.windowPlugins);
+      
+      function printPluginWinPos(winPlugin)
+        
+        if isprop(winPlugin.handles.fig, 'Position')
+          pos = num2str(winPlugin.handles.fig.Position);
+        else
+          pos = 'no window';
+        end
+        
+        fprintf('    %s: [%s]\n', winPlugin.pluginClassName, pos);
+      end
+    end
+    
 
     function openWindow(viewObj, windowFieldName)
       if isfield(viewObj.windows, windowFieldName)

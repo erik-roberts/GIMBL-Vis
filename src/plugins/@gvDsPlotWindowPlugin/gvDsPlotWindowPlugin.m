@@ -200,15 +200,23 @@ classdef gvDsPlotWindowPlugin < gvWindowPlugin
         return
       end
       
-      plotPanPos = pluginObj.controller.plugins.plot.handles.fig.Position;
-      newPos = plotPanPos; % same size as plot window
-      newPos(2) = newPos(2)-newPos(4)-100; % move down
-      %       newPos(3:4) = newPos(3:4)*.8; %shrink
+      % determine figure pos
+      pos = pluginObj.getConfig([pluginObj.pluginClassName '_Position']);
+      if isempty(pos)
+        plotWinPos = pluginObj.controller.plugins.plot.handles.fig.Position;
+        
+        % default Position
+        pos = plotWinPos; % same size as plot window
+        pos(2) = pos(2)-pos(4)-100; % move down
+        % pos(3:4) = pos(3:4)*.8; %shrink
+      end
+      
+
       dsPlotWindowHandle = figure(...
         'Name',['GIMBL-Vis: ' pluginObj.windowName],...
         'Tag',pluginObj.figTag(),...
         'NumberTitle','off',...
-        'Position',newPos,...
+        'Position',pos,...
         'color','white');
       
 %       makeBlankAxes(dsPlotWindowHandle);

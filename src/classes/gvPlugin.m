@@ -88,6 +88,26 @@ classdef (Abstract) gvPlugin < handle
     end
     
     
+    function config = getConfig(pluginObj, varargin)
+      % get config from app
+      % if no args, will return all configs as struct
+      % if string arg, will return the config value of the given string if it
+      %   exists, else it will return []
+      
+      config = pluginObj.controller.app.config;
+      
+      if nargin > 1
+        str = varargin{1};
+        
+        if ischar(str) && isfield(config, str)
+          config = config.(str);
+        else
+          config = [];
+        end
+      end
+    end
+    
+    
     function varargout = getHelp(pluginObj)
       str = pluginObj.helpStr();
       if ~nargout

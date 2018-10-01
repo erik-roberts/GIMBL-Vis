@@ -326,6 +326,13 @@ classdef gv < handle
     end
     
     
+    function printWindowPositions(gvObj)
+      % wrap view.printWindowPositions
+      
+      gvObj.view.printWindowPositions();
+    end
+    
+    
     %% Overloaded built-ins
     function varargout = subsref(obj, S)
       % Notes:
