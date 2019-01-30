@@ -532,7 +532,7 @@ classdef gv < handle
       
       gvObj = gv.Load(loadPath, [], varargin{:});
       
-      gvObj.run(varargin{:});
+      gvObj.run(loadPath, varargin{:});
       
       if nargout
         varargout{1} = gvObj;
