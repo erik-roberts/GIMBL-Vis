@@ -361,6 +361,9 @@ classdef gv < handle
       switch S(1).type
         case '{}'
           varargout = builtin('subsref', obj, S);
+        case '()'
+          temp = S.subs(:);
+          obj.load( temp{:} );
         otherwise
           [varargout{1:nargout}] = builtin('subsref', obj, S);
       end
