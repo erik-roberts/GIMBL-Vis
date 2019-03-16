@@ -10,7 +10,7 @@ while iterBool
   tic
   
   % Changing Vars
-  disabledDims = pluginObj.view.dynamic.disabledDims;
+  lockDims = pluginObj.view.dynamic.lockDims;
   viewDims = pluginObj.view.dynamic.viewDims;
 
   if sum(viewDims) > 2
@@ -40,7 +40,9 @@ end
 %% Sub functions
   function incrementSliders()
     axInd = pluginObj.view.dynamic.sliderVals;
-    axInd(disabledDims) = nDimVals(disabledDims); % set disabled dims to max
+    
+    % pretend lockDims are maxed so they are ignored for iterating
+    axInd(lockDims) = nDimVals(lockDims);
     
     %% New slider position
     if any(axInd < nDimVals) % Increment
@@ -57,9 +59,13 @@ end
       
       % Callback slider
       pluginObj.Callback_select_panel_slider(sliderObject, []);
+      
+      resetAx(lockDims) = 0;
     else
       resetAx = incrDims;
-      resetAx(disabledDims) = 0;
+      
+      % prevent lockDims from resetting so they stay the same
+      resetAx(lockDims) = 0;
     end %if
     
     %% Reset any sliders
