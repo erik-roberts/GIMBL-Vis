@@ -115,7 +115,7 @@ classdef gvSelectPlugin < gvGuiPlugin
       % prevents any change
       
       lockCheckboxes = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','lockCheckbox'), true);
-      pluginObj.view.dynamic.lockDims = [lockCheckboxes.Value];
+      pluginObj.view.dynamic.lockDims = logical([lockCheckboxes.Value]);
       pluginObj.view.dynamic.nLockDims = sum([lockCheckboxes.Value]);
     end
     

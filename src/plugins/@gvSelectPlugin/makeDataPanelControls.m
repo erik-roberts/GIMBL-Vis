@@ -237,7 +237,7 @@ set(dataScrollingPanel, 'Heights',dataPanelheight);
       nStr = num2str(n);
       
       if isfield(pluginObj.view.dynamic, 'lockDims') && (n <= length(pluginObj.view.dynamic.lockDims))
-        thisVal = pluginObj.view.dynamic.lockDims(n);
+        thisVal = double( pluginObj.view.dynamic.lockDims(n) );
       else
         thisVal = 0;
       end
