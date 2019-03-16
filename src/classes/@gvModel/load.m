@@ -60,6 +60,8 @@ elseif ischar(src)
   
   % import data
   data = importdata(src);
+elseif isnumeric(src)
+  data = src;
 else
   error('Unknown load src data type.')
 end
