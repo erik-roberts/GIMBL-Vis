@@ -104,6 +104,23 @@ classdef gvMainWindowPlugin < gvWindowPlugin
     makeMenu(pluginObj, parentHandle)
     
     uiControlsHandles = makeHypercubePanelControls(pluginObj, parentHandle)
+    
+    
+    function selectInitialGuiPluginTab(pluginObj)
+      initialGuiPlugin = pluginObj.controller.app.config.initialGuiPlugin;
+      
+      if ~isempty(initialGuiPlugin)
+        try
+          try
+            pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.metadata.tabs.pluginClassName2tabHandle.(initialGuiPlugin);
+          catch
+            pluginObj.handles.controls.tabPanel.SelectedTab = pluginObj.metadata.tabs.pluginName2tabHandle.(initialGuiPlugin);
+          end
+        catch
+          wprintf('[gvMainWindowPlugin] Could not locate "initialGuiPlugin" tab specified in gvConfig')
+        end
+      end
+    end
 
   end
 

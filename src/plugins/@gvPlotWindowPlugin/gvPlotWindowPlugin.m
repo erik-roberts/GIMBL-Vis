@@ -394,6 +394,8 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       xInds = scatterH.XData(brushInd);
       yInds = scatterH.YData(brushInd);
       
+      nPts = length(xInds);
+      
       % get ax vals
       hypercubeObj = pluginObj.controller.activeHypercube;
       plotDims = axH.UserData.plotDims;
@@ -419,10 +421,6 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
       end
       
       axStr = strjoin(axNames, ' | ');
-      
-      
-      disp('Brush Data:')
-      disp(axStr);
       dataStr = strcat(xVals, ' | ', yVals);
       
       if length(plotDims) > 2
@@ -442,6 +440,48 @@ classdef gvPlotWindowPlugin < gvWindowPlugin
         dataStr = strcat(dataStr, ' | ', zVals);
       end
       
+      % find corresponding index
+      axesType = gvGetAxisType(hypercubeObj);
+      if ~isempty(axesType)
+        % check for axisType = 'dataType'
+        dataTypeAxInd = find(strcmp(axesType, 'dataType'), 1);
+        indexAxInd = find(strcmp(pluginObj.controller.activeHypercube.axis(dataTypeAxInd).axismeta.dataType, 'index'),1);
+        
+        imageInds = zeros(nPts, 1);
+        
+        for iPt = 1:nPts
+          sliderVals = pluginObj.view.dynamic.sliderVals;
+          sliderVals(dataTypeAxInd) = indexAxInd; % set sliderVals dataType axis number to axis position for hypercube index.
+          
+          if length(plotDims) == 3 % 3D
+            sliderVals(plotDims) = [xInds(iPt) yInds(iPt) zInds(iPt)]; % set sliderVals plot dims to closest point to mouse
+          elseif length(plotDims) == 2 % 2D
+            sliderVals(plotDims) = [xInds(iPt) yInds(iPt)]; % set sliderVals plot dims to closest point to mouse
+          else % 1D
+            sliderVals(plotDims) = xInds(iPt); % set sliderVals plot dims to closest point to mouse
+          end
+          
+          % get image index from slider vals
+          sliderVals = num2cell(sliderVals); % convert to cell for indexing
+          imageIndex = hypercubeObj.data(sliderVals{:});
+          if iscell(imageIndex)
+            imageIndex = imageIndex{1};
+          end
+          if ischar(imageIndex)
+            imageIndex = str2double(imageIndex);
+          end
+          imageInds(iPt) = imageIndex;
+        end
+        
+        imageInds = num2str(imageInds);
+        
+        axStr = ['Index | ' axStr];
+        dataStr = strcat(imageInds, ' | ', dataStr);
+      end
+      
+      % disp
+      disp('Brush Data:')
+      disp(axStr);
       disp(dataStr);
     end
     

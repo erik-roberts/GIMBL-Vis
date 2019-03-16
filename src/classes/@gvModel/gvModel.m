@@ -30,14 +30,14 @@ classdef gvModel < handle
   
   methods
     
-    function value = get.activeHypercube(viewObj)
-      value = viewObj.controller.activeHypercube;
+    function value = get.activeHypercube(modelObj)
+      value = modelObj.controller.activeHypercube;
     end
     
-    function value = get.activeHypercubeName(viewObj)
-      value = viewObj.controller.activeHypercubeName;
+    function value = get.activeHypercubeName(modelObj)
+      value = modelObj.controller.activeHypercubeName;
     end
-    
+
   end
   
   %% Public Methods %%
@@ -250,6 +250,58 @@ classdef gvModel < handle
         fldOut = modelObj.nextModelFieldName; % get next fld for model.axes#
       end
     end
+    
+    function axInd = dataTypeAxisInd(modelObj)
+      
+      axesType = gvGetAxisType(modelObj.activeHypercube);
+      if ~isempty(axesType) && iscell(axesType) && ~all(cellfun(@isempty, axesType))
+        % check for axisType = 'dataType'
+        axInd = find(strcmp(axesType, 'dataType'), 1);
+      else
+        axInd = [];
+      end
+    end
+    
+    function dims = singletonDimsLogical(modelObj)
+      dims = size(modelObj.activeHypercube)==1;
+      
+      % remove dataTypeAxisInd
+      ind = modelObj.dataTypeAxisInd;
+      dims(ind) = false;
+    end
+    
+    function dims = nonSingletonDimsLogical(modelObj)
+      dims = ~modelObj.singletonDimsLogical;
+      
+      % remove dataTypeAxisInd
+      ind = modelObj.dataTypeAxisInd;
+      dims(ind) = false;
+    end
+        
+    function dims = singletonDims(modelObj)
+      % not including dataTypeAxis
+      
+      dims = find(modelObj.singletonDimsLogical);
+    end
+    
+    function dims = nonSingletonDims(modelObj)
+      % not including dataTypeAxis
+      
+      dims = find(modelObj.nonSingletonDimsLogical);
+    end
+    
+    function value = numSingletonDims(modelObj)
+      % not including dataTypeAxis
+      
+      value = length(modelObj.singletonDims);
+    end
+    
+    function value = numNonSingletonDims(modelObj)
+      % not including dataTypeAxis
+      
+      value = length(modelObj.nonSingletonDims);
+    end
+    
     
   end
   

@@ -164,6 +164,10 @@ classdef gvSelectPlugin < gvGuiPlugin
     function updateEditFromSlider(pluginObj, sliderObj)
       editObj = findobjReTag(sliderObj.UserData.siblingTag);
       
+      if length(editObj > 1)                                                    %#ok<ISMT>
+        editObj = findobjReTag(['^' sliderObj.UserData.siblingTag '$']);
+      end
+      
       editObj.String = pluginObj.getSliderValStr(sliderObj);
     end
     
@@ -227,8 +231,20 @@ classdef gvSelectPlugin < gvGuiPlugin
       end
     end
     
+    
     function sliders = sliderHandles(pluginObj)
       sliders = sortByTag(findobj(pluginObj.view.windowPlugins.main.handles.fig, '-regexp', 'Tag','slider\d+'), true);
+    end
+    
+    
+    function setInitialViewDims(pluginObj)
+      nNonSingletonDims = pluginObj.controller.model.numNonSingletonDims;
+      
+      if (nNonSingletonDims > 0) && (nNonSingletonDims <= 3)
+        dims2viewLogical = pluginObj.controller.model.nonSingletonDimsLogical;
+        
+        pluginObj.view.dynamic.viewDims = dims2viewLogical;
+      end
     end
 
   end
@@ -280,6 +296,11 @@ classdef gvSelectPlugin < gvGuiPlugin
       pluginObj = src.guiPlugins.(gvSelectPlugin.pluginFieldName); % window plugin
       
       pluginObj.initializeSliderVals();
+      
+      
+      if pluginObj.controller.app.config.setInitialViewDims
+        pluginObj.setInitialViewDims();
+      end
       
       % TODO remake controls
     end

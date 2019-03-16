@@ -7,6 +7,8 @@ baseFontSize = '12';
 closeMainWindowSaveDialogBool = '#!true';
 verboseModeBool = '#!false';
 autoOpenLoadedPluginWindows = '#!true';
+initialGuiPlugin = 'gvMainWindowPlugin';
+setInitialViewDims = '#!true';
 
 % gvPlotWindowPlugin
 plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
@@ -14,6 +16,7 @@ plotColormapScope = 'hypercube'; % {'hypercube', 'slice'}
 % gvImageWindowPlugin
 defaultImagePath = './images/';
 defaultImageRegexp = '^(.+)(\d+)\.\w+$'; % 2 capture groups: 1 for image type, 1 for index
+initialImageType = '';
 
 % gvDsPlotWindowPlugin
 defaultDsPlotStack = "#!{'', '', ''}";
