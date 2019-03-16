@@ -39,7 +39,7 @@ gvObj.run();
 % 2) Using static/class method
 gv.Run; % or `gvObj = gv.Run;`
 
-% 3) using constructor with simulataneous method call
+% 3) using constructor with simultaneous method call
 gv().run % or `gvObj = gv().run;`
 
 %% Object Construction
