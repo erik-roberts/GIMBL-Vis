@@ -321,6 +321,7 @@ makeAllSubplots();
           return
       end
     else
+      camPos = hAx.CameraPosition;
       switch plotType
         case 'scatter'
           scatter3(hAx, axValsVector{:}, markerSize, plotSlice, 'filled'); % slice specific colormap
@@ -333,6 +334,7 @@ makeAllSubplots();
           wprintf('Unknown Plot Type')
           return
       end
+      hAx.CameraPosition = camPos;
     end
     
     if isempty(legendInfo) && ~strcmp(plotType, 'line')
