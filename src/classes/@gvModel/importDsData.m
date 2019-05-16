@@ -508,7 +508,6 @@ end
       if ~isempty(funNamesS) && ~isempty(prefixesS)
         funNames = struct2cell(funNamesS);
         prefixes = struct2cell(prefixesS);
-        gvAnalysisLabels = analysisFlds;
       else
         % check if using merged
         prefixes = regexp(analysisFlds, '^(.+)__.+__\d+$', 'tokens');
@@ -523,6 +522,7 @@ end
           funNames = [funNames{:}];
         end
       end
+      gvAnalysisLabels = analysisFlds;
       
       % make prefixes valid names
       prefixes = matlab.lang.makeValidName(prefixes);
