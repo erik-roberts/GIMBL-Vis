@@ -110,6 +110,8 @@ notify(pluginObj, 'panelControlsMade');
       elseif isempty(menuValue)
         menuValue = 1; % default to 1
       end
+    else
+      menuValue = 1;
     end
     
     % imageTypeMenu
