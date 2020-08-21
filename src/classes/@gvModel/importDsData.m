@@ -11,7 +11,7 @@ function importDsData(modelObj, src, varargin)
 
 
 %% Setup args
-if nargin < 2
+if nargin < 2 || isempty(src)
   src = modelObj.app.workingDir;
 end
 

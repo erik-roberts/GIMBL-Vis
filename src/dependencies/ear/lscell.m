@@ -21,6 +21,8 @@ function dirList = lscell(arg, removePathBool, relativePathBool)
 %
 % Tips: in order to search subdirectories, use the '**' glob character in the arg
 %
+% Note: filters out mac-generated ._* files
+%
 % See also: DIR
 
 % Dev Note: checked on Mac OS 10.12, Windows 10, Linux Mint with Matlab 2017b
@@ -74,6 +76,9 @@ end
 dirList = unique(dirList);
 
 % dirList is cellstr with absolute paths
+
+% remove mac-generated /._* files
+dirList = filterMacDotUnderscoreFiles(dirList);
 
 if relativePathBool && ~removePathBool
   regexStr = ['^' pwd filesep];
